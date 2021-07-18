@@ -1,21 +1,21 @@
-<div>
+<div align="left">
 
   ### 김현식 1998.06.04
   >
-  > 🏃 Python
+  > :running_man: Python
   >> Programmers L3, L4
   >> 
-  > 🚴 C99
+  > :biking_man: C99
   >> BOJ 응애
   >> 
-  > 📱 Kotlin 응애
+  > :iphone: Kotlin 응애
   > 
-  > 🤖 MATLAB 응애
+  > :robot: MATLAB 응애
   > 
-  > 🕸 JS Html CSS
+  > :computer: JS Html CSS
   >> firebase로 동적페이지 구성
   > 
-  > [[oculis] (https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)]
+  > [oculis?](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
   
 </div>
 
