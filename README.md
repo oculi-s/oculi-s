@@ -15,7 +15,7 @@
   > 🕸 JS Html CSS
   >> firebase로 동적페이지 구성
   > 
-  > [oculis] (https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
+  > ![oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
   
 </div>
 
