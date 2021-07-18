@@ -13,7 +13,6 @@
   > JS Html CSS
   >> firebase로 동적페이지 구성
   > 
-  > PS를 열심히..! </br>
   > <https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis>
   
 </div>
