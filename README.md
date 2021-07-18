@@ -1,8 +1,14 @@
 <div>
 
   ### 김현식 1998.06.04
-  > Github 잘 안씀 </br>
-  > PS 열심히 준비중..! </br>
+  > Python </br>
+  >> Programmers L3, L4 수준
+  > C99
+  >> BOJ 응애
+  > Kotlin 응애
+  > JS Html CSS 기초
+  > 
+  > PS를 열심히..! </br>
   > <https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis> </br>
   
 </div>
