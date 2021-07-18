@@ -2,19 +2,20 @@
 
   ### 김현식 1998.06.04
   >
-  > Python 🏃
+  > 🏃 Python
   >> Programmers L3, L4 수준
+  >> programmers.com/
   >> 
-  > C99 🚴
+  > 🚴 C99
   >> BOJ 응애
   >> 
-  > Kotlin 응애애
+  > 📱 Kotlin 응애
   > 
   > JS Html CSS
   >> firebase로 동적페이지 구성
   > 
   > PS를 열심히..! </br>
-  > <https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis> </br>
+  > <https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis>
   
 </div>
 
