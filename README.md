@@ -3,8 +3,7 @@
   ### 김현식 1998.06.04
   >
   > 🏃 Python
-  >> Programmers L3, L4 수준
-  >> programmers.com/
+  >> Programmers L3, L4
   >> 
   > 🚴 C99
   >> BOJ 응애
