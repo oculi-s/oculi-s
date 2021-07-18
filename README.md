@@ -10,7 +10,7 @@
   >> 
   > 📱 Kotlin 응애
   > 
-  > JS Html CSS
+  > 🕸 JS Html CSS
   >> firebase로 동적페이지 구성
   > 
   > <https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis>
