@@ -10,7 +10,7 @@
   >> 
   > 📱 Kotlin 응애
   > 
-  > MATLAB 응애
+  > 🤖 MATLAB 응애
   > 
   > 🕸 JS Html CSS
   >> firebase로 동적페이지 구성
