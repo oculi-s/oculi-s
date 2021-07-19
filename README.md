@@ -26,7 +26,7 @@
 
 [![Solved.ac Profile](http://mazassumnida.wtf/api/v2/generate_badge?boj=oculis)](https://solved.ac/oculis/)
 
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=oculis0925&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
+[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=oculi-s&layout=compact)](https://github.com/anuraghazra/github-readme-stats)
 
 </div>
 </div>
