@@ -2,11 +2,11 @@
 <div class="pull-left">
 
 ### 김현식 1998.06.04
+> :biking_man: C99
+>> BOJ 응애!
+>> 
 > :running_man: Python
 >> Programmers L3, L4
->> 
-> :biking_man: C99
->> BOJ 응애
 >> 
 > :iphone: Kotlin 응애
 > 
