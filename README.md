@@ -3,7 +3,7 @@
 
 ### 김현식 1998.06.04
 > :biking_man: C99
->> BOJ 응애(진)
+>> BOJ 골드
 >> 
 > :running_man: Python
 >> Programmers L3, L4
