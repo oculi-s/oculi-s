@@ -2,20 +2,23 @@
 <div class="pull-left">
 
 ### 김현식 1998.06.04
-> :biking_man: C99
->> BOJ 골드
+> 📱 010-8901-6864
+>> Contact me whenever you want
 >>
->> Codeforces 으응애애
+> :biking_man: C99
+>> [BOJ](https://github.com/oculi-s/Baekjoon) 골드
+>>
+>> [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애
 >> 
 > :running_man: Python
->> Programmers L3, L4
+>> [Programmers](https://github.com/oculi-s/Programmers) L3, L4
 >> 
 > :iphone: Kotlin 응애
 > 
 > :robot: MATLAB 응애
 > 
 > :computer: JS Html CSS
->> firebase로 동적페이지 구성
+>> [firebase](https://github.com/oculi-s/firebase)로 동적페이지 구성
 > 
 > [about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
 
