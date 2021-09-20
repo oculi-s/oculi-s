@@ -2,7 +2,7 @@
 <div class="pull-left">
 
 ### 김현식 1998.06.04
-> 📱 010-8901-6864
+> 📱 <b>010-8901-6864</b>
 >> Contact me whenever you want
 >>
 > :biking_man: C99
