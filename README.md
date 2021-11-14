@@ -10,12 +10,6 @@
 >>
 >> [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애
 >> 
-> :running_man: Python
->> [Programmers](https://github.com/oculi-s/Programmers) L3, L4
->> 
-> :iphone: Kotlin 응애
-> 
-> :robot: MATLAB 응애
 > 
 > :computer: JS Html CSS
 >> [firebase](https://github.com/oculi-s/firebase)로 동적페이지 구성
@@ -24,6 +18,13 @@
 >>
 >> [firebase](https://github.com/oculi-s/blog)로 데이터가 암호화된 블로그 구성
 > 
+> :running_man: Python
+>> [Programmers](https://github.com/oculi-s/Programmers) L3, L4
+>> 
+> :iphone: Kotlin 응애
+> 
+> :robot: MATLAB 응애
+>
 > [about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
 
 </div>
