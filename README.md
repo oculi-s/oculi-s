@@ -19,6 +19,10 @@
 > 
 > :computer: JS Html CSS
 >> [firebase](https://github.com/oculi-s/firebase)로 동적페이지 구성
+>> 
+>> [firebase](https://github.com/oculi-s/ohddul)로 동적 페이지 구성 - 웹 커뮤니티 구성
+>>
+>> [firebase](https://github.com/oculi-s/blog)로 데이터가 암호화된 블로그 구성
 > 
 > [about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
 
