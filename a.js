@@ -21,7 +21,7 @@ window.$$ = document.querySelectorAll.bind(document);
 const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
-const iscode = en('</code>');
+const iscode = en('</pre>');
 var prp = document.createElement('script');
 prp.src = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js?skin=desert';
 
