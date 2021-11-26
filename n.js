@@ -22,7 +22,7 @@ const de = decodeURI;
 const en = encodeURI;
 const iscode = en('</code>');
 
-$('head').innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0"/>`;
+$('head').innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=yes" />`;
 $('head').innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
 $('head').innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
 
