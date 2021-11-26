@@ -25,7 +25,7 @@ $('head').innerHTML += `<meta name="viewport"content="width=device-width, initia
 $('head').innerHTML += `<link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
 $('head').innerHTML += `<title>불로구</title><link rel="shortcut icon"type="image/x-icon"href="https://firebasestorage.googleapis.com/v0/b/sample-65976.appspot.com/o/main.jpg?alt=media&token=fee55cc6-b8a4-4ec3-933a-7fa1b55ed4ae">`;
 var url = de(window.location.href).split('//')[1].split('/').slice(1);
-if (url[0] == 'blog') { url = url.slice(1) };
+if (url[0] == 'sample') { url = url.slice(1) };
 if (url[0] == '') { url = ['index', 'index'] };
 if (url[1] == '') { url[1] = 'index' };
 if (url[1] == 'index') { url.push('index') };
@@ -127,7 +127,7 @@ function signin() {
 async function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.href = 'https://' + location.host + '/blog';
+        location.href = 'https://' + location.host + '/sample';
         ss.uid = null;
         ss.log = false
     }).catch((e) => { alert('로그인 정보가 없습니다.') })
