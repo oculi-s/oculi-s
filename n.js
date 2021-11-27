@@ -60,9 +60,6 @@ async function getData(x) {
         if (url[2] in html.data()) {
             var r = html.data()[url[2]][x];
             ss.prp = r.includes(iscode);
-            if (ss.prp == 'false') {
-                r = r.replace('%0A', '');
-            }
             return de(r);
         } else {
             return create;
@@ -131,13 +128,6 @@ function edit() {
 // 3
 async function save() {
     var d = en($('textarea').value);
-    if (!d.includes(iscode)) {
-        d = d.replaceAll('%0A', '');
-        d = d.replaceAll('%3E%20%3C', '%3E%3C');
-        while (d.includes('%20%20')) {
-            d = d.replaceAll('%20%20', '%20');
-        };
-    };
     var dict = await getDoc(doc(db, url[0], url[1]));
     dict = dict.data();
     if (dict == undefined) {
