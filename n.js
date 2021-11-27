@@ -18,9 +18,6 @@ $('head').innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.co
 $('head').innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
 
 var url = de(window.location.href).split('//')[1].split('/').slice(1);
-if (url[0] == 'body') {
-    url = url.slice(1);
-};
 if (url[0] == '') {
     url = ['index', 'index'];
 };
@@ -195,7 +192,7 @@ function signin() {
 async function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.href = '/body';
+        location.href = '/';
         ss.uid = null;
         ss.log = false;
     }).catch((e) => {
