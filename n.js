@@ -1,17 +1,8 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-auth.js";
 
-const firebaseConfig = {
-    apiKey: "AIzaSyDZouQJ7YKTZUE6F3LAXPnt_p_ayFGQnF8",
-    authDomain: "sample-65976.firebaseapp.com",
-    projectId: "sample-65976",
-    storageBucket: "sample-65976.appspot.com",
-    messagingSenderId: "258901722942",
-    appId: "1:258901722942:web:91a5be6c8c5cb1b483ce6f",
-    measurementId: "G-GVEQ68YWY4"
-};
-
+const firebaseConfig = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
 initializeApp(firebaseConfig);
 window.db = getFirestore();
 window.auth = getAuth();
@@ -27,7 +18,7 @@ $('head').innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.co
 $('head').innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
 
 var url = de(window.location.href).split('//')[1].split('/').slice(1);
-if (url[0] == 'sample') {
+if (url[0] == 'body') {
     url = url.slice(1);
 };
 if (url[0] == '') {
@@ -172,6 +163,17 @@ async function save() {
     };
 }
 
+async function del() {
+    var dict = await getDoc(doc(db, url[0], url[1]));
+    if (confirm('삭제하시겠습니까?')) {
+        delete dict[url[2]];
+        getData(ss.log).then((html) => setData(html));
+        if (Object.keys(dict).length == 0) {
+            deleteDoc(doc(db, url[0], url[1]));
+        }
+    }
+}
+
 // 4
 function onEnterSignin() {
     if (event.keyCode == 13) {
@@ -193,7 +195,7 @@ function signin() {
 async function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.href = '/sample';
+        location.href = '/body';
         ss.uid = null;
         ss.log = false;
     }).catch((e) => {
@@ -232,6 +234,7 @@ window.setData = setData;
 window.setScript = setScript;
 window.edit = edit;
 window.save = save;
+window.del = del;
 window.signin = signin;
 window.signout = signout;
 window.onEnterSignin = onEnterSignin;
