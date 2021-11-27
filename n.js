@@ -163,12 +163,15 @@ async function save() {
 async function del() {
     var dict = await getDoc(doc(db, url[0], url[1]));
     if (confirm('삭제하시겠습니까?')) {
+        dict = dict.data();
         delete dict[url[2]];
+        await updateDoc(doc(db, url[0], url[1]), dict);
         getData(ss.log).then((html) => setData(html));
         if (Object.keys(dict).length == 0) {
             deleteDoc(doc(db, url[0], url[1]));
         }
     }
+    location.reload();
 }
 
 // 4
