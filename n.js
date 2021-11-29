@@ -74,7 +74,7 @@ function setData(html) {
     if (html.includes('<script')) {
         html = html.split('</script>');
         for (var i = 0; i < html.length; i++) {
-            if (html[i].includes('<script')) {
+            if (html[i].includes('<script>')) {
                 script.push(html[i]);
             } else if ($('article')) {
                 $('article').innerHTML = html[i];
@@ -88,10 +88,7 @@ function setData(html) {
 
 function setScript(script) {
     for (var i = 0; i < script.length; i++) {
-        if (script[i].includes('<script>')) {
-            var func = new Function(script[i].replace('<script>', ''));
-            func();
-        }
+        eval(script[i].replace('<script>', '').replace('</script>', ''))
     }
 }
 
