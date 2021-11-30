@@ -51,7 +51,7 @@ async function del() {
 function onEnterSignin() { 13 == event.keyCode && signin() }
 
 function signin() { signInWithEmailAndPassword(auth, $("#id").value, $("#pw").value).then(async e => { ss.uid = e.user.uid, ss.log = !0, location.reload() }).catch(e => { alert(e.message) }) }
-async function signout() { signOut(auth).then(() => { alert("로그아웃 되었습니다."), location.href = "/body", ss.uid = null, ss.log = !1 }).catch(e => { alert("로그인 정보가 없습니다.") }) }
+async function signout() { signOut(auth).then(() => { alert("로그아웃 되었습니다."), location.href = "/sample", ss.uid = null, ss.log = !1 }).catch(e => { alert("로그인 정보가 없습니다.") }) }
 
 function _wresize() { /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ? ($("section") && $("section").classList.add("m-s"), $("aside") && $("aside").classList.add("m-a"), $("nav") && $("nav").classList.add("m-n")) : ($("section") && $("section").classList.remove("m-s"), $("aside") && $("aside").classList.remove("m-a"), $("nav") && $("nav").classList.remove("m-n")) }
 ss.edit = !0, "uid" in ss || (ss.log = !1), getWidget().then(async() => {
