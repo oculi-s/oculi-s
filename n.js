@@ -218,7 +218,7 @@ function _wresize() {
 
 function makeChart(id, raw) {
     var e = document.getElementById(id);
-    Highcharts.chart(id, {
+    return Highcharts.chart(id, {
         chart: { type: e.dataset.type },
         title: { text: e.dataset.title },
         data: { csv: raw },
