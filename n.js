@@ -82,11 +82,11 @@ function setData(html) {
                 $('article').innerHTML = html[i];
             }
         }
+        for (var i = 0; i < script.length; i++) {
+            eval(script[i].replaceAll('<script>', '').replaceAll('</script>', ''));
+        }
     } else if ($('article')) {
         $('article').innerHTML = html;
-    }
-    for (var i = 0; i < script.length; i++) {
-        eval(script[i].replace('<script>', '').replace('</script>', ''));
     }
 }
 
