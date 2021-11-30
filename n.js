@@ -76,6 +76,8 @@ function setData(html) {
         for (var i = 0; i < html.length; i++) {
             if (html[i].includes('<script>')) {
                 script.push(html[i]);
+            } else if (html[i].includes('<script ')) {
+                $('head').innerHTML += html[i] + '</script>';
             } else if ($('article')) {
                 $('article').innerHTML = html[i];
             }
