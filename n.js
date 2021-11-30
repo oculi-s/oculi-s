@@ -83,10 +83,6 @@ function setData(html) {
     } else if ($('article')) {
         $('article').innerHTML = html;
     }
-    return script;
-}
-
-function setScript(script) {
     for (var i = 0; i < script.length; i++) {
         eval(script[i].replace('<script>', '').replace('</script>', ''))
     }
@@ -101,7 +97,7 @@ getWidget().then(async() => {
     var user = await getDoc(doc(db, 'user', ss.uid));
     var editsave = await getDoc(doc(db, 'source', 'editsave'));
     $('section').innerHTML += de(editsave.data().index[user.data().auth]);
-    setScript(setData(html));
+    setData(html);
     if (ss.prp == 'true') {
         getDoc(doc(db, 'source', 'prettify')).then((prp) => eval(prp.data().data));
         getDoc(doc(db, 'source', 'prettify')).then((prp) => $('section').innerHTML += '<style>' + prp.data().skin + '</style>');
