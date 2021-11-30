@@ -190,7 +190,7 @@ function signin() {
 async function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.href = '/';
+        location.href = '/sample/';
         ss.uid = null;
         ss.log = false;
     }).catch((e) => {
