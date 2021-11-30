@@ -214,7 +214,6 @@ function _wresize() {
 
 window.getData = getData;
 window.setData = setData;
-window.setScript = setScript;
 window.edit = edit;
 window.save = save;
 window.del = del;
