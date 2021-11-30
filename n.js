@@ -86,7 +86,7 @@ function setData(html) {
         $('article').innerHTML = html;
     }
     for (var i = 0; i < script.length; i++) {
-        eval(script[i].replace('<script>', '').replace('</script>', ''))
+        eval(script[i].replace('<script>', '').replace('</script>', ''));
     }
 }
 
