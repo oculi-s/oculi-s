@@ -108,6 +108,13 @@ getWidget().then(async() => {
     };
 });
 
+$('body').addEventListener('keydown', e=> {
+    if (e.ctrlKey && e.key == 'e'){
+        e.preventDefault();
+        edit();
+    }
+}
+
 // 2
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
