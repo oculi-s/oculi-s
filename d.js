@@ -109,7 +109,7 @@ getWidget().then(async() => {
 });
 
 $('html').addEventListener('keydown', e=> {
-    if (e.ctrlKey && e.key == 'e'){
+    if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')){
         e.preventDefault();
         edit();
     };
@@ -121,7 +121,7 @@ function edit() {
     $('article').innerHTML = '<textarea>';
     getData(ss.edit).then((html) => { $('textarea').value = html });
     $('textarea').addEventListener('keydown', e => {
-        if (e.ctrlKey && e.key === 's') {
+        if (e.ctrlKey && (e.key === 's' || e.key == 'ㄴ')) {
             e.preventDefault();
             save();
         };
