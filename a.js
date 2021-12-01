@@ -193,7 +193,7 @@ async function signout() {
 $('body').onresize = _wresize;
 
 function _wresize() {
-    if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    if (/Android|iPhone|iPod/i.test(navigator.userAgent)) {
         if ($('section')) {
             $('section').classList.add('m-s');
         };
