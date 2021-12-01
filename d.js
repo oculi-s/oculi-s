@@ -108,7 +108,7 @@ getWidget().then(async() => {
     };
 });
 
-$('body').addEventListener('keydown', e=> {
+$('html').addEventListener('keydown', e=> {
     if (e.ctrlKey && e.key == 'e'){
         e.preventDefault();
         edit();
