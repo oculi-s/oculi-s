@@ -112,8 +112,8 @@ $('body').addEventListener('keydown', e=> {
     if (e.ctrlKey && e.key == 'e'){
         e.preventDefault();
         edit();
-    }
-}
+    };
+});
 
 // 2
 function edit() {
