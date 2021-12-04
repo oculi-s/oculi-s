@@ -46,14 +46,13 @@ while (url.length < 3) {
 console.log(url);
 
 async function getWidget() {
-    var css = await getDoc(doc(db, 'source', 'css'));
+    var source = await getDoc(doc(db, 'sample', 'source'));
+    source = source.data();
     var style = document.createElement('style');
-    style.innerHTML = de(css.data().index[true]);
+    style.innerHTML = de(source.css[true]);
     $('head').append(style);
-    var nav = await getDoc(doc(db, 'source', 'nav'));
-    $('body').innerHTML += de(nav.data().index[ss.log]);
-    var aside = await getDoc(doc(db, 'source', 'aside'));
-    $('body').innerHTML += de(aside.data().index[ss.log]);
+    $('body').innerHTML += de(source.nav[ss.log]);
+    $('body').innerHTML += de(source.aside[ss.log]);
     if ($('aside>span')) {
         $('aside>span').innerHTML = auth.currentUser.email;
     };
