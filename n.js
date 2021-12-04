@@ -235,7 +235,8 @@ function makeChart(id, raw) {
         plotOptions: {
             series: {
                 stacking: e.dataset.stack == '1' ? 'normal' : '',
-                dataLabels: { enabled: true }
+                dataLabels: { enabled: true },
+                animation: false
             },
             column: { stacking: 'normal', dataLabels: { enabled: true } },
         }
