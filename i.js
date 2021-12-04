@@ -104,14 +104,13 @@ if (!('uid' in ss)) {
     ss.log = false;
 }
 getWidget().then(async() => {
+    var source = await getDoc(doc(db, 'sample', 'source'));
+    source = source.data();
     var html = await getData(ss.log);
     var user = await getDoc(doc(db, 'user', ss.uid));
     $('section').innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
-    if (ss.prp == 'true') {
-        getDoc(doc(db, 'source', 'prettify')).then((prp) => eval(prp.data().data));
-        getDoc(doc(db, 'source', 'prettify')).then((prp) => $('section').innerHTML += '<style>' + prp.data().skin + '</style>');
-    };
+    eval(source.data().prp[ss.prp]);
 });
 
 // 2
