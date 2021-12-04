@@ -110,8 +110,8 @@ getWidget().then(async() => {
     var user = await getDoc(doc(db, 'user', ss.uid));
     $('section').innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
-    eval(source.data().prp[ss.prp]);
-    $('section').innerHTML += '<style>' + source.data().prp.skin + '</style>';
+    eval(source.prp[ss.prp]);
+    $('section').innerHTML += '<style>' + source.prp.skin + '</style>';
 });
 
 // 2
