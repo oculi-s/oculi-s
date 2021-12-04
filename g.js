@@ -45,9 +45,9 @@ while (url.length < 3) {
 };
 console.log(url);
 
+var source = await getDoc(doc(db, 'sample', 'source'));
+source = source.data();
 async function getWidget() {
-    var source = await getDoc(doc(db, 'sample', 'source'));
-    source = source.data();
     var style = document.createElement('style');
     style.innerHTML = de(source.css[true]);
     $('head').append(style);
@@ -106,8 +106,7 @@ if (!('uid' in ss)) {
 getWidget().then(async() => {
     var html = await getData(ss.log);
     var user = await getDoc(doc(db, 'user', ss.uid));
-    var editsave = await getDoc(doc(db, 'source', 'editsave'));
-    $('section').innerHTML += de(editsave.data().index[user.data().auth]);
+    $('section').innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
     if (ss.prp == 'true') {
         getDoc(doc(db, 'source', 'prettify')).then((prp) => eval(prp.data().data));
@@ -149,9 +148,7 @@ async function save() {
         await updateDoc(doc(db, url[0], url[1]), dict);
     };
     getData(ss.edit).then((html) => setData(html));
-    if (ss.prp == 'true') {
-        getDoc(doc(db, 'source', 'prettify')).then((prp) => eval(prp.data().data));
-    };
+    eval(source.prp[ss.prp]);
 }
 
 async function del() {
