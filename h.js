@@ -45,9 +45,9 @@ while (url.length < 3) {
 };
 console.log(url);
 
-var source = await getDoc(doc(db, 'sample', 'source'));
-source = source.data();
 async function getWidget() {
+    var source = await getDoc(doc(db, 'sample', 'source'));
+    source = source.data();
     var style = document.createElement('style');
     style.innerHTML = de(source.css[true]);
     $('head').append(style);
@@ -148,7 +148,8 @@ async function save() {
         await updateDoc(doc(db, url[0], url[1]), dict);
     };
     getData(ss.edit).then((html) => setData(html));
-    eval(source.prp[ss.prp]);
+    var source = await getDoc(doc(db, 'sample', 'source'));
+    eval(source.data().prp[ss.prp]);
 }
 
 async function del() {
