@@ -111,6 +111,7 @@ getWidget().then(async() => {
     $('section').innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
     eval(source.data().prp[ss.prp]);
+    $('section').innerHTML += '<style>' + source.data().prp.skin + '</style>';
 });
 
 // 2
