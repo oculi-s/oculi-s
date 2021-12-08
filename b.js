@@ -98,8 +98,8 @@ getWidget().then(async() => {
     var user = await getDoc(doc(db, 'user', ss.uid));
     $('section').innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
-    eval(source.prp[ss.prp]);
-    $('section').innerHTML += '<style>' + source.prps[ss.prp] + '</style>';
+    eval(de(source.prp[ss.prp]));
+    $('section').innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
 });
 
 $('html').addEventListener('keydown', e=> {
@@ -142,7 +142,7 @@ async function save() {
         await updateDoc(doc(db, url[0], url[1]), dict);
     };
     getData(ss.edit).then((html) => setData(html));
-    eval(source.prp[ss.prp]);
+    eval(de(source.prp[ss.prp]));
 }
 
 async function del() {
