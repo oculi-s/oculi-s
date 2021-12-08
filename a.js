@@ -19,15 +19,13 @@ $('head').innerHTML += `<meta name="viewport" content="width=device-width, initi
 $('head').innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
 $('head').innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
 
-var url = de(window.location.href).split('//')[1].split('/').slice(1);
+var url = de(window.location.pathname).split('/');
+var source = '';
 if (url[0] == '') {
     url = ['index', 'index'];
 };
 if (url[1] == '') {
     url[1] = 'index';
-};
-if (url[1] == 'index') {
-    url.push('index');
 };
 if (url[2] == '') {
     url[2] = 'index';
@@ -38,14 +36,13 @@ while (url.length < 3) {
 console.log(url);
 
 async function getWidget() {
-    var css = await getDoc(doc(db, 'source', 'css'));
+    source = await getDoc(doc(db, 'index', 'source'));
+    source = source.data();
     var style = document.createElement('style');
-    style.innerHTML = de(css.data().index[true]);
+    style.innerHTML = de(source.css[true]);
     $('head').append(style);
-    var nav = await getDoc(doc(db, 'source', 'nav'));
-    $('body').innerHTML += de(nav.data().index[ss.log]);
-    var aside = await getDoc(doc(db, 'source', 'aside'));
-    $('body').innerHTML += de(aside.data().index[ss.log]);
+    $('body').innerHTML += de(source.nav[ss.log]);
+    $('body').innerHTML += de(source.aside[ss.log]);
     if ($('aside>span')) {
         $('aside>span').innerHTML = auth.currentUser.email;
     };
@@ -99,13 +96,10 @@ if (!('uid' in ss)) {
 getWidget().then(async() => {
     var html = await getData(ss.log);
     var user = await getDoc(doc(db, 'user', ss.uid));
-    var editsave = await getDoc(doc(db, 'source', 'editsave'));
-    $('section').innerHTML += de(editsave.data().index[user.data().auth]);
+    $('section').innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
-    if (ss.prp == 'true') {
-        getDoc(doc(db, 'source', 'prettify')).then((prp) => eval(prp.data().data));
-        getDoc(doc(db, 'source', 'prettify')).then((prp) => $('section').innerHTML += '<style>' + prp.data().skin + '</style>');
-    };
+    eval(source.prp[ss.prp]);
+    $('section').innerHTML += '<style>' + source.prps[ss.prp] + '</style>';
 });
 
 $('html').addEventListener('keydown', e=> {
@@ -148,9 +142,7 @@ async function save() {
         await updateDoc(doc(db, url[0], url[1]), dict);
     };
     getData(ss.edit).then((html) => setData(html));
-    if (ss.prp == 'true') {
-        getDoc(doc(db, 'source', 'prettify')).then((prp) => eval(prp.data().data));
-    };
+    eval(source.prp[ss.prp]);
 }
 
 async function del() {
