@@ -39,7 +39,7 @@ async function getWidget() {
     source = await getDoc(doc(db, 'index', 'source'));
     source = source.data();
     var style = document.createElement('style');
-    style.innerHTML = de(source.css[true]);
+    style.innerHTML = de(source.css.true);
     $('head').append(style);
     $('body').innerHTML += de(source.nav[ss.log]);
     $('body').innerHTML += de(source.aside[ss.log]);
@@ -59,10 +59,10 @@ async function getData(x) {
             ss.prp = r.includes(iscode);
             return de(r);
         } else {
-            return source.create.true;
+            return de(source.create.true);
         }
     } else {
-        return source.create.true;
+        return de(source.create.true);
     }
 }
 
