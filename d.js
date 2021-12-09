@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-app.js";
-import { getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-firestore.js";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-firestore.js";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-auth.js";
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
@@ -51,8 +51,6 @@ async function getWidget() {
     _wresize();
 }
 
-// 1
-const create = '<h1>문서가 존재하지 않습니다.</h1>';
 async function getData(x) {
     var html = await getDoc(doc(db, url[0], url[1]));
     if (html.data()) {
@@ -61,10 +59,10 @@ async function getData(x) {
             ss.prp = r.includes(iscode);
             return de(r);
         } else {
-            return create;
+            return source.create.true;
         }
     } else {
-        return create;
+        return source.create.true;
     }
 }
 
@@ -102,14 +100,13 @@ getWidget().then(async() => {
     $('section').innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
 });
 
-$('html').addEventListener('keydown', e=> {
-    if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')){
+$('html').addEventListener('keydown', e => {
+    if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
         e.preventDefault();
         edit();
     };
 });
 
-// 2
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     $('article').innerHTML = '<textarea>';
@@ -122,7 +119,6 @@ function edit() {
     });
 }
 
-// 3
 async function save() {
     var d = en($('textarea').value);
     var dict = await getDoc(doc(db, url[0], url[1]));
@@ -159,7 +155,6 @@ async function del() {
     location.reload();
 }
 
-// 4
 function onEnterSignin() {
     if (event.keyCode == 13) {
         signin();
@@ -244,3 +239,6 @@ window.signin = signin;
 window.signout = signout;
 window.onEnterSignin = onEnterSignin;
 window.makeChart = makeChart;
+window.collection = collection;
+window.getDocs = getDocs;
+window.getDoc = getDoc;
