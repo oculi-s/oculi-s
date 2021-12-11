@@ -3,28 +3,23 @@
 
 ### 김현식 1998.06.04
 > 📱 <b>010-8901-6864</b>
->> Contact me whenever you want
->>
-> :biking_man: C99
->> [BOJ](https://github.com/oculi-s/Baekjoon) 골드
->>
->> [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애
->> 
+>> Contact me whenever you want  
+
+> :biking_man: C99  
+>> [BOJ](https://github.com/oculi-s/Baekjoon) 골드  
+>> [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
 > 
 > :computer: JS Html CSS
->> [firebase](https://github.com/oculi-s/firebase)로 동적페이지 구성
->> 
->> [firebase](https://github.com/oculi-s/ohddul)로 웹 커뮤니티 구성
->>
->> [firebase](https://github.com/oculi-s/blog)로 데이터가 암호화된 블로그 구성
+>> [Tree](https://github.com/oculi-s/tree) 실시간 트리구조 변환기 제작  
+>> [firebase](https://github.com/oculi-s/firebase)로 동적페이지 구성  
+>> [firebase](https://github.com/oculi-s/ohddul)로 웹 커뮤니티 구성  
+>> [firebase](https://github.com/oculi-s/blog)로 데이터가 암호화된 블로그 구성  
 > 
 > :running_man: Python
 >> [Programmers](https://github.com/oculi-s/Programmers) L3, L4
 >> 
-> :iphone: Kotlin 응애
-> 
-> :robot: MATLAB 응애
->
+> :iphone: Kotlin 응애  
+> :robot: MATLAB 응애  
 > [about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
 
 </div>
