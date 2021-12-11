@@ -11,9 +11,9 @@
 > 
 > :computer: JS Html CSS
 >> [Tree](https://github.com/oculi-s/tree) 실시간 트리구조 변환기 제작  
->> [firebase](https://github.com/oculi-s/firebase)로 동적페이지 구성  
->> [firebase](https://github.com/oculi-s/ohddul)로 웹 커뮤니티 구성  
->> [firebase](https://github.com/oculi-s/blog)로 데이터가 암호화된 블로그 구성  
+>> [Flea market](https://github.com/oculi-s/flea_market) 쇼핑몰 데모 제작  
+>> [firebase](https://github.com/oculi-s/ohddul) 웹 커뮤니티 구성  
+>> [firebase](https://github.com/oculi-s/blog) 데이터가 암호화된 블로그 구성  
 > 
 > :running_man: Python
 >> [Programmers](https://github.com/oculi-s/Programmers) L3, L4
