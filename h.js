@@ -86,7 +86,7 @@ function setData(html) {
 function setIndex() {
     $('index').innerHTML = '';
     var keys = ['h2', 'h3', 'h4', 'h5'];
-    temp = '';
+    var temp = '';
     for (var i = 0; i < keys.length; i++) {
         var H = $$(keys[i]);
         for (var j = 0; j < H.length; j++) {
