@@ -186,7 +186,8 @@ async function signout() {
 $('body').onresize = _wresize;
 
 function _wresize() {
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+    var c = $('section').offsetLeft - ($('nav').offsetLeft + $('nav').offsetWidth);
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent) || c > 0) {
         if ($('section')) {
             $('section').classList.add('m-s');
         };
