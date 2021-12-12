@@ -91,7 +91,7 @@ function setIndex() {
         var H = $$(keys[i]);
         for (var j = 0; j < H.length; j++) {
             H[j].id = `${en(H[j].innerHTML)}`;
-            temp += `<${keys[i]}><a href="#${H[j].id}">${H[j].innerHTML}</a></${keys[i]}><br>`
+            temp += `<${keys[i]}><a href="#${H[j].id}">${H[j].innerHTML}</a></${keys[i]}>`
         }
     }
     $('index').innerHTML = temp;
