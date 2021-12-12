@@ -80,6 +80,21 @@ function setData(html) {
     } else {
         $('article').innerHTML = html;
     }
+    setIndex();
+}
+
+function setIndex() {
+    $('index').innerHTML = '';
+    var keys = ['h2', 'h3', 'h4', 'h5'];
+    temp = '';
+    for (var i = 0; i < keys.length; i++) {
+        var H = $$(keys[i]);
+        for (var j = 0; j < H.length; j++) {
+            H[j].id = `${en(H[j].innerHTML)}`;
+            temp += `<${keys[i]}><a href="#${H[j].id}">${H[j].innerHTML}</a></${keys[i]}><br>`
+        }
+    }
+    $('index').innerHTML = temp;
 }
 
 ss.edit = true;
