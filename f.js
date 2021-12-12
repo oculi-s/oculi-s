@@ -21,25 +21,15 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
 head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
 body.innerHTML = '<nav></nav><section><article></article></section><aside></aside>';
+
 const nav = $('nav');
 const section = $('section');
-const article = $('article');
 const aside = $('aside');
 
 var url = de(window.location.pathname).split('/').slice(1);
 var source = '';
-if (url[0] == '') {
-    url = ['index', 'index'];
-};
-if (url[1] == '') {
-    url[1] = 'index';
-};
-if (url[2] == '') {
-    url[2] = 'index';
-};
-while (url.length < 3) {
-    url.push('index');
-};
+url = url.filter(e => e !== '');
+while (url.length < 3) { url.push('index'); };
 console.log(url);
 
 async function getWidget() {
@@ -81,14 +71,14 @@ function setData(html) {
             } else if (html[i].includes('<script ')) {
                 head.innerHTML += html[i] + '</script>';
             } else {
-                article.innerHTML = html[i];
+                $('article').innerHTML = html[i];
             }
         }
         for (var i = 0; i < script.length; i++) {
             eval(script[i].split('>')[1].split('<')[0]);
         }
     } else {
-        article.innerHTML = html;
+        $('article').innerHTML = html;
     }
 }
 
@@ -205,7 +195,6 @@ function _wresize() {
             if (!mchangeWidth) {
                 mchangeWidth = window.innerWidth;
             }
-            console.log(mchangeWidth)
         }
     } else if (window.innerWidth > mchangeWidth) {
         section.classList.remove('m-s');
