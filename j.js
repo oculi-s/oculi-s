@@ -85,14 +85,11 @@ function setData(html) {
 
 function setIndex() {
     $('index').innerHTML = '';
-    var keys = ['h2', 'h3', 'h4', 'h5'];
     var temp = '';
-    for (var i = 0; i < keys.length; i++) {
-        var H = $$(keys[i]);
-        for (var j = 0; j < H.length; j++) {
-            H[j].id = `${en(H[j].innerHTML)}`;
-            temp += `<${keys[i]}><a href="#${H[j].id}">${H[j].innerHTML}</a></${keys[i]}>`
-        }
+    var H = $$('h2, h3, h4, h5');
+    for (var i = 0; i < H.length; i++) {
+        H[i].id = `${en(H[i].innerHTML)}`;
+        temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerHTML}</a></${H[i].tagName}>`
     }
     $('index').innerHTML = temp;
 }
