@@ -14,10 +14,12 @@ const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
 const iscode = en('</code>');
+const head = document.head;
+const body = document.body;
 
-$('head').innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
-$('head').innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
-$('head').innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
+head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
+head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
+head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
 
 var url = de(window.location.pathname).split('/').slice(1);
 var source = '';
@@ -40,13 +42,12 @@ async function getWidget() {
     source = source.data();
     var style = document.createElement('style');
     style.innerHTML = de(source.css.true);
-    $('head').append(style);
-    $('body').innerHTML += de(source.nav[ss.log]);
-    $('body').innerHTML += de(source.aside[ss.log]);
+    head.append(style);
+    body.innerHTML += de(source.nav[ss.log]) + de(source.aside[ss.log]);
     if ($('aside>span')) {
         $('aside>span').innerHTML = auth.currentUser.email;
     };
-    $('body').innerHTML += '<section></section>';
+    body.innerHTML += '<section></section>';
     $('section').innerHTML = '<article></article>';
     _wresize();
 }
@@ -74,7 +75,7 @@ function setData(html) {
             if (html[i].includes('<script>')) {
                 script.push(html[i]);
             } else if (html[i].includes('<script ')) {
-                $('head').innerHTML += html[i] + '</script>';
+                head.innerHTML += html[i] + '</script>';
             } else if ($('article')) {
                 $('article').innerHTML = html[i];
             }
@@ -183,30 +184,19 @@ async function signout() {
     });
 }
 
-$('body').onresize = _wresize;
+body.onresize = _wresize;
 
 function _wresize() {
-    var c = $('section').offsetLeft - ($('nav').offsetLeft + $('nav').offsetWidth);
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent) || c > 0) {
-        if ($('section')) {
-            $('section').classList.add('m-s');
-        };
-        if ($('aside')) {
-            $('aside').classList.add('m-a');
-        };
-        if ($('nav')) {
-            $('nav').classList.add('m-n');
-        };
+    var c = $('section').offsetLeft < ($('nav').offsetLeft + $('nav').offsetWidth);
+    var d = !$('section').classList.includes('m-s')
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent) || (c && d)) {
+        $('section').classList.add('m-s');
+        $('aside').classList.add('m-a');
+        $('nav').classList.add('m-n');
     } else {
-        if ($('section')) {
-            $('section').classList.remove('m-s');
-        };
-        if ($('aside')) {
-            $('aside').classList.remove('m-a');
-        };
-        if ($('nav')) {
-            $('nav').classList.remove('m-n');
-        };
+        $('section').classList.remove('m-s');
+        $('aside').classList.remove('m-a');
+        $('nav').classList.remove('m-n');
     };
 }
 
