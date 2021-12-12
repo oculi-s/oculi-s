@@ -188,7 +188,7 @@ body.onresize = _wresize;
 
 function _wresize() {
     var c = $('section').offsetLeft < ($('nav').offsetLeft + $('nav').offsetWidth);
-    var d = !$('section').classList.includes('m-s')
+    var d = !$('section').classList.contains('m-s')
     if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent) || (c && d)) {
         $('section').classList.add('m-s');
         $('aside').classList.add('m-a');
