@@ -195,12 +195,12 @@ body.onresize = _wresize;
 var mchangeWidth = 0;
 
 function _wresize() {
-    if (!section.classList.contains('m-s')) {
-        if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
-            section.classList.add('m-s');
-            aside.classList.add('m-a');
-            nav.classList.add('m-n');
-        } else if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+        section.classList.add('m-s');
+        aside.classList.add('m-a');
+        nav.classList.add('m-n');
+    } else if (!section.classList.contains('m-s')) {
+        if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
             section.classList.add('m-s');
             aside.classList.add('m-a');
             nav.classList.add('m-n');
