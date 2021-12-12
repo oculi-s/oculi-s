@@ -20,6 +20,11 @@ const body = document.body;
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
 head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
+body.innerHTML = '<nav></nav><section><article></article></section><aside></aside>';
+const nav = $('nav');
+const section = $('section');
+const article = $('article');
+const aside = $('aside');
 
 var url = de(window.location.pathname).split('/').slice(1);
 var source = '';
@@ -43,12 +48,11 @@ async function getWidget() {
     var style = document.createElement('style');
     style.innerHTML = de(source.css.true);
     head.append(style);
-    body.innerHTML += de(source.nav[ss.log]) + de(source.aside[ss.log]);
+    nav.innerHTML = de(source.nav[ss.log]);
+    aside.innerHTML = de(source.aside[ss.log]);
     if ($('aside>span')) {
         $('aside>span').innerHTML = auth.currentUser.email;
     };
-    body.innerHTML += '<section></section>';
-    $('section').innerHTML = '<article></article>';
     _wresize();
 }
 
@@ -76,15 +80,15 @@ function setData(html) {
                 script.push(html[i]);
             } else if (html[i].includes('<script ')) {
                 head.innerHTML += html[i] + '</script>';
-            } else if ($('article')) {
-                $('article').innerHTML = html[i];
+            } else {
+                article.innerHTML = html[i];
             }
         }
         for (var i = 0; i < script.length; i++) {
             eval(script[i].split('>')[1].split('<')[0]);
         }
-    } else if ($('article')) {
-        $('article').innerHTML = html;
+    } else {
+        article.innerHTML = html;
     }
 }
 
@@ -95,10 +99,10 @@ if (!('uid' in ss)) {
 getWidget().then(async() => {
     var html = await getData(ss.log);
     var user = await getDoc(doc(db, 'user', ss.uid));
-    $('section').innerHTML += de(source.editsave[user.data().auth]);
+    section.innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
     eval(de(source.prp[ss.prp]));
-    $('section').innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
+    section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
 });
 
 $('html').addEventListener('keydown', e => {
@@ -186,18 +190,31 @@ async function signout() {
 
 body.onresize = _wresize;
 
+var mchangeWidth = 0;
+
 function _wresize() {
-    var c = $('section').offsetLeft < ($('nav').offsetLeft + $('nav').offsetWidth);
-    var d = !$('section').classList.contains('m-s')
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent) || (c && d)) {
-        $('section').classList.add('m-s');
-        $('aside').classList.add('m-a');
-        $('nav').classList.add('m-n');
-    } else {
-        $('section').classList.remove('m-s');
-        $('aside').classList.remove('m-a');
-        $('nav').classList.remove('m-n');
-    };
+    if (!section.classList.contains('m-s')) {
+        if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+            section.classList.add('m-s');
+            aside.classList.add('m-a');
+            nav.classList.add('m-n');
+        } else if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
+            section.classList.add('m-s');
+            aside.classList.add('m-a');
+            nav.classList.add('m-n');
+            if (!mchangeWidth) {
+                mchangeWidth = window.innerWidth;
+            }
+            console.log(mchangeWidth)
+        }
+    } else if (window.innerWidth > mchangeWidth) {
+        section.classList.remove('m-s');
+        aside.classList.remove('m-a');
+        nav.classList.remove('m-n');
+        if (mchangeWidth) {
+            mchangeWidth = window.innerWidth;
+        }
+    }
 }
 
 function makeChart(id, raw) {
