@@ -82,7 +82,7 @@ function setData(html) {
     }
     setIndex();
     if (location.hash) {
-        location = location.hash;
+        $(`*[href='${location.hash}']`).click()
     }
 }
 
