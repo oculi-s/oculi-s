@@ -107,7 +107,8 @@ getWidget().then(async() => {
     section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
 });
 if (location.hash) {
-    location.href = location.href;
+    console.log(location.hash);
+    location.href = location.hash;
 }
 
 $('html').addEventListener('keydown', e => {
