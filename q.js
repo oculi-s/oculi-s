@@ -26,7 +26,7 @@ const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
 
-var url = de(location.pathname).split('/').slice(1);
+var url = de(location.pathname).toLowerCase().split('/').slice(1);
 var source = '';
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
@@ -107,7 +107,6 @@ getWidget().then(async() => {
     section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
 }).then(() => {
     if (location.hash) {
-        console.log(location.hash);
         location.href = location.hash;
     }
 });
