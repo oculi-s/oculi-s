@@ -105,11 +105,12 @@ getWidget().then(async() => {
     setData(html);
     eval(de(source.prp[ss.prp]));
     section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
+}).then(() => {
+    if (location.hash) {
+        console.log(location.hash);
+        location.href = location.hash;
+    }
 });
-if (location.hash) {
-    console.log(location.hash);
-    location.href = location.hash;
-}
 
 $('html').addEventListener('keydown', e => {
     if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
