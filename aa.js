@@ -81,6 +81,9 @@ function setData(html) {
         $('article').innerHTML = html;
     }
     setIndex();
+    if (location.hash) {
+        location.href = location.hash;
+    }
 }
 
 function setIndex() {
@@ -92,9 +95,6 @@ function setIndex() {
         temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText}</a></${H[i].tagName}>`
     }
     $('index').innerHTML = temp;
-    if (location.hash) {
-        location.href = location.hash;
-    }
 }
 
 ss.edit = true;
