@@ -26,7 +26,11 @@ const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
 
-var url = de(window.location.pathname).split('/').slice(1);
+var url = de(location.pathname).split('/').slice(1);
+var link = '';
+if (location.pathname.includes('#')) {
+    link = '#' + location.pathname.split('#')[1];
+}
 var source = '';
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
@@ -92,6 +96,7 @@ function setIndex() {
         temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText}</a></${H[i].tagName}>`
     }
     $('index').innerHTML = temp;
+    location.href = link;
 }
 
 ss.edit = true;
