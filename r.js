@@ -75,7 +75,7 @@ function setData(html) {
             }
         }
         for (var i = 0; i < script.length; i++) {
-            eval(script[i].split('>')[1].split('<')[0]);
+            eval(script[i].split('<script>')[1].split('</script>')[0]);
         }
     } else {
         $('article').innerHTML = html;
