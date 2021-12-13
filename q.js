@@ -88,8 +88,8 @@ function setIndex() {
     var temp = '';
     var H = $$('h2, h3, h4, h5');
     for (var i = 0; i < H.length; i++) {
-        H[i].id = `${en(H[i].innerText)}`;
-        temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText}</a></${H[i].tagName}>`
+        H[i].id = `${en(H[i].innerText.toLowerCase())}`;
+        temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText.toLowerCase()}</a></${H[i].tagName}>`
     }
     $('index').innerHTML = temp;
 }
