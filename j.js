@@ -81,9 +81,6 @@ function setData(html) {
         $('article').innerHTML = html;
     }
     setIndex();
-    if (location.hash) {
-        $(`*[href='${location.hash}']`).click()
-    }
 }
 
 function setIndex() {
@@ -109,6 +106,9 @@ getWidget().then(async() => {
     eval(de(source.prp[ss.prp]));
     section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
 });
+if (location.hash) {
+    location.href = location.href;
+}
 
 $('html').addEventListener('keydown', e => {
     if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
