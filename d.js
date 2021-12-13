@@ -92,8 +92,8 @@ function setIndex() {
         temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText}</a></${H[i].tagName}>`
     }
     $('index').innerHTML = temp;
-    if (location.pathname.includes('#')) {
-        location.href = '#' + location.pathname.split('#')[1];
+    if (location.hash) {
+        location.href = location.hash;
     }
 }
 
