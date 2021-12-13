@@ -10,7 +10,7 @@ window.db = getFirestore();
 window.auth = getAuth();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
-const ss = sessionStorage;
+const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
 const iscode = en('</code>');
@@ -88,8 +88,8 @@ function setIndex() {
     var temp = '';
     var H = $$('h2, h3, h4, h5');
     for (var i = 0; i < H.length; i++) {
-        H[i].id = `${en(H[i].innerHTML)}`;
-        temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerHTML}</a></${H[i].tagName}>`
+        H[i].id = `${en(H[i].innerText)}`;
+        temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText}</a></${H[i].tagName}>`
     }
     $('index').innerHTML = temp;
 }
