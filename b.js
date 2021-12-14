@@ -84,14 +84,16 @@ function setData(html) {
 }
 
 function setIndex() {
-    $('index').innerHTML = '';
-    var temp = '';
-    var H = $$('h2, h3, h4, h5');
-    for (var i = 0; i < H.length; i++) {
-        H[i].id = `${en(H[i].innerText.toLowerCase())}`;
-        temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText.toLowerCase()}</a></${H[i].tagName}>`
+    if ($('index')){
+        $('index').innerHTML = '';
+        var temp = '';
+        var H = $$('h2, h3, h4, h5');
+        for (var i = 0; i < H.length; i++) {
+            H[i].id = `${en(H[i].innerText.toLowerCase())}`;
+            temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText.toLowerCase()}</a></${H[i].tagName}>`
+        }
+        $('index').innerHTML = temp;
     }
-    $('index').innerHTML = temp;
 }
 
 ss.edit = true;
