@@ -124,6 +124,8 @@ function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     $('article').innerHTML = '<textarea>';
     getData(ss.edit).then((html) => { $('textarea').value = html });
+    $('textarea').focus();
+    $('textarea').selectionEnd = $('textarea').selectionEnd;
     $('textarea').addEventListener('keydown', e => {
         if (e.ctrlKey && (e.key === 's' || e.key == 'ㄴ')) {
             e.preventDefault();
