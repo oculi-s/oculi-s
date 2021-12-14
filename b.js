@@ -101,6 +101,12 @@ if (!('uid' in ss)) {
     ss.log = false;
 }
 getWidget().then(async() => {
+    url_string = '<portal>';
+    for (var i = 0; i<url.length; i++){
+        url_string += `/<a href=/${url.slice(0,i).join('/')}/>${url[i]}</a>`;
+    }
+    url_string += '</portal>';
+    section.innerHTML += url_string;
     var html = await getData(ss.log);
     var user = await getDoc(doc(db, 'user', ss.uid));
     section.innerHTML += de(source.editsave[user.data().auth]);
