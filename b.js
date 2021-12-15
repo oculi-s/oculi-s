@@ -84,7 +84,7 @@ function setData(html) {
 }
 
 function setIndex() {
-    if ($('index')){
+    if ($('index')) {
         $('index').innerHTML = '';
         var temp = '';
         var H = $$('h2, h3, h4, h5');
@@ -101,8 +101,8 @@ if (!('uid' in ss)) {
     ss.log = false;
 }
 getWidget().then(async() => {
-    url_string = '<portal>';
-    for (var i = 0; i<url.length; i++){
+    var url_string = '<portal>';
+    for (var i = 0; i < url.length; i++) {
         url_string += `/<a href=/${url.slice(0,i).join('/')}/>${url[i]}</a>`;
     }
     url_string += '</portal>';
