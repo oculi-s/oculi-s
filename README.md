@@ -1,25 +1,25 @@
 <div class="text-justify>
 <div class="pull-left">
 
-### 김현식 1998.06.04
-> 📱 <b>010-8901-6864</b>
->> Contact me whenever you want  
+## 김현식 1998.06.04
+📱 <b>010-8901-6864</b>  
+Contact me whenever you want  
 
-> :biking_man: C99  
->> [BOJ](https://github.com/oculi-s/Baekjoon) 골드  
->> [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
-> 
-> :computer: JS Html CSS
->> [Tree](https://github.com/oculi-s/tree) 실시간 트리구조 변환기 제작  
->> [Flea market](https://github.com/oculi-s/flea_market) 쇼핑몰 데모 제작  
->> [Ohddul](https://github.com/oculi-s/ohddul) 웹 커뮤니티 구성  
->> [Blog](https://github.com/oculi-s/blog) 데이터가 암호화된 블로그 구성  
-> 
-> :running_man: Python
->> [Programmers](https://github.com/oculi-s/Programmers) L3, L4
->> 
-> :iphone: Kotlin 응애  
-> :robot: MATLAB 응애  
+## 1. :biking_man: C99  
+[BOJ](https://github.com/oculi-s/Baekjoon) 골드  
+[Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
+  
+## 2. :computer: JS Html CSS
+[Tree](https://github.com/oculi-s/tree) 실시간 트리구조 변환기 제작  
+[Flea market](https://github.com/oculi-s/flea_market) 쇼핑몰 데모 제작  
+[Ohddul](https://github.com/oculi-s/ohddul) 웹 커뮤니티 구성  
+[Blog](https://github.com/oculi-s/sample) 데이터가 암호화된 블로그 구성  
+
+## 3. :running_man: Python
+[Programmers](https://github.com/oculi-s/Programmers) L3, L4  
+
+## 4. :iphone: Kotlin 응애  
+## 5. :robot: MATLAB 응애  
 > [about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
 
 </div>
