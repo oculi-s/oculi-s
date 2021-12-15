@@ -41,7 +41,7 @@ while (url.length < 3) { url.push('index'); };
 console.log(url);
 
 async function getWidget() {
-    source = await getDoc(doc(db, 'index', 'source'));
+    source = await getDoc(doc(db, 'sample', 'source'));
     source = source.data();
     var style = document.createElement('style');
     style.innerHTML = de(source.css.true);
