@@ -27,7 +27,7 @@ const body = document.body;
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
-head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="/main.png"/>`
+head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://cdn.jsdelivr.net/gh/oculi-s/blog/main.png"/>`
 body.innerHTML = '<nav></nav><section><article></article></section><aside></aside>';
 
 const nav = $('nav');
