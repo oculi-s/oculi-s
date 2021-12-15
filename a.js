@@ -103,7 +103,9 @@ if (!('uid' in ss)) {
 getWidget().then(async() => {
     var url_string = '<portal>';
     for (var i = 0; i < url.length; i++) {
-        url_string += `/<a href=/${url.slice(0,i).join('/')}/>${url[i]}</a>`;
+        if (url[i] != 'index') {
+            url_string += `/<a href=/${url.slice(0, i + 1).join('/')}/>${url[i]}</a>`;
+        }
     }
     url_string += '</portal>';
     section.innerHTML += url_string;
