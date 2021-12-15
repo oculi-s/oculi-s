@@ -36,7 +36,7 @@ const aside = $('aside');
 
 var url = de(location.pathname).toLowerCase().split('/').slice(1);
 var source = '';
-url = url.filter(e => e !== '' && e != 'sample');
+url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
