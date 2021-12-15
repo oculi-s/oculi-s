@@ -18,51 +18,42 @@ window.db = getFirestore();
 window.auth = getAuth();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
-const ss = sessionStorage;
+const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
 const iscode = en('</code>');
+const head = document.head;
+const body = document.body;
 
-$('head').innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
-$('head').innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
-$('head').innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="https://firebasestorage.googleapis.com/v0/b/futures-1dff5.appspot.com/o/main.jpg?alt=media&token=5f6610c4-97d5-414d-a6c0-acb44ef6c347">`;
+head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
+head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
+head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="/main.png"/>`
+body.innerHTML = '<nav></nav><section><article></article></section><aside></aside>';
 
-var url = de(window.location.href).split('//')[1].split('/').slice(1);
-if (url[0] == '') {
-    url = ['index', 'index'];
-};
-if (url[1] == '') {
-    url[1] = 'index';
-};
-if (url[1] == 'index') {
-    url.push('index');
-};
-if (url[2] == '') {
-    url[2] = 'index';
-};
-while (url.length < 3) {
-    url.push('index');
-};
+const nav = $('nav');
+const section = $('section');
+const aside = $('aside');
+
+var url = de(location.pathname).toLowerCase().split('/').slice(1);
+var source = '';
+url = url.filter(e => e !== '' && e != 'sample');
+while (url.length < 3) { url.push('index'); };
 console.log(url);
 
 async function getWidget() {
-    var source = await getDoc(doc(db, 'sample', 'source'));
+    source = await getDoc(doc(db, 'index', 'source'));
     source = source.data();
     var style = document.createElement('style');
-    style.innerHTML = de(source.css[true]);
-    $('head').append(style);
-    $('body').innerHTML += de(source.nav[ss.log]);
-    $('body').innerHTML += de(source.aside[ss.log]);
+    style.innerHTML = de(source.css.true);
+    head.append(style);
+    nav.innerHTML = de(source.nav[ss.log]);
+    aside.innerHTML = de(source.aside[ss.log]);
     if ($('aside>span')) {
         $('aside>span').innerHTML = auth.currentUser.email;
     };
-    $('body').innerHTML += '<section></section>';
-    $('section').innerHTML = '<article></article>';
     _wresize();
 }
 
-// 1
-const create = '<h1>문서가 존재하지 않습니다.</h1>';
 async function getData(x) {
     var html = await getDoc(doc(db, url[0], url[1]));
     if (html.data()) {
@@ -71,10 +62,10 @@ async function getData(x) {
             ss.prp = r.includes(iscode);
             return de(r);
         } else {
-            return create;
+            return de(source.create.true);
         }
     } else {
-        return create;
+        return de(source.create.true);
     }
 }
 
@@ -86,16 +77,30 @@ function setData(html) {
             if (html[i].includes('<script>')) {
                 script.push(html[i]);
             } else if (html[i].includes('<script ')) {
-                $('head').innerHTML += html[i] + '</script>';
-            } else if ($('article')) {
+                head.innerHTML += html[i] + '</script>';
+            } else {
                 $('article').innerHTML = html[i];
             }
         }
         for (var i = 0; i < script.length; i++) {
-            eval(script[i].split('>')[1].split('<')[0]);
+            eval(script[i].split('<script>')[1].split('</script>')[0]);
         }
-    } else if ($('article')) {
+    } else {
         $('article').innerHTML = html;
+    }
+    setIndex();
+}
+
+function setIndex() {
+    if ($('index')) {
+        $('index').innerHTML = '';
+        var temp = '';
+        var H = $$('h2, h3, h4, h5');
+        for (var i = 0; i < H.length; i++) {
+            H[i].id = `${en(H[i].innerText.toLowerCase())}`;
+            temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText.toLowerCase()}</a></${H[i].tagName}>`
+        }
+        $('index').innerHTML = temp;
     }
 }
 
@@ -104,31 +109,47 @@ if (!('uid' in ss)) {
     ss.log = false;
 }
 getWidget().then(async() => {
-    var source = await getDoc(doc(db, 'sample', 'source'));
-    source = source.data();
+    var url_string = '<portal>';
+    for (var i = 0; i < url.length; i++) {
+        if (url[i] != 'index') {
+            url_string += `/<a href=/${url.slice(0, i + 1).join('/')}/>${url[i]}</a>`;
+        }
+    }
+    url_string += '</portal>';
+    section.innerHTML += url_string;
     var html = await getData(ss.log);
     var user = await getDoc(doc(db, 'user', ss.uid));
-    $('section').innerHTML += de(source.editsave[user.data().auth]);
+    section.innerHTML += de(source.editsave[user.data().auth]);
     setData(html);
-    eval(source.prp[ss.prp]);
-    $('section').innerHTML += '<style>' + source.prp.skin + '</style>';
+    eval(de(source.prp[ss.prp]));
+    section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
+}).then(() => {
+    if (location.hash) {
+        location.href = location.hash;
+    }
 });
 
-// 2
+$('html').addEventListener('keydown', e => {
+    if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
+        e.preventDefault();
+        edit();
+    };
+});
+
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     $('article').innerHTML = '<textarea>';
     getData(ss.edit).then((html) => { $('textarea').value = html });
-    $('textarea').style = "width:100%; height:100%;";
+    $('textarea').focus();
+    $('textarea').selectionEnd = $('textarea').selectionEnd;
     $('textarea').addEventListener('keydown', e => {
-        if (e.ctrlKey && e.key === 's') {
+        if (e.ctrlKey && (e.key === 's' || e.key == 'ㄴ')) {
             e.preventDefault();
             save();
         };
     });
 }
 
-// 3
 async function save() {
     var d = en($('textarea').value);
     var dict = await getDoc(doc(db, url[0], url[1]));
@@ -148,8 +169,7 @@ async function save() {
         await updateDoc(doc(db, url[0], url[1]), dict);
     };
     getData(ss.edit).then((html) => setData(html));
-    var source = await getDoc(doc(db, 'sample', 'source'));
-    eval(source.data().prp[ss.prp]);
+    eval(de(source.prp[ss.prp]));
 }
 
 async function del() {
@@ -166,7 +186,6 @@ async function del() {
     location.reload();
 }
 
-// 4
 function onEnterSignin() {
     if (event.keyCode == 13) {
         signin();
@@ -187,7 +206,7 @@ function signin() {
 async function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.href = '/sample/';
+        location.href = '/sample';
         ss.uid = null;
         ss.log = false;
     }).catch((e) => {
@@ -195,30 +214,32 @@ async function signout() {
     });
 }
 
-$('body').onresize = _wresize;
+body.onresize = _wresize;
+
+var mchangeWidth = 0;
 
 function _wresize() {
-    if (/Android|iPhone|iPod/i.test(navigator.userAgent)) {
-        if ($('section')) {
-            $('section').classList.add('m-s');
-        };
-        if ($('aside')) {
-            $('aside').classList.add('m-a');
-        };
-        if ($('nav')) {
-            $('nav').classList.add('m-n');
-        };
-    } else {
-        if ($('section')) {
-            $('section').classList.remove('m-s');
-        };
-        if ($('aside')) {
-            $('aside').classList.remove('m-a');
-        };
-        if ($('nav')) {
-            $('nav').classList.remove('m-n');
-        };
-    };
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+        section.classList.add('m-s');
+        aside.classList.add('m-a');
+        nav.classList.add('m-n');
+    } else if (!section.classList.contains('m-s')) {
+        if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
+            section.classList.add('m-s');
+            aside.classList.add('m-a');
+            nav.classList.add('m-n');
+            if (!mchangeWidth) {
+                mchangeWidth = window.innerWidth;
+            }
+        }
+    } else if (window.innerWidth > mchangeWidth) {
+        section.classList.remove('m-s');
+        aside.classList.remove('m-a');
+        nav.classList.remove('m-n');
+        if (mchangeWidth) {
+            mchangeWidth = window.innerWidth;
+        }
+    }
 }
 
 function makeChart(id, raw) {
@@ -235,8 +256,7 @@ function makeChart(id, raw) {
         plotOptions: {
             series: {
                 stacking: e.dataset.stack == '1' ? 'normal' : '',
-                dataLabels: { enabled: true },
-                animation: false
+                dataLabels: { enabled: true }
             },
             column: { stacking: 'normal', dataLabels: { enabled: true } },
         }
@@ -252,3 +272,6 @@ window.signin = signin;
 window.signout = signout;
 window.onEnterSignin = onEnterSignin;
 window.makeChart = makeChart;
+window.collection = collection;
+window.getDocs = getDocs;
+window.getDoc = getDoc;
