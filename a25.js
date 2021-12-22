@@ -90,19 +90,19 @@ var H = '';
 var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
 var hnum = { '2': '', '3': '', '4': '', '5': '' };
 var hid = { '1':'', '2': '', '3': '', '4': '', '5': '' };
-function indexing(hid, num, i) {
+function indexing(tid, num, i) {
     var d = H[i].tagName[1];
-    H[i].id = hid + s[d][0] + num + s[d][1];
+    H[i].id = tid + s[d][0] + num + s[d][1];
     if (i < H.length - 1) {
         var nd = H[i + 1].tagName[1];
         if (d < nd) {
             hnum[d] = num;
             hid[d] = s[d][0] + num + s[d][1];
-            indexing(hid + hid[d], 1, i + 1);
+            indexing(tid + hid[d], 1, i + 1);
         } else if (d == nd) {
-            indexing(hid, num + 1, i + 1);
+            indexing(tid, num + 1, i + 1);
         } else {
-            indexing(hid.slice(0, nd).join(''), hnum[nd] + 1, i + 1);
+            indexing(tid.slice(0, nd).join(''), hnum[nd] + 1, i + 1);
         }
     }
 }
