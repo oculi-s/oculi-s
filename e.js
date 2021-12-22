@@ -173,12 +173,11 @@ async function del() {
         dict = dict.data();
         delete dict[url[2]];
         await updateDoc(doc(db, url[0], url[1]), dict);
-        getData(ss.log).then((html) => setData(html));
         if (Object.keys(dict).length == 0) {
             deleteDoc(doc(db, url[0], url[1]));
         }
+        getData(ss.log).then((html) => setData(html));
     }
-    location.reload();
 }
 
 function onEnterSignin() {
