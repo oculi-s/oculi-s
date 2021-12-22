@@ -174,11 +174,11 @@ async function del() {
     if (confirm('삭제하시겠습니까?')) {
         dict = dict.data();
         delete dict[url[2]];
-        await updateDoc(index, dict);
+        updateDoc(index, dict);
         if (Object.keys(dict).length == 0) {
             deleteDoc(index);
         }
-        getData(ss.log).then((html) => setData(html));
+        $('article').innerHTML = de(source.create.true);
     }
 }
 
