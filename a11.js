@@ -93,7 +93,7 @@ function indexing(num, i) {
     var id = '';
     H[i].id = s[d][0] + num + s[d][1];
     H[i].innerHTML = `<a href="#index">${H[i].id}</a>` + H[i].innerHTML;
-    if (d != h[i + 1].tagName) {
+    if (d != H[i + 1].tagName) {
         indexing(1, i + 1);
     } else {
         indexing(num + 1, i + 1);
@@ -103,6 +103,7 @@ function indexing(num, i) {
 function setIndex() {
     H = $$('h2, h3, h4, h5');
     if ($('index')) {
+        $('index').id = 'index';
         $('index').innerHTML = '';
         var temp = '';
         indexing(1, 0);
