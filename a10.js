@@ -89,7 +89,7 @@ function setData(index) {
 var H = '';
 var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
 function indexing(num, i) {
-    var d = H[i].tagName;
+    var d = H[i].tagName[1];
     var id = '';
     H[i].id = s[d][0] + num + s[d][1];
     H[i].innerHTML = `<a href="#index">${H[i].id}</a>` + H[i].innerHTML;
