@@ -91,15 +91,16 @@ var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
 var hnum = { '2': '', '3': '', '4': '', '5': '' };
 function indexing(num, i) {
     var d = H[i].tagName[1];
+    var nd = H[i + 1].tagName[1];
     H[i].id = s[d][0] + num + s[d][1];
     H[i].innerHTML = `<a href="#index">${H[i].id}</a> ` + H[i].innerHTML;
-    if (d < H[i + 1].tagName[1]) {
+    if (d < nd) {
         hnum[d] = num;
         indexing(1, i + 1);
-    } else if (d == H[i + 1].tagName[1]) {
+    } else if (d == nd) {
         indexing(num + 1, i + 1);
     } else {
-        indexing(hnum[d] + 1, i + 1);
+        indexing(hnum[nd] + 1, i + 1);
     }
 }
 
