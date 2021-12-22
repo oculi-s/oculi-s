@@ -89,19 +89,20 @@ function setData(index) {
 var H = '';
 var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
 var hnum = { '2': '', '3': '', '4': '', '5': '' };
-function indexing(num, i) {
+var hid = { '1':'', '2': '', '3': '', '4': '', '5': '' };
+function indexing(hid, num, i) {
     var d = H[i].tagName[1];
-    H[i].id = s[d][0] + num + s[d][1];
-    H[i].innerHTML = `<a href="#index">${H[i].id}</a> ` + H[i].innerHTML;
+    H[i].id = hid + s[d][0] + num + s[d][1];
     if (i < H.length - 1) {
         var nd = H[i + 1].tagName[1];
         if (d < nd) {
             hnum[d] = num;
-            indexing(1, i + 1);
+            hid[d] = s[d][0] + num + s[d][1];
+            indexing(hid + hid[d], 1, i + 1);
         } else if (d == nd) {
-            indexing(num + 1, i + 1);
+            indexing(hid, num + 1, i + 1);
         } else {
-            indexing(hnum[nd] + 1, i + 1);
+            indexing(hid.slice(0, nd).join(''), hnum[nd] + 1, i + 1);
         }
     }
 }
@@ -114,7 +115,8 @@ function setIndex() {
         var temp = '';
         indexing(1, 0);
         for (var i = 0; i < H.length; i++) {
-            temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].id}</a> ${H[i].innerText.toLowerCase()}</${H[i].tagName}>`
+            temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].id}</a> ${H[i].innerText}</${H[i].tagName}>`
+            H[i].innerHTML = `<a href="#index">${H[i].id}</a> ` + H[i].innerHTML;
         }
         $('index').innerHTML = temp;
     }
