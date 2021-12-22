@@ -86,21 +86,22 @@ function setData(index) {
     setIndex();
 }
 
-var H = $$('h2, h3, h4, h5');
-var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] }
+var H = '';
+var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
 function indexing(num, i) {
     var d = H[i].tagName;
-    var id = ''
+    var id = '';
     H[i].id = s[d][0] + num + s[d][1];
     H[i].innerHTML = `<a href="#index">${H[i].id}</a>` + H[i].innerHTML;
     if (d != h[i + 1].tagName) {
-        indexing(1, i + 1)
+        indexing(1, i + 1);
     } else {
         indexing(num + 1, i + 1);
     }
 }
 
 function setIndex() {
+    H = $$('h2, h3, h4, h5');
     if ($('index')) {
         $('index').innerHTML = '';
         var temp = '';
