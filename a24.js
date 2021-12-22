@@ -113,7 +113,7 @@ function setIndex() {
         $('index').id = 'index';
         $('index').innerHTML = '';
         var temp = '';
-        indexing(1, 0);
+        indexing('', 1, 0);
         for (var i = 0; i < H.length; i++) {
             temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].id}</a> ${H[i].innerText}</${H[i].tagName}>`
             H[i].innerHTML = `<a href="#index">${H[i].id}</a> ` + H[i].innerHTML;
