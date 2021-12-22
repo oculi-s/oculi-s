@@ -32,7 +32,7 @@ url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-const index = doc(db, url[0], url[1]);
+var html = doc(db, url[0], url[1]);
 
 async function getWidget() {
     source = await getDoc(doc(db, 'index', 'source'));
@@ -49,7 +49,7 @@ async function getWidget() {
 }
 
 async function getData(x) {
-    var html = await getDoc(index);
+    html = await getDoc(html);
     if (html.data()) {
         if (url[2] in html.data()) {
             var r = html.data()[url[2]][x];
@@ -63,24 +63,24 @@ async function getData(x) {
     }
 }
 
-function setData(html) {
+function setData(index) {
     var script = [];
-    if (html.includes('<script')) {
-        html = html.split('</script>');
-        for (var i = 0; i < html.length; i++) {
-            if (html[i].includes('<script>')) {
-                script.push(html[i]);
-            } else if (html[i].includes('<script ')) {
-                head.innerHTML += html[i] + '</script>';
+    if (index.includes('<script')) {
+        index = index.split('</script>');
+        for (var i = 0; i < index.length; i++) {
+            if (index[i].includes('<script>')) {
+                script.push(index[i]);
+            } else if (index[i].includes('<script ')) {
+                head.innerHTML += index[i] + '</script>';
             } else {
-                $('article').innerHTML = html[i];
+                $('article').innerHTML = index[i];
             }
         }
         for (var i = 0; i < script.length; i++) {
             eval(script[i].split('<script>')[1].split('</script>')[0]);
         }
     } else {
-        $('article').innerHTML = html;
+        $('article').innerHTML = index;
     }
     setIndex();
 }
@@ -111,10 +111,10 @@ getWidget().then(async() => {
     }
     url_string += '</portal>';
     section.innerHTML += url_string;
-    var html = await getData(ss.log);
+    var index = await getData(ss.log);
     var user = await getDoc(doc(db, 'user', ss.uid));
     section.innerHTML += de(source.editsave[user.data().auth]);
-    setData(html);
+    setData(index);
     eval(de(source.prp[ss.prp]));
     section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
 }).then(() => {
@@ -149,12 +149,11 @@ function edit() {
 
 async function save() {
     var d = en($('textarea').value);
-    var dict = await getDoc(index);
-    dict = dict.data();
+    var dict = html.data();
     if (dict == undefined) {
         dict = {};
         dict[url[2]] = { auth: 1, true: d, false: '' };
-        await setDoc(index, dict);
+        await setDoc(html, dict);
     } else {
         if (!dict[url[2]]) {
             dict[url[2]] = { auth: 1 };
@@ -163,20 +162,19 @@ async function save() {
         if (dict[url[2]].auth < 2) {
             dict[url[2]][!ss.edit] = dict[url[2]].auth ? '' : d;
         };
-        await updateDoc(index, dict);
+        await updateDoc(html, dict);
     };
     getData(ss.edit).then((html) => setData(html));
     eval(de(source.prp[ss.prp]));
 }
 
 async function del() {
-    var dict = await getDoc(index);
     if (confirm('삭제하시겠습니까?')) {
-        dict = dict.data();
+        var dict = html.data();
         delete dict[url[2]];
-        updateDoc(index, dict);
+        updateDoc(html, dict);
         if (Object.keys(dict).length == 0) {
-            deleteDoc(index);
+            deleteDoc(html);
         }
         $('article').innerHTML = de(source.create.true);
     }
