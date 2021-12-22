@@ -70,7 +70,7 @@ function setData(index) {
         index = index.split('</script>');
         for (var i = 0; i < index.length; i++) {
             if (index[i].includes('<script>')) {
-                script.push(index[i].replace('<string>', ''));
+                script.push(index[i].replace('<script>', ''));
             } else if (index[i].includes('<script ')) {
                 head.innerHTML += index[i] + '</script>';
             } else {
