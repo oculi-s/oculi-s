@@ -90,8 +90,9 @@ var H = '';
 var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
 function indexing(num, id) {
     var d = H[i].tagName[1];
-    H[i].id = id + s[d][0] + num + s[d][1];
-    H[i].innerHTML = `<a href="#index">${H[i].id}</a> ` + H[i].innerHTML;
+    var tid = s[d][0] + num + s[d][1];
+    H[i].id = id + tid;
+    H[i].innerHTML = `<a href="#index">${tid}</a> ` + H[i].innerHTML;
     if (d != H[i + 1].tagName[1]) {
         indexing(1, H[i].id);
     } else {
