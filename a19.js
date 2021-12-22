@@ -88,7 +88,7 @@ function setData(index) {
 
 var H = '';
 var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
-var hnum = ['','','','','',''];
+var hnum = { '2': '', '3': '', '4': '', '5': '' };
 function indexing(num, i) {
     var d = H[i].tagName[1];
     H[i].id = s[d][0] + num + s[d][1];
