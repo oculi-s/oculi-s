@@ -96,6 +96,8 @@ function indexing(num, i) {
     if (d < H[i + 1].tagName[1]) {
         hnum = num;
         indexing(1, i + 1);
+    } else if (d == H[i+1].tagName[1]){
+        indexing(num + 1, i + 1);
     } else {
         indexing(hnum + 1, i + 1);
     }
