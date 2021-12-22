@@ -88,15 +88,14 @@ function setData(index) {
 
 var H = '';
 var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
-function indexing(num, i) {
+function indexing(num, id) {
     var d = H[i].tagName[1];
-    var id = '';
-    H[i].id = s[d][0] + num + s[d][1];
+    H[i].id = id + s[d][0] + num + s[d][1];
     H[i].innerHTML = `<a href="#index">${H[i].id}</a> ` + H[i].innerHTML;
     if (d != H[i + 1].tagName[1]) {
-        indexing(1, i + 1);
+        indexing(1, H[i].id);
     } else {
-        indexing(num + 1, i + 1);
+        indexing(num + 1, id);
     }
 }
 
@@ -106,7 +105,7 @@ function setIndex() {
         $('index').id = 'index';
         $('index').innerHTML = '';
         var temp = '';
-        indexing(1, 0);
+        indexing(1, '');
         for (var i = 0; i < H.length; i++) {
             temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].id}</a> ${H[i].innerText.toLowerCase()}</${H[i].tagName}>`
         }
