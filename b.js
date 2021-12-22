@@ -125,7 +125,10 @@ $('html').addEventListener('keydown', e => {
     if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
         e.preventDefault();
         edit();
-    };
+    } else if (e.keyCode == 27){
+        e.preventDefault();
+        del();
+    }
 });
 
 function edit() {
