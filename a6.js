@@ -26,18 +26,19 @@ const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
 
-var url = de(location.pathname).toLowerCase().split('/').slice(1);
 var source = '';
 var html = '';
 var dict = '';
+var url = de(location.pathname).toLowerCase().split('/').slice(1);
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
 
 async function getWidget() {
-    html = await getDoc(doc(db, url[0], url[1]));
-    dict = html.data();
+    html = doc(db, url[0], url[1]);
+    dict = await getDoc(html);
+    dict = dict.data();
     source = await getDoc(doc(db, 'index', 'source'));
     source = source.data();
     var style = document.createElement('style');
@@ -52,9 +53,9 @@ async function getWidget() {
 }
 
 async function getData(x) {
-    if (html.data()) {
-        if (url[2] in html.data()) {
-            var r = html.data()[url[2]][x];
+    if (dict) {
+        if (url[2] in dict) {
+            var r = dict[url[2]][x];
             ss.prp = r.includes(iscode);
             return de(r);
         } else {
