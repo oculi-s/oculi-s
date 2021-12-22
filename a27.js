@@ -102,7 +102,7 @@ function indexing(tid, num, i) {
         } else if (d == nd) {
             indexing(tid, num + 1, i + 1);
         } else {
-            indexing(hid.slice(0, nd).join(''), hnum[nd] + 1, i + 1);
+            indexing(Object.values(hid).slice(0, nd).join(''), hnum[nd] + 1, i + 1);
         }
     }
 }
