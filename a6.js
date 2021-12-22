@@ -41,9 +41,7 @@ async function getWidget() {
     dict = dict.data();
     source = await getDoc(doc(db, 'index', 'source'));
     source = source.data();
-    var style = document.createElement('style');
-    style.innerHTML = de(source.css.true);
-    head.append(style);
+    head.innerHTML += de(source.css.true);
     nav.innerHTML = de(source.nav[ss.log]);
     aside.innerHTML = de(source.aside[ss.log]);
     if ($('aside>span')) {
@@ -119,7 +117,7 @@ getWidget().then(async() => {
     section.innerHTML += de(source.editsave[user.data().auth]);
     setData(index);
     eval(de(source.prp[ss.prp]));
-    section.innerHTML += '<style>' + de(source.prps[ss.prp]) + '</style>';
+    section.innerHTML += de(source.prps[ss.prp]);
 }).then(() => {
     if (location.hash) {
         location.href = location.hash;
