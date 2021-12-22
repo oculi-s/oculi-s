@@ -32,6 +32,8 @@ url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
+const index = doc(db, url[0], url[1]);
+
 async function getWidget() {
     source = await getDoc(doc(db, 'index', 'source'));
     source = source.data();
@@ -47,7 +49,7 @@ async function getWidget() {
 }
 
 async function getData(x) {
-    var html = await getDoc(doc(db, url[0], url[1]));
+    var html = await getDoc(index);
     if (html.data()) {
         if (url[2] in html.data()) {
             var r = html.data()[url[2]][x];
@@ -147,12 +149,12 @@ function edit() {
 
 async function save() {
     var d = en($('textarea').value);
-    var dict = await getDoc(doc(db, url[0], url[1]));
+    var dict = await getDoc(index);
     dict = dict.data();
     if (dict == undefined) {
         dict = {};
         dict[url[2]] = { auth: 1, true: d, false: '' };
-        await setDoc(doc(db, url[0], url[1]), dict);
+        await setDoc(index, dict);
     } else {
         if (!dict[url[2]]) {
             dict[url[2]] = { auth: 1 };
@@ -161,20 +163,20 @@ async function save() {
         if (dict[url[2]].auth < 2) {
             dict[url[2]][!ss.edit] = dict[url[2]].auth ? '' : d;
         };
-        await updateDoc(doc(db, url[0], url[1]), dict);
+        await updateDoc(index, dict);
     };
     getData(ss.edit).then((html) => setData(html));
     eval(de(source.prp[ss.prp]));
 }
 
 async function del() {
-    var dict = await getDoc(doc(db, url[0], url[1]));
+    var dict = await getDoc(index);
     if (confirm('삭제하시겠습니까?')) {
         dict = dict.data();
         delete dict[url[2]];
-        await updateDoc(doc(db, url[0], url[1]), dict);
+        await updateDoc(index, dict);
         if (Object.keys(dict).length == 0) {
-            deleteDoc(doc(db, url[0], url[1]));
+            deleteDoc(index);
         }
         getData(ss.log).then((html) => setData(html));
     }
