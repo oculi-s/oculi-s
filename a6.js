@@ -70,7 +70,7 @@ function setData(index) {
         index = index.split('</script>');
         for (var i = 0; i < index.length; i++) {
             if (index[i].includes('<script>')) {
-                script.push(index[i]);
+                script.push(index[i].replace('<string>',''));
             } else if (index[i].includes('<script ')) {
                 head.innerHTML += index[i] + '</script>';
             } else {
@@ -78,7 +78,7 @@ function setData(index) {
             }
         }
         for (var i = 0; i < script.length; i++) {
-            eval(script[i].split('<script>')[1].split('</script>')[0]);
+            eval(script[i]);
         }
     } else {
         $('article').innerHTML = index;
