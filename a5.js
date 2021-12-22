@@ -149,12 +149,12 @@ function edit() {
     });
 }
 
-async function save() {
+function save() {
     var d = en($('textarea').value);
     if (dict == undefined) {
         dict = {};
         dict[url[2]] = { auth: 1, true: d, false: '' };
-        await setDoc(html, dict);
+        setDoc(html, dict);
     } else {
         if (!dict[url[2]]) {
             dict[url[2]] = { auth: 1 };
@@ -163,7 +163,7 @@ async function save() {
         if (dict[url[2]].auth < 2) {
             dict[url[2]][!ss.edit] = dict[url[2]].auth ? '' : d;
         };
-        await updateDoc(html, dict);
+        updateDoc(html, dict);
     };
     getData(ss.edit).then((html) => setData(html));
     eval(de(source.prp[ss.prp]));
