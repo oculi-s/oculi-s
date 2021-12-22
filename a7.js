@@ -70,7 +70,7 @@ function setData(index) {
         index = index.split('</script>');
         for (var i = 0; i < index.length; i++) {
             if (index[i].includes('<script>')) {
-                script.push(index[i].replace('<string>',''));
+                script.push(index[i].replace('<string>', ''));
             } else if (index[i].includes('<script ')) {
                 head.innerHTML += index[i] + '</script>';
             } else {
@@ -86,14 +86,27 @@ function setData(index) {
     setIndex();
 }
 
+var H = $$('h2, h3, h4, h5');
+var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] }
+function indexing(num, i) {
+    var d = H[i].tagName;
+    var id = ''
+    H[i].id = s[d][0] + num + s[d][1];
+    H[i].innerHTML = `<a href="#index">${H[i].id}</a>` + H[i].innerHTML;
+    if (d != h[i + 1].tagName) {
+        indexing(1, i + 1)
+    } else {
+        indexing(num + 1, i + 1);
+    }
+}
+
 function setIndex() {
     if ($('index')) {
         $('index').innerHTML = '';
         var temp = '';
-        var H = $$('h2, h3, h4, h5');
+        indexing(1, 0);
         for (var i = 0; i < H.length; i++) {
-            H[i].id = `${en(H[i].innerText.toLowerCase())}`;
-            temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].innerText.toLowerCase()}</a></${H[i].tagName}>`
+            temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].id}</a>${H[i].innerText.toLowerCase()}</${H[i].tagName}>`
         }
         $('index').innerHTML = temp;
     }
@@ -103,7 +116,7 @@ ss.edit = true;
 if (!('uid' in ss)) {
     ss.log = false;
 }
-getWidget().then(async() => {
+getWidget().then(async () => {
     var url_string = '<portal>';
     for (var i = 0; i < url.length; i++) {
         if (url[i] != 'index') {
@@ -128,7 +141,7 @@ $('html').addEventListener('keydown', e => {
     if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
         e.preventDefault();
         edit();
-    } else if (e.ctrlKey && (e.key == 'd' || e.key == 'ㅇ')){
+    } else if (e.ctrlKey && (e.key == 'd' || e.key == 'ㅇ')) {
         e.preventDefault();
         del();
     }
@@ -187,7 +200,7 @@ function onEnterSignin() {
 
 function signin() {
     signInWithEmailAndPassword(auth, $('#id').value, $('#pw').value)
-        .then(async(userCredential) => {
+        .then(async (userCredential) => {
             ss.uid = userCredential.user.uid;
             ss.log = true;
             location.reload();
