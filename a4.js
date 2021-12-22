@@ -28,13 +28,16 @@ const aside = $('aside');
 
 var url = de(location.pathname).toLowerCase().split('/').slice(1);
 var source = '';
+var html = '';
+var dict = '';
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-var html = doc(db, url[0], url[1]);
 
 async function getWidget() {
+    html = await getDoc(doc(db, url[0], url[1]));
+    dict = html.data();
     source = await getDoc(doc(db, 'index', 'source'));
     source = source.data();
     var style = document.createElement('style');
@@ -49,7 +52,6 @@ async function getWidget() {
 }
 
 async function getData(x) {
-    html = await getDoc(html);
     if (html.data()) {
         if (url[2] in html.data()) {
             var r = html.data()[url[2]][x];
@@ -149,7 +151,6 @@ function edit() {
 
 async function save() {
     var d = en($('textarea').value);
-    var dict = html.data();
     if (dict == undefined) {
         dict = {};
         dict[url[2]] = { auth: 1, true: d, false: '' };
@@ -170,7 +171,6 @@ async function save() {
 
 async function del() {
     if (confirm('삭제하시겠습니까?')) {
-        var dict = html.data();
         delete dict[url[2]];
         updateDoc(html, dict);
         if (Object.keys(dict).length == 0) {
