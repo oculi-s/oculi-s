@@ -1,22 +1,19 @@
 import { initializeApp } from "https://cdn.skypack.dev/@firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://cdn.skypack.dev/@firebase/firestore";
-import { getStorage, ref, getDownloadURL, getBytes, uploadBytes } from "https://cdn.skypack.dev/@firebase/storage";
+import { getStorage, ref, listAll, getDownloadURL, uploadBytes } from "https://cdn.skypack.dev/@firebase/storage";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://cdn.skypack.dev/@firebase/auth";
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
 
-window.ref = ref;
-window.getDownloadURL = getDownloadURL;
-window.getBytes = getBytes;
-window.uploadBytes = uploadBytes;
 
 const firebaseConfig = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
 initializeApp(firebaseConfig);
 window.db = getFirestore();
-window.st = getStorage();
 window.auth = getAuth();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
+
+const st = getStorage();
 const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
@@ -37,6 +34,7 @@ var source = '';
 var html = '';
 var dict = '';
 var user = '';
+var img = '';
 var url = de(location.pathname).toLowerCase().split('/').slice(1);
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
@@ -51,6 +49,8 @@ async function getWidget() {
     source = source.data();
     user = await getDoc(doc(db, 'user', ss.uid));
     user = user.data();
+    img = await listAll(ref(st, url.join('/')));
+    img = img.items;
 
     head.innerHTML += de(source.css.true);
     nav.innerHTML = de(source.nav[ss.log]);
@@ -95,6 +95,7 @@ function setData(index) {
         $('article').innerHTML = index;
     }
     setIndex();
+    setImage();
 }
 
 var H = '';
@@ -134,6 +135,15 @@ function setIndex() {
     }
 }
 
+function setImage() {
+    img.forEach(async e => {
+        if ($(`img[name="${e.name}"]`)) {
+            var imgLink = await getDownloadURL(e);
+            $(`img[name="${e.name}"]`).src = imgLink;
+        }
+    })
+}
+
 ss.edit = true;
 if (!('uid' in ss)) {
     ss.log = false;
@@ -171,11 +181,10 @@ $('html').addEventListener('unload', e => { ss.clear(); })
 
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
-    $('article').innerHTML = '<textarea>';
-    getData(ss.edit).then((html) => { $('textarea').value = html });
-    $('textarea').focus();
-    $('textarea').selectionEnd = $('textarea').selectionEnd;
-    $('textarea').addEventListener('keydown', e => {
+    $('article').innerHTML = '<edit contenteditable=true>';
+    getData(ss.edit).then((html) => { $('edit').innerText = html });
+    $('edit').focus();
+    $('edit').addEventListener('keydown', e => {
         if (e.ctrlKey && (e.key === 's' || e.key == 'ㄴ')) {
             e.preventDefault();
             save();
@@ -184,7 +193,7 @@ function edit() {
 }
 
 function save() {
-    var d = en($('textarea').value);
+    var d = en($('edit').innerText);
     if (dict == undefined) {
         dict = {};
         dict[url[2]] = { auth: 1, true: d, false: '' };
