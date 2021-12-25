@@ -1,12 +1,19 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-app.js";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/9.3.0/firebase-auth.js";
+import { initializeApp } from "https://cdn.skypack.dev/@firebase/app";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://cdn.skypack.dev/@firebase/firestore";
+import { getStorage, ref, getDownloadURL, getBytes, uploadBytes } from "https://cdn.skypack.dev/@firebase/storage";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://cdn.skypack.dev/@firebase/auth";
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
+
+window.ref = ref;
+window.getDownloadURL = getDownloadURL;
+window.getBytes = getBytes;
+window.uploadBytes = uploadBytes;
 
 const firebaseConfig = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
 initializeApp(firebaseConfig);
 window.db = getFirestore();
+window.st = getStorage();
 window.auth = getAuth();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
@@ -93,7 +100,8 @@ function setData(index) {
 var H = '';
 var s = { '2': ['', '.'], '3': ['', ')'], '4': ['', ''], '5': ['(', ')'] };
 var hnum = { '2': '', '3': '', '4': '', '5': '' };
-var hid = { '1':'', '2': '', '3': '', '4': '', '5': '' };
+var hid = { '1': '', '2': '', '3': '', '4': '', '5': '' };
+
 function indexing(tid, num, i) {
     var d = H[i].tagName[1];
     H[i].tid = s[d][0] + num + s[d][1];
@@ -120,7 +128,7 @@ function setIndex() {
         indexing('', 1, 0);
         H.forEach(e => {
             temp += `<${e.tagName}><a href="#${e.id}">${e.tid}</a> ${e.innerText}</${e.tagName}>`
-            e.innerHTML = `<a href="#index">${e.tid}</a> ` + e.innerHTML; 
+            e.innerHTML = `<a href="#index">${e.tid}</a> ` + e.innerHTML;
         });
         $('index').innerHTML = temp;
     }
@@ -130,7 +138,7 @@ ss.edit = true;
 if (!('uid' in ss)) {
     ss.log = false;
 }
-getWidget().then(async () => {
+getWidget().then(async() => {
     var url_string = '<portal>';
     for (var i = 0; i < url.length; i++) {
         if (url[i] != 'index') {
@@ -159,7 +167,7 @@ $('html').addEventListener('keydown', e => {
         del();
     }
 });
-$('html').addEventListener('unload', e => {ss.clear();})
+$('html').addEventListener('unload', e => { ss.clear(); })
 
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
