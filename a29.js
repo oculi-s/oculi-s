@@ -29,6 +29,7 @@ const aside = $('aside');
 var source = '';
 var html = '';
 var dict = '';
+var user = '';
 var url = de(location.pathname).toLowerCase().split('/').slice(1);
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
@@ -41,6 +42,9 @@ async function getWidget() {
     dict = dict.data();
     source = await getDoc(doc(db, 'index', 'source'));
     source = source.data();
+    user = await getDoc(doc(db, 'user', ss.uid));
+    user = user.data();
+
     head.innerHTML += de(source.css.true);
     nav.innerHTML = de(source.nav[ss.log]);
     aside.innerHTML = de(source.aside[ss.log]);
@@ -112,13 +116,12 @@ function setIndex() {
     H = $$('h2, h3, h4, h5');
     if ($('index')) {
         $('index').id = 'index';
-        $('index').innerHTML = '';
         var temp = '';
         indexing('', 1, 0);
-        for (var i = 0; i < H.length; i++) {
-            temp += `<${H[i].tagName}><a href="#${H[i].id}">${H[i].tid}</a> ${H[i].innerText}</${H[i].tagName}>`
-            H[i].innerHTML = `<a href="#index">${H[i].tid}</a> ` + H[i].innerHTML;
-        }
+        H.forEach(e => {
+            temp += `<${e.tagName}><a href="#${e.id}">${e.tid}</a> ${e.innerText}</${e.tagName}>`
+            e.innerHTML = `<a href="#index">${e.tid}</a> ` + e.innerHTML; 
+        });
         $('index').innerHTML = temp;
     }
 }
@@ -137,8 +140,7 @@ getWidget().then(async () => {
     url_string += '</portal>';
     section.innerHTML += url_string;
     var index = await getData(ss.log);
-    var user = await getDoc(doc(db, 'user', ss.uid));
-    section.innerHTML += de(source.editsave[user.data().auth]);
+    section.innerHTML += de(source.editsave[user.auth]);
     setData(index);
     eval(de(source.prp[ss.prp]));
     section.innerHTML += de(source.prps[ss.prp]);
@@ -157,6 +159,7 @@ $('html').addEventListener('keydown', e => {
         del();
     }
 });
+$('html').addEventListener('unload', e => {ss.clear();})
 
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
@@ -211,8 +214,8 @@ function onEnterSignin() {
 
 function signin() {
     signInWithEmailAndPassword(auth, $('#id').value, $('#pw').value)
-        .then(async (userCredential) => {
-            ss.uid = userCredential.user.uid;
+        .then(u => {
+            ss.uid = u.user.uid;
             ss.log = true;
             location.reload();
         }).catch((e) => {
