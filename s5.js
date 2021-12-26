@@ -5,7 +5,15 @@ import { getAuth, signInWithEmailAndPassword, signOut } from "https://jspm.dev/@
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
 
-const firebaseConfig = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
+const firebaseConfig = {
+    apiKey: "AIzaSyDZouQJ7YKTZUE6F3LAXPnt_p_ayFGQnF8",
+    authDomain: "sample-65976.firebaseapp.com",
+    projectId: "sample-65976",
+    storageBucket: "sample-65976.appspot.com",
+    messagingSenderId: "258901722942",
+    appId: "1:258901722942:web:91a5be6c8c5cb1b483ce6f",
+    measurementId: "G-GVEQ68YWY4"
+};
 initializeApp(firebaseConfig);
 window.db = getFirestore();
 window.st = getStorage();
