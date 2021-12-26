@@ -1,19 +1,18 @@
-import { initializeApp } from "https://cdn.skypack.dev/@firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://cdn.skypack.dev/@firebase/firestore";
-import { getStorage, ref, listAll, getDownloadURL, uploadBytes } from "https://cdn.skypack.dev/@firebase/storage";
-import { getAuth, signInWithEmailAndPassword, signOut } from "https://cdn.skypack.dev/@firebase/auth";
+import { initializeApp } from "https://jspm.dev/@firebase/app";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://jspm.dev/@firebase/firestore";
+import { getStorage, ref, listAll, getDownloadURL, uploadBytes, deleteObject } from "https://jspm.dev/@firebase/storage";
+import { getAuth, signInWithEmailAndPassword, signOut } from "https://jspm.dev/@firebase/auth";
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
-
 
 const firebaseConfig = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
 initializeApp(firebaseConfig);
 window.db = getFirestore();
-window.auth = getAuth();
+window.st = getStorage();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
 
-const st = getStorage();
+const auth = getAuth();
 const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
@@ -30,7 +29,7 @@ const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
 
-var source = '';
+var srce = '';
 var html = '';
 var dict = '';
 var user = '';
@@ -40,38 +39,49 @@ url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
+(async() => {
+    srce = await getDoc(doc(db, 'index', 'source'));
+    srce = srce.data();
+    head.innerHTML += de(srce.css.true);
+    nav.innerHTML = de(srce.nav[ss.log]);
+    aside.innerHTML = de(srce.aside[ss.log]);
+    $('aside>span').innerHTML = auth.currentUser.email;
+    _wresize();
 
-async function getWidget() {
     html = doc(db, url[0], url[1]);
     dict = await getDoc(html);
     dict = dict.data();
-    source = await getDoc(doc(db, 'index', 'source'));
-    source = source.data();
     user = await getDoc(doc(db, 'user', ss.uid));
     user = user.data();
-    img = await listAll(ref(st, url.join('/')));
-    img = img.items;
+})().then(() => {
+    var portal = document.createElement('portal');
+    for (var i = 0; i < url.length; i++) {
+        if (url[i] != 'index') {
+            portal.innerHTML += `/<a href=/${url.slice(0, i + 1).join('/')}/>${url[i]}</a>`;
+        }
+    }
+    section.append(portal);
+    section.innerHTML += de(srce.editsave[user.auth]);
+    setData(getData(ss.log));
+    eval(de(srce.prp[ss.prp]));
+    head.innerHTML += de(srce.prps[ss.prp]);
+}).then(() => {
+    if (location.hash) {
+        location.href = location.hash;
+    }
+});
 
-    head.innerHTML += de(source.css.true);
-    nav.innerHTML = de(source.nav[ss.log]);
-    aside.innerHTML = de(source.aside[ss.log]);
-    if ($('aside>span')) {
-        $('aside>span').innerHTML = auth.currentUser.email;
-    };
-    _wresize();
-}
-
-async function getData(x) {
+function getData(x) {
     if (dict) {
         if (url[2] in dict) {
             var r = dict[url[2]][x];
             ss.prp = r.includes(iscode);
             return de(r);
         } else {
-            return de(source.create.true);
+            return de(srce.create.true);
         }
     } else {
-        return de(source.create.true);
+        return de(srce.create.true);
     }
 }
 
@@ -135,7 +145,9 @@ function setIndex() {
     }
 }
 
-function setImage() {
+async function setImage() {
+    img = await listAll(ref(st, url.join('/')));
+    img = img.items;
     img.forEach(async e => {
         if ($(`img[name="${e.name}"]`)) {
             var imgLink = await getDownloadURL(e);
@@ -144,30 +156,34 @@ function setImage() {
     })
 }
 
+async function loadImgList() {
+    img = await listAll(ref(st, url.join('/')));
+    img = img.items;
+    $('#img>div').innerHTML = '';
+    img.forEach(e => {
+        $('#img>div').innerHTML += `<p>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
+    })
+}
+
+function uploadImg() {
+    var imgs = $('article input').files;
+    for (var i = 0; i < imgs.length; i++) {
+        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i]).then(() => loadImgList())
+    }
+    $('article input').value = '';
+
+}
+
+function deleteImg(n) {
+    if (confirm('삭제하시겠습니까?')) {
+        deleteObject(ref(st, `${url.join('/')}/${n}`)).then(() => loadImgList())
+    }
+}
+
 ss.edit = true;
 if (!('uid' in ss)) {
     ss.log = false;
 }
-getWidget().then(async() => {
-    var url_string = '<portal>';
-    for (var i = 0; i < url.length; i++) {
-        if (url[i] != 'index') {
-            url_string += `/<a href=/${url.slice(0, i + 1).join('/')}/>${url[i]}</a>`;
-        }
-    }
-    url_string += '</portal>';
-    section.innerHTML += url_string;
-    var index = await getData(ss.log);
-    section.innerHTML += de(source.editsave[user.auth]);
-    setData(index);
-    eval(de(source.prp[ss.prp]));
-    section.innerHTML += de(source.prps[ss.prp]);
-}).then(() => {
-    if (location.hash) {
-        location.href = location.hash;
-    }
-});
-
 $('html').addEventListener('keydown', e => {
     if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
         e.preventDefault();
@@ -181,8 +197,10 @@ $('html').addEventListener('unload', e => { ss.clear(); })
 
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
-    $('article').innerHTML = '<edit contenteditable=true>';
-    getData(ss.edit).then((html) => { $('edit').innerText = html });
+    $('article').innerHTML = `<edit contenteditable=true></edit>`;
+    $('edit').innerText = getData(ss.edit);
+    $('article').innerHTML += de(srce.img.true);
+    loadImgList();
     $('edit').focus();
     $('edit').addEventListener('keydown', e => {
         if (e.ctrlKey && (e.key === 's' || e.key == 'ㄴ')) {
@@ -208,8 +226,8 @@ function save() {
         };
         updateDoc(html, dict);
     };
-    getData(ss.edit).then((html) => setData(html));
-    eval(de(source.prp[ss.prp]));
+    setData(de(dict[url[2]][ss.edit]));
+    eval(de(srce.prp[ss.prp]));
 }
 
 async function del() {
@@ -219,7 +237,7 @@ async function del() {
         if (Object.keys(dict).length == 0) {
             deleteDoc(html);
         }
-        $('article').innerHTML = de(source.create.true);
+        $('article').innerHTML = de(srce.create.true);
     }
 }
 
@@ -312,3 +330,5 @@ window.makeChart = makeChart;
 window.collection = collection;
 window.getDocs = getDocs;
 window.getDoc = getDoc;
+window.uploadImg = uploadImg;
+window.deleteImg = deleteImg;
