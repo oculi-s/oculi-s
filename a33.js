@@ -39,7 +39,7 @@ url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-(async() => {
+(async () => {
     srce = await getDoc(doc(db, 'index', 'source'));
     srce = srce.data();
     head.innerHTML += de(srce.css.true);
@@ -62,6 +62,7 @@ console.log(url);
     }
     section.append(portal);
     section.innerHTML += de(srce.editsave[user.auth]);
+    loadImgList();
     setData(getData(ss.log));
     eval(de(srce.prp[ss.prp]));
     head.innerHTML += de(srce.prps[ss.prp]);
@@ -146,8 +147,6 @@ function setIndex() {
 }
 
 async function setImage() {
-    img = await listAll(ref(st, url.join('/')));
-    img = img.items;
     img.forEach(async e => {
         if ($(`img[name="${e.name}"]`)) {
             var imgLink = await getDownloadURL(e);
@@ -159,10 +158,12 @@ async function setImage() {
 async function loadImgList() {
     img = await listAll(ref(st, url.join('/')));
     img = img.items;
-    $('#img>div').innerHTML = '';
-    img.forEach(e => {
-        $('#img>div').innerHTML += `<p>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
-    })
+    if ($('#img')) {
+        $('#img>div').innerHTML = '';
+        img.forEach(e => {
+            $('#img>div').innerHTML += `<p>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
+        })
+    }
 }
 
 function uploadImg() {
