@@ -151,10 +151,11 @@ async function setImage() {
     img = await listAll(ref(st, url.join('/')));
     img = img.items;
     img.forEach(async e => {
-        if ($(`img[name="${e.name}"]`)) {
+        var el = $(`img[name="${e.name}"]`);
+        if (el) {
             var imgLink = await getDownloadURL(e);
-            $(`img[name="${e.name}"]`).src = imgLink;
-            $(`img[name="${e.name}"]`).onclick = 'this.classList.toggle("show")';
+            el.src = imgLink;
+            el.setAttribute('onclick', 'this.classList.toggle("show")');
         }
     })
 }
