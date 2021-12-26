@@ -34,6 +34,7 @@ var html = '';
 var dict = '';
 var user = '';
 var img = '';
+var himg = '';
 var url = de(location.pathname).toLowerCase().split('/').slice(1);
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
@@ -163,7 +164,7 @@ async function loadImgList() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
         img.forEach(e => {
-            $('#img>div').innerHTML += `<p onclick=navigator.clipboard.writeText(this.innerText)>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
+            $('#img>div').innerHTML += `<p onclick=navigator.clipboard.writeText(this.innerText) style='color:${dict[url[2].includes(e.name)?'':"white"]}'>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
         })
     }
 }
