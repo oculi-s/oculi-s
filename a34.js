@@ -147,6 +147,8 @@ function setIndex() {
 }
 
 async function setImage() {
+    img = await listAll(ref(st, url.join('/')));
+    img = img.items;
     img.forEach(async e => {
         if ($(`img[name="${e.name}"]`)) {
             var imgLink = await getDownloadURL(e);
@@ -161,7 +163,7 @@ async function loadImgList() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
         img.forEach(e => {
-            $('#img>div').innerHTML += `<p>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
+            $('#img>div').innerHTML += `<p onclick=navigator.clipboard.writeText(this.innerText)>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
         })
     }
 }
