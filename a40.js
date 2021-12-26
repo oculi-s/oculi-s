@@ -154,6 +154,7 @@ async function setImage() {
         if ($(`img[name="${e.name}"]`)) {
             var imgLink = await getDownloadURL(e);
             $(`img[name="${e.name}"]`).src = imgLink;
+            $(`img[name="${e.name}"]`).onclick = 'this.classList.toggle("show")';
         }
     })
 }
@@ -164,7 +165,7 @@ async function loadImgList() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
         img.forEach(e => {
-            $('#img>div').innerHTML += `<p onclick=navigator.clipboard.writeText(this.innerText) style='color:${de(dict[url[2]].true).includes(e.name)?"#aaa":"#fff"};'>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
+            $('#img>div').innerHTML += `<p onclick=navigator.clipboard.writeText(this.innerText) style='color:${de(dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff"};'>${e.name}<button onclick=deleteImg('${e.name}')><i class="fa fa-trash"></i></button></p>`
         })
     }
 }
