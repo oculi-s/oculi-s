@@ -71,7 +71,9 @@ console.log(url);
     if (location.hash) {
         location.href = location.hash;
     }
-});
+})
+
+window.onerror = (m)=>{body.innerHTML = m;}
 
 function getData(x) {
     if (dict) {
