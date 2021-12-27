@@ -16,6 +16,7 @@ const auth = getAuth();
 const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
+const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
 const iscode = en('</code>');
 const head = document.head;
 const body = document.body;
@@ -24,7 +25,7 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
 head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="/main.png"/>`
 body.innerHTML = '<nav></nav><section><article></article></section><aside></aside>';
-body.onresize = _wresize;
+body.onresize = wresize;
 
 const nav = $('nav');
 const section = $('section');
@@ -35,7 +36,6 @@ var html = '';
 var dict = '';
 var user = '';
 var img = '';
-var himg = '';
 var url = de(location.pathname).toLowerCase().split('/').slice(1);
 url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
@@ -250,7 +250,7 @@ function save() {
     eval(de(srce.prp[ss.prp]));
 }
 
-async function del() {
+function del() {
     if (confirm('삭제하시겠습니까?')) {
         delete dict[url[2]];
         updateDoc(html, dict);
@@ -259,12 +259,6 @@ async function del() {
         }
         $('article').innerHTML = de(srce.create.true);
     }
-}
-
-function onEnterSignin() {
-    if (event.keyCode == 13) {
-        signin();
-    };
 }
 
 function signin() {
@@ -289,7 +283,7 @@ function signout() {
     });
 }
 
-function _wresize() {
+function wresize() {
     var mchangeWidth = 0;
     if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
         section.classList.add('m-s');
@@ -342,7 +336,6 @@ window.save = save;
 window.del = del;
 window.signin = signin;
 window.signout = signout;
-window.onEnterSignin = onEnterSignin;
 window.makeChart = makeChart;
 window.collection = collection;
 window.getDocs = getDocs;
