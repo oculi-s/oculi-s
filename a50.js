@@ -42,14 +42,14 @@ while (url.length < 3) { url.push('index'); };
 console.log(url);
 
 try {
-    (async () => {
+    (async() => {
         srce = await getDoc(doc(db, 'index', 'source'));
         srce = srce.data();
         head.innerHTML += de(srce.css.true);
         nav.innerHTML = de(srce.nav[ss.log]);
         aside.innerHTML = de(srce.aside[ss.log]);
         $('aside>span').innerHTML = auth.currentUser.email;
-        _wresize();
+        wresize();
 
         html = doc(db, url[0], url[1]);
         dict = await getDoc(html);
