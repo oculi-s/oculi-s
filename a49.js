@@ -24,6 +24,7 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">`;
 head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="/main.png"/>`
 body.innerHTML = '<nav></nav><section><article></article></section><aside></aside>';
+body.onresize = _wresize;
 
 const nav = $('nav');
 const section = $('section');
@@ -78,6 +79,21 @@ try {
     body.innerHTML += `<br>${$('script[type=module]').src}`;
 }
 
+ss.edit = true;
+if (!('uid' in ss)) {
+    ss.log = false;
+}
+$('html').addEventListener('keydown', e => {
+    if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
+        e.preventDefault();
+        edit();
+    } else if (e.ctrlKey && (e.key == 'd' || e.key == 'ㅇ')) {
+        e.preventDefault();
+        del();
+    }
+});
+$('html').addEventListener('unload', e => { ss.clear(); })
+
 function getData(x) {
     if (dict) {
         if (url[2] in dict) {
@@ -118,10 +134,9 @@ function setData(index) {
 
 function setFold() {
     $$(`article>${$('h1').dataset.fold}`).forEach((e) => {
-        e.setAttribute('onclick', 'unfold(this)');
+        e.onclick = () => { e.classList.toggle('fold') };
         e.classList.add('foldable');
     })
-    window.unfold = function (e) { e.classList.toggle("fold"); };
 }
 
 var H = '';
@@ -200,21 +215,6 @@ function deleteImg(n) {
     }
 }
 
-ss.edit = true;
-if (!('uid' in ss)) {
-    ss.log = false;
-}
-$('html').addEventListener('keydown', e => {
-    if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
-        e.preventDefault();
-        edit();
-    } else if (e.ctrlKey && (e.key == 'd' || e.key == 'ㅇ')) {
-        e.preventDefault();
-        del();
-    }
-});
-$('html').addEventListener('unload', e => { ss.clear(); })
-
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     $('article').innerHTML = `<edit contenteditable=true></edit>`;
@@ -278,7 +278,7 @@ function signin() {
         });
 }
 
-async function signout() {
+function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
         location.href = '/';
@@ -289,11 +289,8 @@ async function signout() {
     });
 }
 
-body.onresize = _wresize;
-
-var mchangeWidth = 0;
-
 function _wresize() {
+    var mchangeWidth = 0;
     if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
         section.classList.add('m-s');
         aside.classList.add('m-a');
