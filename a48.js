@@ -40,40 +40,43 @@ url = url.filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-(async () => {
-    srce = await getDoc(doc(db, 'index', 'source'));
-    srce = srce.data();
-    head.innerHTML += de(srce.css.true);
-    nav.innerHTML = de(srce.nav[ss.log]);
-    aside.innerHTML = de(srce.aside[ss.log]);
-    $('aside>span').innerHTML = auth.currentUser.email;
-    _wresize();
+try {
+    (async () => {
+        srce = await getDoc(doc(db, 'index', 'source'));
+        srce = srce.data();
+        head.innerHTML += de(srce.css.true);
+        nav.innerHTML = de(srce.nav[ss.log]);
+        aside.innerHTML = de(srce.aside[ss.log]);
+        $('aside>span').innerHTML = auth.currentUser.email;
+        _wresize();
 
-    html = doc(db, url[0], url[1]);
-    dict = await getDoc(html);
-    dict = dict.data();
-    user = await getDoc(doc(db, 'user', ss.uid));
-    user = user.data();
-})().then(() => {
-    var portal = document.createElement('portal');
-    for (var i = 0; i < url.length; i++) {
-        if (url[i] != 'index') {
-            portal.innerHTML += `/<a href=/${url.slice(0, i + 1).join('/')}/>${url[i]}</a>`;
+        html = doc(db, url[0], url[1]);
+        dict = await getDoc(html);
+        dict = dict.data();
+        user = await getDoc(doc(db, 'user', ss.uid));
+        user = user.data();
+    })().then(() => {
+        var portal = document.createElement('portal');
+        for (var i = 0; i < url.length; i++) {
+            if (url[i] != 'index') {
+                portal.innerHTML += `/<a href=/${url.slice(0, i + 1).join('/')}/>${url[i]}</a>`;
+            }
         }
-    }
-    section.append(portal);
-    section.innerHTML += de(srce.editsave[user.auth]);
-    loadImgList();
-    setData(getData(ss.log));
-    eval(de(srce.prp[ss.prp]));
-    head.innerHTML += de(srce.prps[ss.prp]);
-}).then(() => {
-    if (location.hash) {
-        location.href = location.hash;
-    }
-})
-
-window.onerror = (m)=>{body.innerHTML = m;}
+        section.append(portal);
+        section.innerHTML += de(srce.editsave[user.auth]);
+        loadImgList();
+        setData(getData(ss.log));
+        eval(de(srce.prp[ss.prp]));
+        head.innerHTML += de(srce.prps[ss.prp]);
+    }).then(() => {
+        if (location.hash) {
+            location.href = location.hash;
+        }
+    })
+} catch (e) {
+    body.innerHTML = e.message;
+    body.innerHTML += `<br>${$('script[type=module]').src}`;
+}
 
 function getData(x) {
     if (dict) {
@@ -109,7 +112,16 @@ function setData(index) {
         $('article').innerHTML = index;
     }
     setIndex();
+    setFold();
     setImage();
+}
+
+function setFold() {
+    $$(`article>${$('h1').dataset.fold}`).forEach((e) => {
+        e.setAttribute('onclick', 'unfold(this)');
+        e.classList.add('foldable');
+    })
+    window.unfold = function (e) { e.classList.toggle("fold"); };
 }
 
 var H = '';
