@@ -157,7 +157,7 @@ async function setImage() {
         if (el) {
             var imgLink = await getDownloadURL(e);
             el.src = imgLink;
-            el.setAttribute('onclick', `this.classList.toggle("show")`);
+            el.setAttribute('onclick', `this.classList.toggle("show");$('body').classList.toggle("blur")`);
         }
     })
 }
