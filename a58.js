@@ -115,12 +115,12 @@ function setData(index) {
     scrsrc.forEach(scr => e.remove(scr));
     script.forEach(scr => e.remove(scr));
     article.innerHTML = e.innerHTML;
-    scrsrc.forEach(scr => {
+    (scrsrc.forEach(scr => {
         fval(scr.src);
-    })
+    }))().then(
     script.forEach(scr => {
         eval(scr.innerText);
-    })
+    }));
     setIndex();
     setFold();
     setImage();
