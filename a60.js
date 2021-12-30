@@ -20,8 +20,9 @@ const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
 const iscode = en('</code>');
 const head = document.head;
 const body = document.body;
-const uprp = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js';
-
+const u = {};
+u.prp = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js';
+u.trv = 'https://s3.tradingview.com/tv.js';
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
@@ -38,7 +39,8 @@ var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e 
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-(async () => {
+(async() => {
+    fval(u.trv);
     loadImgList();
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
@@ -78,7 +80,7 @@ console.log(url);
         ss.log = false;
     }
     setData(getData(ss.log));
-    if (ss.prp) { fval(uprp); }
+    if (ss.prp) { fval(u.prp); }
     head.innerHTML += de(fb.srce.prps[ss.prp]);
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
@@ -87,10 +89,10 @@ console.log(url);
     throw e;
 });
 
-function fval(src) {
+function fval(src, asy = true) {
     fetch(src)
         .then(r => { return r.text() })
-        .then(r => eval(`(async()=>{${r}})()`));
+        .then(r => eval(asy ? `(async()=>{${r}})()` : r));
 }
 
 function getData(x) {
@@ -107,6 +109,17 @@ function getData(x) {
     }
 }
 
+function setScript(e, script) {
+    script.forEach(scr => {
+        e.remove(scr);
+        if (scr.src) {
+            fval(scr.src, false);
+        } else {
+            eval(scr.innerText);
+        }
+    });
+}
+
 function setData(index) {
     var e = document.createElement('html')
     e.innerHTML = index;
@@ -115,17 +128,10 @@ function setData(index) {
     scrsrc.forEach(scr => e.remove(scr));
     script.forEach(scr => e.remove(scr));
     article.innerHTML = e.innerHTML;
-    (async () => {
-        scrsrc.forEach(scr => {
-            fval(scr.src);
-        })
-    })().then(
-        script.forEach(scr => {
-            eval(scr.innerText);
-        }));
     setIndex();
     setFold();
     setImage();
+    setScript(e, script);
 }
 
 function setFold() {
@@ -251,7 +257,7 @@ function save() {
     };
     setData(de(fb.dict[url[2]][ss.edit]));
     if (ss.prp) {
-        fval(uprp);
+        fval(u.prp, false);
     }
 }
 
