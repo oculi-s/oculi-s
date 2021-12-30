@@ -38,7 +38,7 @@ var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e 
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-(async() => {
+(async () => {
     loadImgList();
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
@@ -110,17 +110,16 @@ function getData(x) {
 function setData(index) {
     var e = document.createElement('html')
     e.innerHTML = index;
-    var script = e.querySelectorAll('script');
+    var scrsrc = e.querySelectorAll('script[src]');
+    var script = e.querySelectorAll('script:not([src])');
+    scrsrc.forEach(scr => e.remove(scr));
     script.forEach(scr => e.remove(scr));
     article.innerHTML = e.innerHTML;
-    script.forEach(scr => {
-        console.log(scr);
-        if (scr.src) {
-            fval(scr.src);
-        } else {
-            eval(scr.innerText);
-        }
-    })
+    scrsrc.forEach(scr => {
+        fval(scr.src);
+    }).then(script.forEach(scr => {
+        eval(scr.innerText);
+    }))
     setIndex();
     setFold();
     setImage();
