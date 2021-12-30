@@ -83,7 +83,7 @@ console.log(url);
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
 }).catch(e => {
-    body.innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
+    article.innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
 
