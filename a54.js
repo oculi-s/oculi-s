@@ -20,6 +20,8 @@ const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
 const iscode = en('</code>');
 const head = document.head;
 const body = document.body;
+const uprp = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js';
+
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
@@ -32,8 +34,7 @@ const section = $('section');
 const aside = $('aside');
 
 var article = ''
-var url = de(location.pathname).toLowerCase().split('/').slice(1);
-url = url.filter(e => e !== '');
+var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
@@ -77,16 +78,20 @@ console.log(url);
         ss.log = false;
     }
     setData(getData(ss.log));
-    eval(de(fb.srce.prp[ss.prp]));
+    if (ss.prp) { fval(uprp); }
     head.innerHTML += de(fb.srce.prps[ss.prp]);
 }).then(() => {
-    if (location.hash) {
-        location.href = location.hash;
-    }
+    if (location.hash) { location.href = location.hash; }
 }).catch(e => {
     body.innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
+
+function fval(src) {
+    fetch(src)
+        .then(r => { return r.text() })
+        .then(r => eval(`(async()=>{${r}})()`));
+}
 
 function getData(x) {
     if (fb.dict) {
@@ -103,24 +108,19 @@ function getData(x) {
 }
 
 function setData(index) {
-    var script = [];
-    if (index.includes('<script')) {
-        index = index.split('</script>');
-        for (var i = 0; i < index.length; i++) {
-            if (index[i].includes('<script>')) {
-                script.push(index[i].replace('<script>', ''));
-            } else if (index[i].includes('<script ')) {
-                head.innerHTML += index[i] + '</script>';
-            } else {
-                article.innerHTML = index[i];
-            }
+    var e = document.createElement('html')
+    e.innerHTML = index;
+    var script = e.querySelectorAll('script');
+    script.forEach(scr => e.remove(scr));
+    article.innerHTML = e.innerHTML;
+    script.forEach(scr => {
+        console.log(scr);
+        if (scr.src) {
+            fval(scr.src);
+        } else {
+            eval(scr.innerText);
         }
-        for (var i = 0; i < script.length; i++) {
-            eval(script[i]);
-        }
-    } else {
-        article.innerHTML = index;
-    }
+    })
     setIndex();
     setFold();
     setImage();
@@ -248,7 +248,9 @@ function save() {
         updateDoc(fb.html, fb.dict);
     };
     setData(de(fb.dict[url[2]][ss.edit]));
-    eval(de(fb.srce.prp[ss.prp]));
+    if (ss.prp) {
+        fval(uprp);
+    }
 }
 
 function del() {
