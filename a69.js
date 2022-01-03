@@ -225,9 +225,23 @@ function deleteImg(n) {
 function listener() {
     if (event.keyCode <= 90 && event.keyCode >= 65) {
         event.preventDefault();
-        this.value += String.fromCharCode(event.keyCode + 32);
+        insertTextAtCaret(String.fromCharCode(event.keyCode + 32));
     }
 }
+
+function insertTextAtCaret(text) {
+    var sel, range;
+    if (window.getSelection) {
+       sel = window.getSelection();
+       if (sel.getRangeAt && sel.rangeCount) {
+          range = sel.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(document.createTextNode(text));
+       }
+    } else if (document.selection && document.selection.createRange) {
+       document.selection.createRange().text = text;
+    }
+ }
 
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
@@ -242,8 +256,7 @@ function edit() {
             e.preventDefault();
             save();
         } else if (e.keyCode == 93) {
-            var L = $('edit').dataset.eng;
-            if (L == 'true') {
+            if ($('edit').dataset.eng == 'true') {
                 $('edit').removeEventListener('keydown', listener);
                 $('edit').setAttribute('data-eng', 'false');
             } else {
