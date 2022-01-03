@@ -58,7 +58,7 @@ console.log(url);
     fb.user = fb.user.data();
 })().then(() => {
     document.addEventListener('keydown', e => {
-        if (e.ctrlKey && e.key == 'e') {
+        if (e.ctrlKey && (e.keyCode == 69 || e.keyCode == 101)) {
             e.preventDefault();
             edit();
         }
@@ -239,11 +239,10 @@ function edit() {
     loadImgList(false);
     edit.focus();
     edit.addEventListener('keydown', e => {
-        if (e.ctrlKey && e.key == 's') {
+        if (e.ctrlKey && (e.keyCode == 83 || e.keyCode == 115)) {
             e.preventDefault();
             save();
-        }
-        if (e.keyCode == 93) {
+        } else if (e.keyCode == 93) {
             var edit = $('edit');
             var L = edit.dataset.eng;
             if (L == 'true') {
