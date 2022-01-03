@@ -242,18 +242,18 @@ function edit() {
         if (e.ctrlKey && (e.keyCode === 's')) {
             e.preventDefault();
             save();
-        } else if (e.keyCode == 93) {
-            var edit = $('edit');
-            var L = edit.dataset.eng;
-            if (L == 'true') {
-                edit.removeEventListener('keydown', listener);
-                edit.setAttribute('data-eng', 'false');
-            } else {
-                edit.addEventListener('keydown', listener);
-                edit.setAttribute('data-eng', 'true');
-            }
         }
-
+        // if (e.keyCode == 93) {
+        //     var edit = $('edit');
+        //     var L = edit.dataset.eng;
+        //     if (L == 'true') {
+        //         edit.removeEventListener('keydown', listener);
+        //         edit.setAttribute('data-eng', 'false');
+        //     } else {
+        //         edit.addEventListener('keydown', listener);
+        //         edit.setAttribute('data-eng', 'true');
+        //     }
+        // }
     });
 }
 
