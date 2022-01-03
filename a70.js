@@ -223,25 +223,17 @@ function deleteImg(n) {
 }
 
 function listener() {
-    if (event.keyCode <= 90 && event.keyCode >= 65) {
-        event.preventDefault();
-        insertTextAtCaret(String.fromCharCode(event.keyCode + 32));
+    if (!event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
+        if (event.keyCode <= 90 && event.keyCode >= 65) {
+            event.preventDefault();
+            var sel = getSelection();
+            if (sel.getRangeAt && sel.rangeCount) {
+                var range = sel.getRangeAt(0);
+                range.insertNode(document.createTextNode(String.fromCharCode(event.keyCode + 32)));
+            }
+        }
     }
 }
-
-function insertTextAtCaret(text) {
-    var sel, range;
-    if (window.getSelection) {
-       sel = window.getSelection();
-       if (sel.getRangeAt && sel.rangeCount) {
-          range = sel.getRangeAt(0);
-          range.deleteContents();
-          range.insertNode(document.createTextNode(text));
-       }
-    } else if (document.selection && document.selection.createRange) {
-       document.selection.createRange().text = text;
-    }
- }
 
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
