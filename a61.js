@@ -39,7 +39,7 @@ var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e 
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-(async() => {
+(async () => {
     fval(u.trv);
     loadImgList();
     fb.srce = await getDoc(doc(db, 'index', 'source'));
@@ -58,7 +58,7 @@ console.log(url);
     fb.user = fb.user.data();
 })().then(() => {
     document.addEventListener('keydown', e => {
-        if (e.ctrlKey && (e.key == 'e' || e.key == 'ㄷ')) {
+        if (e.ctrlKey && e.key == 'e') {
             e.preventDefault();
             edit();
         }
@@ -88,6 +88,13 @@ console.log(url);
     article.innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
+
+function listener() {
+    if (event.keyCode <= 90 && event.keyCode >= 65) {
+        event.preventDefault();
+        this.value += String.fromCharCode(event.keyCode + 32);
+    }
+}
 
 function fval(src, asy = true) {
     fetch(src)
@@ -231,10 +238,20 @@ function edit() {
     loadImgList(false);
     $('edit').focus();
     $('edit').addEventListener('keydown', e => {
-        if (e.ctrlKey && (e.key === 's' || e.key == 'ㄴ')) {
+        if (e.ctrlKey && (e.keyCode === 's')) {
             e.preventDefault();
             save();
-        };
+        } else if (e.keyCode == 93) {
+            var L = $('edit').dataset.list;
+            if (L == 'true') {
+                $('edit').removeEventListener('keydown', listener);
+                $('edit').setAttribute('data-list', 'false');
+            } else {
+                $('edit').addEventListener('keydown', listener);
+                $('edit').setAttribute('data-list', 'true');
+            }
+        }
+
     });
 }
 
