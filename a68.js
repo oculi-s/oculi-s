@@ -233,24 +233,22 @@ function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>`;
     article.classList.add('e-a');
-    var edit = $('edit');
-    edit.innerText = getData(ss.edit);
+    $('edit').innerText = getData(ss.edit);
     article.innerHTML += de(fb.srce.img.true);
     loadImgList(false);
-    edit.focus();
-    edit.addEventListener('keydown', e => {
+    $('edit').focus();
+    $('edit').addEventListener('keydown', e => {
         if (e.ctrlKey && (e.keyCode == 83 || e.keyCode == 115)) {
             e.preventDefault();
             save();
         } else if (e.keyCode == 93) {
-            var edit = $('edit');
-            var L = edit.dataset.eng;
+            var L = $('edit').dataset.eng;
             if (L == 'true') {
-                edit.removeEventListener('keydown', listener);
-                edit.setAttribute('data-eng', 'false');
+                $('edit').removeEventListener('keydown', listener);
+                $('edit').setAttribute('data-eng', 'false');
             } else {
-                edit.addEventListener('keydown', listener);
-                edit.setAttribute('data-eng', 'true');
+                $('edit').addEventListener('keydown', listener);
+                $('edit').setAttribute('data-eng', 'true');
             }
         }
     });
