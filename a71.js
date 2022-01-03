@@ -181,14 +181,16 @@ function setIndex() {
 }
 
 function setImage() {
-    fb.img.forEach(async e => {
-        var el = $(`img[name="${e.name}"]`);
-        if (el) {
-            var imgLink = await getDownloadURL(e);
-            el.src = imgLink;
-            el.setAttribute('onclick', `this.classList.toggle("show");$('body').classList.toggle("blur")`);
-        }
-    })
+    if (fb.img.length) {
+        fb.img.forEach(async e => {
+            var el = $(`img[name="${e.name}"]`);
+            if (el) {
+                var imgLink = await getDownloadURL(e);
+                el.src = imgLink;
+                el.setAttribute('onclick', `this.classList.toggle("show");$('body').classList.toggle("blur")`);
+            }
+        })
+    }
 }
 
 async function loadImgList(reload = true) {
