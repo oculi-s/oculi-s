@@ -231,7 +231,7 @@ function listener() {
 
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
-    article.innerHTML = `<edit data-eng=false contenteditable=true></edit>`;
+    article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>`;
     article.classList.add('e-a');
     $('edit').innerText = getData(ss.edit);
     article.innerHTML += de(fb.srce.img.true);
