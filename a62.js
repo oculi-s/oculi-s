@@ -89,13 +89,6 @@ console.log(url);
     throw e;
 });
 
-function listener() {
-    if (event.keyCode <= 90 && event.keyCode >= 65) {
-        event.preventDefault();
-        this.value += String.fromCharCode(event.keyCode + 32);
-    }
-}
-
 function fval(src, asy = true) {
     fetch(src)
         .then(r => { return r.text() })
@@ -229,9 +222,16 @@ function deleteImg(n) {
     }
 }
 
+function listener() {
+    if (event.keyCode <= 90 && event.keyCode >= 65) {
+        event.preventDefault();
+        this.value += String.fromCharCode(event.keyCode + 32);
+    }
+}
+
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
-    article.innerHTML = `<edit contenteditable=true></edit>`;
+    article.innerHTML = `<edit data-eng=false contenteditable=true></edit>`;
     article.classList.add('e-a');
     $('edit').innerText = getData(ss.edit);
     article.innerHTML += de(fb.srce.img.true);
@@ -242,13 +242,13 @@ function edit() {
             e.preventDefault();
             save();
         } else if (e.keyCode == 93) {
-            var L = $('edit').dataset.list;
+            var L = $('edit').dataset.eng;
             if (L == 'true') {
                 $('edit').removeEventListener('keydown', listener);
-                $('edit').setAttribute('data-list', 'false');
+                $('edit').setAttribute('data-eng', 'false');
             } else {
                 $('edit').addEventListener('keydown', listener);
-                $('edit').setAttribute('data-list', 'true');
+                $('edit').setAttribute('data-eng', 'true');
             }
         }
 
