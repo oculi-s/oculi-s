@@ -239,21 +239,21 @@ function edit() {
     loadImgList(false);
     edit.focus();
     edit.addEventListener('keydown', e => {
-        if (e.ctrlKey && (e.keyCode === 's')) {
+        if (e.ctrlKey && e.key == 's') {
             e.preventDefault();
             save();
         }
-        // if (e.keyCode == 93) {
-        //     var edit = $('edit');
-        //     var L = edit.dataset.eng;
-        //     if (L == 'true') {
-        //         edit.removeEventListener('keydown', listener);
-        //         edit.setAttribute('data-eng', 'false');
-        //     } else {
-        //         edit.addEventListener('keydown', listener);
-        //         edit.setAttribute('data-eng', 'true');
-        //     }
-        // }
+        if (e.keyCode == 93) {
+            var edit = $('edit');
+            var L = edit.dataset.eng;
+            if (L == 'true') {
+                edit.removeEventListener('keydown', listener);
+                edit.setAttribute('data-eng', 'false');
+            } else {
+                edit.addEventListener('keydown', listener);
+                edit.setAttribute('data-eng', 'true');
+            }
+        }
     });
 }
 
