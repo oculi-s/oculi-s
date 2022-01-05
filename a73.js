@@ -228,7 +228,7 @@ async function loadImgList(reload = true) {
         $('#img>div').innerHTML = '';
         fb.img.forEach(e => {
             $('#img>div').innerHTML += `
-            <p onclick=navigator.clipboard.writeText(this.innerText) style='color:${de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff"};'>
+            <p onclick=navigator.clipboard.writeText(this.innerText.trim()) style='color:${de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff"};'>
             ${e.name}<button onclick=deleteImg('${e.name}') class="far fa-trash-alt"></button></p>`
         })
     }
@@ -322,10 +322,9 @@ function save() {
     }
 }
 
-async function del() {
+function del() {
     if (confirm('삭제하시겠습니까?')) {
         delete fb.dict[url[2]];
-        console.log(fb.dict);
         var new_dict = {}
         new_dict[url[2]] = deleteField();
         updateDoc(fb.html, new_dict).then(() => setData(getData(ss.log)));
@@ -385,8 +384,6 @@ function makeChart(id, raw) {
 }
 
 window.save = save;
-window.getData = getData;
-window.setData = setData;
 window.edit = edit;
 window.del = del;
 window.signin = signin;
