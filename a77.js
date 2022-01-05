@@ -63,7 +63,7 @@ const aside = $('aside');
 var article = ''
 var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
 url.push('index', 'index', 'index')
-url.slice(3);
+url.slice(2);
 console.log(url);
 
 (async() => {
@@ -291,7 +291,7 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (k == 187) {
+        } else if (k == 93) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
