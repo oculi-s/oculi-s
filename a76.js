@@ -283,12 +283,14 @@ function edit() {
     edit.focus();
     article.innerHTML += de(fb.srce.img.true);
     loadImgList(false);
+    var int = setInterval(save, 60 * 1000, true);
     $('edit').addEventListener('keydown', e => {
         var k = e.keyCode;
         var edit = $('edit');
         if (event.ctrlKey && (k == 83 || k == 115)) {
             e.preventDefault();
             save();
+            clearInterval(int);
         } else if (k == 187) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
@@ -305,8 +307,8 @@ function edit() {
     });
 }
 
-function save() {
-    article.classList.remove('e-a');
+function save(autosave = false) {
+    console.log('saved');
     var d = en($('edit').innerText);
     if (fb.dict == undefined) {
         fb.dict = {};
@@ -322,9 +324,12 @@ function save() {
         };
         updateDoc(fb.html, fb.dict);
     };
-    setData(de(fb.dict[url[2]][ss.edit]));
-    if (ss.prp) {
-        fval(u.prp, false);
+    if (!autosave) {
+        article.classList.remove('e-a');
+        setData(de(fb.dict[url[2]][ss.edit]));
+        if (ss.prp) {
+            fval(u.prp, false);
+        }
     }
 }
 
