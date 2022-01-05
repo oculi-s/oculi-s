@@ -62,7 +62,8 @@ const aside = $('aside');
 
 var article = ''
 var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
-while (url.length < 3) { url.push('index'); };
+url.push('index', 'index', 'index')
+url.slice(3);
 console.log(url);
 
 (async() => {
@@ -249,23 +250,27 @@ function deleteImg(n) {
     }
 }
 
+function insert_text(s) {
+    var sel = getSelection();
+    var range = sel.getRangeAt(0);
+    var node = document.createTextNode(s);
+    range.insertNode(node);
+    range.setStartAfter(node);
+    sel.removeAllRanges();
+    sel.addRange(range);
+}
+
 function listener() {
     var k = event.keyCode;
     if (!(event.ctrlKey || event.altKey || event.metaKey)) {
         if (k <= 90 && k >= 65) {
             event.preventDefault();
-            var sel = getSelection();
-            var range = sel.getRangeAt(0);
-            sel.removeAllRanges();
             if (event.shiftKey) {
                 var s = String.fromCharCode(k);
             } else {
                 var s = String.fromCharCode(k + 32);
             }
-            var node = document.createTextNode(s);
-            range.insertNode(node);
-            range.setStartAfter(node);
-            sel.addRange(range);
+            insert_text(s);
         }
     }
 }
@@ -284,7 +289,7 @@ function edit() {
         if (event.ctrlKey && (k == 83 || k == 115)) {
             e.preventDefault();
             save();
-        } else if (k == 93) {
+        } else if (k == 187) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
@@ -295,6 +300,7 @@ function edit() {
             }
         } else if (k == 9) {
             e.preventDefault();
+            insert_text('\u00a0\u00a0\u00a0\u00a0');
         }
     });
 }
