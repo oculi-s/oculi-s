@@ -62,8 +62,8 @@ const aside = $('aside');
 
 var article = ''
 var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
-url.push('index', 'index', 'index')
-url.slice(2);
+url.push('index', 'index', 'index');
+url = url.slice(0, 3);
 console.log(url);
 
 (async() => {
