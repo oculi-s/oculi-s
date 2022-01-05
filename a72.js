@@ -1,5 +1,5 @@
 import { initializeApp } from "https://jspm.dev/@firebase/app";
-import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc } from "https://jspm.dev/@firebase/firestore";
+import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from "https://jspm.dev/@firebase/firestore";
 import { getStorage, ref, listAll, getDownloadURL, uploadBytes, deleteObject } from "https://jspm.dev/@firebase/storage";
 import { getAuth, signInWithEmailAndPassword, signOut } from "https://jspm.dev/@firebase/auth";
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
@@ -30,6 +30,32 @@ head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image
 body.innerHTML = '<nav></nav><section><article></article></section><aside></aside>';
 body.onresize = wresize;
 
+var mchangeWidth = 0;
+
+function wresize() {
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+        section.classList.add('m-s');
+        aside.classList.add('m-a');
+        nav.classList.add('m-n');
+    } else if (!section.classList.contains('m-s')) {
+        if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
+            section.classList.add('m-s');
+            aside.classList.add('m-a');
+            nav.classList.add('m-n');
+            if (!mchangeWidth) {
+                mchangeWidth = window.innerWidth;
+            }
+        }
+    } else if (window.innerWidth > mchangeWidth) {
+        section.classList.remove('m-s');
+        aside.classList.remove('m-a');
+        nav.classList.remove('m-n');
+        if (mchangeWidth) {
+            mchangeWidth = window.innerWidth;
+        }
+    }
+}
+
 const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
@@ -39,7 +65,7 @@ var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e 
 while (url.length < 3) { url.push('index'); };
 console.log(url);
 
-(async () => {
+(async() => {
     fval(u.trv);
     loadImgList();
     fb.srce = await getDoc(doc(db, 'index', 'source'));
@@ -85,7 +111,7 @@ console.log(url);
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
 }).catch(e => {
-    article.innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
+    article.innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
 
@@ -161,7 +187,7 @@ function indexing(tid, num, i) {
         } else if (d == nd) {
             indexing(tid, num + 1, i + 1);
         } else {
-            indexing(Object.values(hid).slice(0, nd).join(''), hnum[nd] + 1, i + 1);
+            indexing(Object.values(hid).slice(0, nd - 1).join(''), hnum[nd] + 1, i + 1);
         }
     }
 }
@@ -203,8 +229,7 @@ async function loadImgList(reload = true) {
         fb.img.forEach(e => {
             $('#img>div').innerHTML += `
             <p onclick=navigator.clipboard.writeText(this.innerText) style='color:${de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff"};'>
-            ${e.name}
-            <button onclick=deleteImg('${e.name}') class="far fa-trash-alt"></button></p>`
+            ${e.name}<button onclick=deleteImg('${e.name}') class="far fa-trash-alt"></button></p>`
         })
     }
 }
@@ -225,14 +250,22 @@ function deleteImg(n) {
 }
 
 function listener() {
-    if (!event.ctrlKey && !event.altKey && !event.metaKey && !event.shiftKey) {
-        if (event.keyCode <= 90 && event.keyCode >= 65) {
+    var k = event.keyCode;
+    if (!(event.ctrlKey || event.altKey || event.metaKey)) {
+        if (k <= 90 && k >= 65) {
             event.preventDefault();
             var sel = getSelection();
-            if (sel.getRangeAt && sel.rangeCount) {
-                var range = sel.getRangeAt(0);
-                range.insertNode(document.createTextNode(String.fromCharCode(event.keyCode + 32)));
+            var range = sel.getRangeAt(0);
+            sel.removeAllRanges();
+            if (event.shiftKey) {
+                var s = String.fromCharCode(k);
+            } else {
+                var s = String.fromCharCode(k + 32);
             }
+            var node = document.createTextNode(s);
+            range.insertNode(node);
+            range.setStartAfter(node);
+            sel.addRange(range);
         }
     }
 }
@@ -240,23 +273,28 @@ function listener() {
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>`;
-    article.classList.add('e-a');
-    $('edit').innerText = getData(ss.edit);
+    var edit = $('edit');
+    edit.innerText = getData(ss.edit);
+    edit.focus();
     article.innerHTML += de(fb.srce.img.true);
     loadImgList(false);
-    $('edit').focus();
     $('edit').addEventListener('keydown', e => {
-        if (e.ctrlKey && (e.keyCode == 83 || e.keyCode == 115)) {
+        var k = e.keyCode;
+        var edit = $('edit');
+        if (event.ctrlKey && (k == 83 || k == 115)) {
             e.preventDefault();
             save();
-        } else if (e.keyCode == 93) {
-            if ($('edit').dataset.eng == 'true') {
-                $('edit').removeEventListener('keydown', listener);
-                $('edit').setAttribute('data-eng', 'false');
+        } else if (k == 93) {
+            e.preventDefault();
+            if (edit.dataset.eng == 'true') {
+                edit.removeEventListener('keydown', listener);
+                edit.setAttribute('data-eng', 'false');
             } else {
-                $('edit').addEventListener('keydown', listener);
-                $('edit').setAttribute('data-eng', 'true');
+                edit.addEventListener('keydown', listener);
+                edit.setAttribute('data-eng', 'true');
             }
+        } else if (k == 9) {
+            e.preventDefault();
         }
     });
 }
@@ -284,14 +322,16 @@ function save() {
     }
 }
 
-function del() {
+async function del() {
     if (confirm('삭제하시겠습니까?')) {
         delete fb.dict[url[2]];
-        updateDoc(fb.html, fb.dict);
+        console.log(fb.dict);
+        var new_dict = {}
+        new_dict[url[2]] = deleteField();
+        updateDoc(fb.html, new_dict).then(() => setData(getData(ss.log)));
         if (Object.keys(fb.dict).length == 0) {
             deleteDoc(fb.html);
         }
-        article.innerHTML = de(fb.srce.create.true);
     }
 }
 
@@ -321,31 +361,6 @@ function signout() {
     }).catch((e) => {
         alert('로그인 정보가 없습니다.');
     });
-}
-
-function wresize() {
-    var mchangeWidth = 0;
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
-        section.classList.add('m-s');
-        aside.classList.add('m-a');
-        nav.classList.add('m-n');
-    } else if (!section.classList.contains('m-s')) {
-        if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
-            section.classList.add('m-s');
-            aside.classList.add('m-a');
-            nav.classList.add('m-n');
-            if (!mchangeWidth) {
-                mchangeWidth = window.innerWidth;
-            }
-        }
-    } else if (window.innerWidth > mchangeWidth) {
-        section.classList.remove('m-s');
-        aside.classList.remove('m-a');
-        nav.classList.remove('m-n');
-        if (mchangeWidth) {
-            mchangeWidth = window.innerWidth;
-        }
-    }
 }
 
 function makeChart(id, raw) {
