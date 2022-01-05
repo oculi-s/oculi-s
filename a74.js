@@ -328,8 +328,9 @@ function del() {
         var new_dict = {}
         new_dict[url[2]] = deleteField();
         updateDoc(fb.html, new_dict).then(() => setData(getData(ss.log)));
-        if (Object.keys(fb.dict).length == 0) {
+        if (!Object.keys(fb.dict).length) {
             deleteDoc(fb.html);
+            fb.dict = undefined;
         }
     }
 }
