@@ -73,9 +73,6 @@ console.log(url);
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
     head.innerHTML += de(fb.srce.css.true);
-    nav.innerHTML = de(fb.srce.nav[ss.log]);
-    aside.innerHTML = de(fb.srce.aside[ss.log]);
-    wresize();
     if (ss.uid != 'null' && ss.uid != 'undefined') {
         $('aside>span').innerHTML = auth.currentUser.email;
     }
@@ -84,6 +81,10 @@ console.log(url);
     fb.dict = fb.dict.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
     fb.user = fb.user.data();
+    alert(fb.user, ss.uid);
+    nav.innerHTML = de(fb.srce.nav[ss.uid in fb.user]);
+    aside.innerHTML = de(fb.srce.aside[ss.uid in fb.user]);
+    wresize();
 })().then(() => {
     document.addEventListener('keydown', e => {
         if (e.ctrlKey && (e.keyCode == 69 || e.keyCode == 101)) {
