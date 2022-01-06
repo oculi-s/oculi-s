@@ -80,10 +80,11 @@ console.log(url);
     fb.dict = await getDoc(fb.html);
     fb.dict = fb.dict.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
-    alert(fb.user != undefined);
-    nav.innerHTML = de(fb.srce.nav[fb.user != undefined]);
-    aside.innerHTML = de(fb.srce.aside[fb.user != undefined]);
     fb.user = fb.user.data();
+    if (!fb.user)
+        signout();
+    nav.innerHTML = de(fb.srce.nav[ss.log]);
+    aside.innerHTML = de(fb.srce.aside[ss.log]);
     wresize();
 })().then(() => {
     document.addEventListener('keydown', e => {
