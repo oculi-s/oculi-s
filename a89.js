@@ -335,7 +335,8 @@ function save(autosave = false) {
             fval(u.prp, false);
         }
     }
-    console.log('saved');
+    $('es>div>span').style.color = '#6183ff';
+    setTimeout(() => { $('es>div>span').style.color = 'transparent'; }, 1000);
 }
 
 function del() {
