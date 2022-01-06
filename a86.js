@@ -73,9 +73,6 @@ console.log(url);
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
     head.innerHTML += de(fb.srce.css.true);
-    if (ss.uid != 'null' && ss.uid != 'undefined') {
-        $('aside>span').innerHTML = auth.currentUser.email;
-    }
     fb.html = doc(db, url[0], url[1]);
     fb.dict = await getDoc(fb.html);
     fb.dict = fb.dict.data();
@@ -85,6 +82,9 @@ console.log(url);
         signout();
     nav.innerHTML = de(fb.srce.nav[ss.log]);
     aside.innerHTML = de(fb.srce.aside[ss.log]);
+    if (ss.uid != 'null' && ss.uid != 'undefined') {
+        $('aside>span').innerHTML = auth.currentUser.email;
+    }
     wresize();
 })().then(() => {
     document.addEventListener('keydown', e => {
