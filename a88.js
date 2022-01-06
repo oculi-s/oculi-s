@@ -67,7 +67,7 @@ url.push('index', 'index', 'index');
 url = url.slice(0, 3);
 console.log(url);
 
-(async() => {
+(async () => {
     fval(u.trv);
     loadImgList();
     fb.srce = await getDoc(doc(db, 'index', 'source'));
@@ -78,14 +78,16 @@ console.log(url);
     fb.dict = fb.dict.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
     fb.user = fb.user.data();
-    if (!fb.user)
+    if (fb.user) {
+        nav.innerHTML = de(fb.srce.nav[ss.log]);
+        aside.innerHTML = de(fb.srce.aside[ss.log]);
+        if (ss.uid != 'null' && ss.uid != 'undefined') {
+            $('aside>span').innerHTML = auth.currentUser.email;
+        }
+    } else {
         signout();
-})().then(() => {
-    nav.innerHTML = de(fb.srce.nav[ss.log]);
-    aside.innerHTML = de(fb.srce.aside[ss.log]);
-    if (ss.uid != 'null' && ss.uid != 'undefined') {
-        $('aside>span').innerHTML = auth.currentUser.email;
     }
+})().then(() => {
     wresize();
     document.addEventListener('keydown', e => {
         if (e.ctrlKey && (e.keyCode == 69 || e.keyCode == 101)) {
