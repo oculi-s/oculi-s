@@ -80,13 +80,13 @@ console.log(url);
     fb.user = fb.user.data();
     if (!fb.user)
         signout();
+})().then(() => {
     nav.innerHTML = de(fb.srce.nav[ss.log]);
     aside.innerHTML = de(fb.srce.aside[ss.log]);
     if (ss.uid != 'null' && ss.uid != 'undefined') {
         $('aside>span').innerHTML = auth.currentUser.email;
     }
     wresize();
-})().then(() => {
     document.addEventListener('keydown', e => {
         if (e.ctrlKey && (e.keyCode == 69 || e.keyCode == 101)) {
             e.preventDefault();
