@@ -111,6 +111,7 @@ console.log(url);
     if (ss.prp) { fval(u.prp); }
     head.innerHTML += de(fb.srce.prps[ss.prp]);
     $('load').style.opacity = 0;
+    $('load').style.display = 'none';
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
     document.addEventListener('keydown', e => {
