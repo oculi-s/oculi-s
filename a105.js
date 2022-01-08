@@ -86,8 +86,9 @@ console.log(url);
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ss.log]);
         aside.innerHTML = de(fb.srce.aside[ss.log]);
-        if (auth.currentUser)
+        if (ss.uid != 'null' && ss.uid != 'undefined') {
             $('aside>span').innerHTML = auth.currentUser.email;
+        }
     } else {
         body.innerHTML = '';
         signout();
