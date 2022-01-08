@@ -270,7 +270,7 @@ function listener() {
     if (!(event.ctrlKey || event.altKey || event.metaKey)) {
         if (k <= 90 && k >= 65) {
             event.preventDefault();
-            var s = String.fromCharCode(k + event.shiftKey ? 0 : 32);
+            var s = String.fromCharCode(k + (event.shiftKey ? 0 : 32));
             insert_text(s);
         }
     }
