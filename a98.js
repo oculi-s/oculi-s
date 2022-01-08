@@ -282,8 +282,8 @@ function edit() {
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>`;
     $('edit').innerText = getData(ss.edit);
     $('edit').focus();
-    $('type').style.visibility = 'visible';
-    $('ke').style.visibility = 'visible';
+    section.classList.add('e-s');
+    article.classList.add('e-a');
     article.innerHTML += de(fb.srce.img.true);
     loadImgList(false);
     var int = setInterval(save, 60 * 1000, true);
@@ -329,6 +329,7 @@ function save(autosave = false) {
         updateDoc(fb.html, fb.dict);
     };
     if (!autosave) {
+        section.classList.remove('e-s');
         article.classList.remove('e-a');
         setData(de(fb.dict[url[2]][ss.edit]));
         if (ss.prp) {
