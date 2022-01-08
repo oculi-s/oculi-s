@@ -259,6 +259,7 @@ function insert_text(s) {
     var sel = getSelection();
     var range = sel.getRangeAt(0);
     var node = document.createTextNode(s);
+    sel.deleteFromDocument();
     range.insertNode(node);
     range.setStartAfter(node);
     sel.removeAllRanges();
