@@ -280,9 +280,10 @@ function listener() {
 function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>`;
-    var edit = $('edit');
-    edit.innerText = getData(ss.edit);
-    edit.focus();
+    $('edit').innerText = getData(ss.edit);
+    $('edit').focus();
+    $('type').style.visibility = 'visible';
+    $('ke').style.visibility = 'visible';
     article.innerHTML += de(fb.srce.img.true);
     loadImgList(false);
     var int = setInterval(save, 60 * 1000, true);
@@ -294,14 +295,15 @@ function edit() {
             save();
             clearInterval(int);
         } else if (k == 18) {
-            $$('es>div>span')[1].innerHTML = edit.dataset.eng == 'true' ? '한' : '영';
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
                 edit.setAttribute('data-eng', 'false');
+                $$('es>div>span')[1].innerHTML = '한';
             } else {
                 edit.addEventListener('keydown', listener);
                 edit.setAttribute('data-eng', 'true');
+                $$('es>div>span')[1].innerHTML = '영';
             }
         } else if (k == 9) {
             e.preventDefault();
