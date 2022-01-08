@@ -299,11 +299,11 @@ function edit() {
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
                 edit.setAttribute('data-eng', 'false');
-                $$('es>div>span')[1].innerHTML = '한';
+                $('ke').innerHTML = '한';
             } else {
                 edit.addEventListener('keydown', listener);
                 edit.setAttribute('data-eng', 'true');
-                $$('es>div>span')[1].innerHTML = '영';
+                $('ke').innerHTML = '영';
             }
         } else if (k == 9) {
             e.preventDefault();
