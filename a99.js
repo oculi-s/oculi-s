@@ -7,17 +7,18 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
 
 const firebaseConfig = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
 initializeApp(firebaseConfig);
-initializeApp(firebaseConfig);
 window.db = getFirestore();
 window.st = getStorage();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
+HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
+HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
 
 const auth = getAuth();
 const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
-const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
+window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
 const iscode = en('</code>');
 const head = document.head;
 const body = document.body;
@@ -32,9 +33,14 @@ body.innerHTML = '<nav></nav><section><article></article></section><aside></asid
 body.onresize = wresize;
 
 var mchangeWidth = 0;
+const ios = /iPhone|ipad|iPod/i.test(navigator.userAgent);
+const adr = /Android/i.test(navigator.userAgent);
+const nav = $('nav');
+const section = $('section');
+const aside = $('aside');
 
 function wresize() {
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+    if (adr || ios) {
         section.classList.add('m-s');
         aside.classList.add('m-a');
         nav.classList.add('m-n');
@@ -57,45 +63,35 @@ function wresize() {
     }
 }
 
-const nav = $('nav');
-const section = $('section');
-const aside = $('aside');
-
 var article = ''
 var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
 url.push('index', 'index', 'index');
 url = url.slice(0, 3);
 console.log(url);
 
-(async () => {
+(async() => {
     fval(u.trv);
     loadImgList();
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
+    fb.user = await getDoc(doc(db, 'user', ss.uid));
+    fb.user = fb.user.data();
     head.innerHTML += de(fb.srce.css.true);
+    wresize();
     fb.html = doc(db, url[0], url[1]);
     fb.dict = await getDoc(fb.html);
     fb.dict = fb.dict.data();
-    fb.user = await getDoc(doc(db, 'user', ss.uid));
-    fb.user = fb.user.data();
+})().then(() => {
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ss.log]);
         aside.innerHTML = de(fb.srce.aside[ss.log]);
-        if (ss.uid != 'null' && ss.uid != 'undefined') {
+        if (auth.currentUser) {
             $('aside>span').innerHTML = auth.currentUser.email;
         }
     } else {
+        body.innerHTML = '';
         signout();
     }
-})().then(() => {
-    wresize();
-    document.addEventListener('keydown', e => {
-        if (e.ctrlKey && (e.keyCode == 69 || e.keyCode == 101)) {
-            e.preventDefault();
-            edit();
-        }
-    });
-    document.addEventListener('unload', e => { ss.clear(); });
 }).then(() => {
     var portal = document.createElement('portal');
     for (var i = 0; i < url.length; i++) {
@@ -104,7 +100,7 @@ console.log(url);
         }
     }
     section.append(portal);
-    section.innerHTML += de(fb.srce.editsave[fb.user.auth]);
+    section.innerHTML += de(fb.srce.es[fb.user.auth]);
 
     article = $('article');
     ss.edit = true;
@@ -115,7 +111,15 @@ console.log(url);
     if (ss.prp) { fval(u.prp); }
     head.innerHTML += de(fb.srce.prps[ss.prp]);
 }).then(() => {
+    body.className = '';
     if (location.hash) { location.href = location.hash; }
+    document.addEventListener('keydown', e => {
+        if (e.ctrlKey && (e.keyCode == 69 || e.keyCode == 101)) {
+            e.preventDefault();
+            edit();
+        }
+    });
+    document.addEventListener('unload', e => { ss.clear(); });
 }).catch(e => {
     article.innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
@@ -294,7 +298,7 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (k == 18) {
+        } else if (k == 18 && ios) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
