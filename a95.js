@@ -294,6 +294,7 @@ function edit() {
             save();
             clearInterval(int);
         } else if (k == 18) {
+            $$('es>div>span')[1].innerHTML = edit.dataset.eng == 'true' ? '영' : '한';
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
