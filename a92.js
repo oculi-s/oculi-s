@@ -270,16 +270,7 @@ function listener() {
     if (!(event.ctrlKey || event.altKey || event.metaKey)) {
         if (k <= 90 && k >= 65) {
             event.preventDefault();
-            if (event.shiftKey) {
-                var s = String.fromCharCode(k);
-            } else if (event.metaKey){
-                var temp = 'abdinrsuw';
-                if (temp.includes(String.fromCharCode(k))){
-                    event.preventDefault();
-                }
-            } else {
-                var s = String.fromCharCode(k + 32);
-            }
+            var s = String.fromCharCode(k + event.shiftKey ? 0 : 32);
             insert_text(s);
         }
     }
