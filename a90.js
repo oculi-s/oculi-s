@@ -272,6 +272,11 @@ function listener() {
             event.preventDefault();
             if (event.shiftKey) {
                 var s = String.fromCharCode(k);
+            } else if (event.metaKey){
+                var temp = 'abdinrsuw';
+                if (temp.includes(String.fromCharCode(k))){
+                    event.preventDefault();
+                }
             } else {
                 var s = String.fromCharCode(k + 32);
             }
@@ -296,7 +301,7 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (k == 93) {
+        } else if (event.metaKey) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
