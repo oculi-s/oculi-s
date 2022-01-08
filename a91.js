@@ -301,7 +301,7 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (event.metaKey) {
+        } else if (k == 18) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
