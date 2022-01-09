@@ -208,12 +208,11 @@ function indexing(tid, num, i) {
 function setIndex() {
     H = $$('h2, h3, h4, h5');
     if ($('index')) {
-        $('index').id = 'index';
         var temp = '';
         indexing('', 1, 0);
         H.forEach(e => {
             temp += `<${e.tagName}><a href="#${e.id}" target=_self>${e.tid}</a> ${e.innerText}</${e.tagName}>`
-            e.innerHTML = `<a href="#index">${e.tid}</a> ` + e.innerHTML;
+            e.innerHTML = `<a href="#">${e.tid}</a> ` + e.innerHTML;
         });
         $('index').innerHTML = temp;
     }
