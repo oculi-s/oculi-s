@@ -76,8 +76,7 @@ console.log(url);
     ss.edit = true;
     if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
     fval(u.trv);
-    fb.img = await listAll(ref(st, url.join('/')));
-    if (fb.img) { fb.img = fb.img.items; }
+    loadImgList();
     fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
@@ -281,6 +280,11 @@ function createImg(e) {
     return p;
 }
 
+async function loadImgList() {
+    fb.img = await listAll(ref(st, url.join('/')));
+    if (fb.img) { fb.img = fb.img.items; }
+}
+
 function setImageEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
@@ -328,6 +332,7 @@ function edit() {
     article.classList.add('e-a');
     var int = setInterval(save, 60 * 1000, true);
     $('edit').focus();
+    loadImgList();
     setImageEdit();
     $('edit').onkeydown = e => {
         var edit = $('edit');
