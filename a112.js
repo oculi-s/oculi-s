@@ -260,12 +260,12 @@ function setImageEdit() {
             p.innerText = e.name;
             btn.onclick = () => {
                 deleteImg(e.name);
-                fb.img.forEach(ee=>{
-                    if (ee.name == e.name){
-                        delete fb.img[ee];
-                        break;
-                    }
-                })
+								for (var i=0; i<fb.img.length; i++){
+										if(fb.img[i].name==e.name){
+												fb.img.pop(i);
+												break;
+										}
+								}
             }
             btn.classList.add('far', 'fa-trash-alt');
             p.append(btn);
@@ -325,7 +325,7 @@ function listener() {
 function edit(callback = setImageEdit) {
     ss.edit = $('input[name="type"]:checked').value;
     var edit = document.createElement('edit');
-    edit.setAttribute('data-eng' = 'false');
+    edit.setAttribute('data-eng', 'false');
     edit.setAttribute('contenteditable', true);
     edit.innerText = getData(ss.edit);
     article.innerHTML = edit;
@@ -374,13 +374,13 @@ function save(autosave = false, callback = saved) {
     } else {
         if (!fb.dict[url[2]]) {
             fb.dict[url[2]] = { auth: 1 };
-        };
+        }
         fb.dict[url[2]][ss.edit] = d;
         if (fb.dict[url[2]].auth < 2) {
             fb.dict[url[2]][!ss.edit] = fb.dict[url[2]].auth ? '' : d;
-        };
+        }
         updateDoc(fb.html, fb.dict);
-    };
+    }
     if (!autosave) {
         section.classList.remove('e-s');
         article.classList.remove('e-a');
