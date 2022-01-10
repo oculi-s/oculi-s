@@ -34,14 +34,12 @@ body.innerHTML += `<nav></nav><section><article></article></section><aside></asi
 body.onresize = wresize;
 
 var mchangeWidth = 0;
-const ios = /iPhone|ipad|iPod/i.test(navigator.userAgent);
-const adr = /Android/i.test(navigator.userAgent);
 const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
 
 function wresize() {
-    if (adr || ios) {
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
         section.classList.add('m-s');
         aside.classList.add('m-a');
         nav.classList.add('m-n');
@@ -300,7 +298,7 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (k == 18 && ios) {
+        } else if (k == 18 && /iPhone|ipad|iPod/i.test(navigator.userAgent)) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
