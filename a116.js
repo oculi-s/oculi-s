@@ -253,6 +253,7 @@ function setImage() {
 
 function createImg(e) {
     var p = document.createElement('p');
+    var btn = document.createElement('button');
     p.setAttribute('name', e.name);
     p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
     p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
