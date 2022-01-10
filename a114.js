@@ -71,9 +71,7 @@ console.log(url);
 (async () => {
     fval(u.trv);
     fb.img = await listAll(ref(st, url.join('/')));
-    if (fb.img) {
-        fb.img = fb.img.items;
-    }
+    if (fb.img) { fb.img = fb.img.items; }
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
@@ -121,7 +119,7 @@ console.log(url);
             edit();
         }
     });
-    document.addEventListener('unload', e => { ss.clear(); });
+    document.addEventListener('unload', () => { ss.clear(); });
 }).catch(e => {
     unload();
     $('article').innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
@@ -252,7 +250,7 @@ function setImage() {
     }
 }
 
-function createImg(e){
+function createImg(e) {
     var p = document.createElement('p');
     p.setAttribute('name', e.name);
     p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
@@ -270,12 +268,13 @@ function createImg(e){
     }
     btn.classList.add('far', 'fa-trash-alt');
     p.append(btn);
+    return p;
 }
 
 function setImageEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        fb.img.forEach(e => {$('#img>div').append(createImg(e));})
+        fb.img.forEach(e => { $('#img>div').append(createImg(e)); })
     }
 }
 
