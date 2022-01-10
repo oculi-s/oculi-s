@@ -1,3 +1,5 @@
+const fbc = { apiKey: "AIzaSyDZouQJ7YKTZUE6F3LAXPnt_p_ayFGQnF8", authDomain: "sample-65976.firebaseapp.com", projectId: "sample-65976", storageBucket: "sample-65976.appspot.com", messagingSenderId: "258901722942", appId: "1:258901722942:web:91a5be6c8c5cb1b483ce6f", measurementId: "G-GVEQ68YWY4" };
+
 import { initializeApp } from "https://jspm.dev/@firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from "https://jspm.dev/@firebase/firestore";
 import { getStorage, ref, listAll, getDownloadURL, uploadBytes, deleteObject } from "https://jspm.dev/@firebase/storage";
@@ -5,38 +7,40 @@ import { getAuth, signInWithEmailAndPassword, signOut } from "https://jspm.dev/@
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
 
-const firebaseConfig = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
-initializeApp(firebaseConfig);
+initializeApp(fbc);
 window.db = getFirestore();
 window.st = getStorage();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
+HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
 
 const auth = getAuth();
 const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
-window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
+const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
 const iscode = en('</code>');
 const head = document.head;
 const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
 const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
 body.innerHTML = `<load style="${css_load}"><img src='/main.gif' style="${css_gif}"></load>`;
+body.innerHTML += `<nav></nav><section><article></article></section><aside></aside>`;
+body.onresize = wresize;
+document.title = '불로구';
+
+const nav = $('nav');
+const section = $('section');
+const aside = $('aside');
 const u = {};
 u.prp = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js';
 u.trv = 'https://s3.tradingview.com/tv.js';
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
-head.innerHTML += `<title>불로구</title><link rel="shortcut icon" type="image/x-icon" href="/main.png"/>`
-body.innerHTML += `<nav></nav><section><article></article></section><aside></aside>`;
-body.onresize = wresize;
+head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
 var mchangeWidth = 0;
-const nav = $('nav');
-const section = $('section');
-const aside = $('aside');
 
 function wresize() {
     if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
@@ -62,17 +66,19 @@ function wresize() {
     }
 }
 
-var article = ''
+var article = '';
 var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
 url.push('index', 'index', 'index');
 url = url.slice(0, 3);
 console.log(url);
 
-(async () => {
+(async() => {
+    ss.edit = true;
+    if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
     fval(u.trv);
     fb.img = await listAll(ref(st, url.join('/')));
     if (fb.img) { fb.img = fb.img.items; }
-    fb.srce = await getDoc(doc(db, 'index', 'source'));
+    fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
     fb.user = fb.user.data();
@@ -103,23 +109,18 @@ console.log(url);
     section.innerHTML += de(fb.srce.es[fb.user.auth]);
 
     article = $('article');
-    ss.edit = true;
-    if (!('uid' in ss)) {
-        ss.log = false;
-    }
     setData(getData(ss.log));
     if (ss.prp) { fval(u.prp); }
     head.innerHTML += de(fb.srce.prps[ss.prp]);
     unload();
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
-    document.addEventListener('keydown', e => {
-        if (e.ctrlKey && (e.keyCode == 69 || e.keyCode == 101)) {
+    document.onkeydown = e => {
+        if (e.ctrlKey && e.keyCode == 69) {
             e.preventDefault();
             edit();
         }
-    });
-    document.addEventListener('unload', () => { ss.clear(); });
+    }
 }).catch(e => {
     unload();
     $('article').innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
@@ -151,9 +152,8 @@ function getData(x) {
     }
 }
 
-function setScript(e, script) {
+function setScript(script) {
     script.forEach(scr => {
-        e.remove(scr);
         if (scr.src) {
             fval(scr.src, false);
         } else {
@@ -164,16 +164,16 @@ function setScript(e, script) {
 
 function setData(index) {
     var e = document.createElement('html')
-    e.innerHTML = index;
-    var scrsrc = e.querySelectorAll('script[src]');
-    var script = e.querySelectorAll('script:not([src])');
+    e.innerHTML = index.replaceAll('\u00a0', ' ');
+    var scrsrc = e.$$('script[src]');
+    var script = e.$$('script:not([src])');
     scrsrc.forEach(scr => e.remove(scr));
     script.forEach(scr => e.remove(scr));
     article.innerHTML = e.innerHTML;
     setIndex();
     setFold();
     setImage();
-    setScript(e, script);
+    setScript(script);
     setCode();
 }
 
@@ -191,11 +191,16 @@ function setCode() {
         var but = document.createElement('button');
         but.innerText = 'Compile';
         but.onclick = () => {
-            var form = new FormData();
-            form.append('initScript', $('code').innerText.trim());
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', "https://www.jdoodle.com/api/redirect-to-post/c-online-compiler");
-            xhr.send(form);
+            var form = document.createElement('form');
+            var text = document.createElement('textarea');
+            text.name = 'initScript';
+            text.value = $('code').innerText.trim().replaceAll('\u00a0', ' ');
+            form.action = 'https://www.jdoodle.com/api/redirect-to-post/c-online-compiler';
+            form.method = 'POST';
+            form.target = '_blank';
+            form.append(text);
+            article.append(form);
+            form.submit();
         }
         article.append(but);
     }
@@ -244,7 +249,10 @@ function setImage() {
             if (el) {
                 var imgLink = await getDownloadURL(e);
                 el.src = imgLink;
-                el.setAttribute('onclick', `this.classList.toggle("show");$('body').classList.toggle("blur")`);
+                el.onclick = () => {
+                    el.classList.toggle("show");
+                    body.classList.toggle("blur");
+                };
             }
         })
     }
@@ -259,8 +267,7 @@ function createImg(e) {
     p.innerText = e.name;
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
-            deleteObject(ref(st, `${url.join('/')}/${n}`));
-            p.remove();
+            deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(p.remove());
         }
         for (var i = 0; i < fb.img.length; i++) {
             if (fb.img[i].name == e.name) {
@@ -269,7 +276,7 @@ function createImg(e) {
             }
         }
     }
-    btn.classList.append('far', 'fa-trash-alt');
+    btn.classList.add('far', 'fa-trash-alt');
     p.append(btn);
     return p;
 }
@@ -277,15 +284,16 @@ function createImg(e) {
 function setImageEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        fb.img.forEach(e => { $('#img>div').append(createImg(e))})
+        fb.img.forEach(e => { $('#img>div').append(createImg(e)) })
     }
 }
 
 function uploadImg() {
     var imgs = $('article input').files;
     for (var i = 0; i < imgs.length; i++) {
-        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i]);
-        $('#img>div').append(createImg(imgs[i]));
+        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i]).then(
+            $('#img>div').append(createImg(imgs[i]))
+        );
     }
     $('article input').value = '';
 }
@@ -313,25 +321,21 @@ function listener() {
 }
 
 function edit() {
-    ss.edit = $('input[name="type"]:checked').value;
-    var edit = document.createElement('edit');
-    edit.setAttribute('data-eng', 'false');
-    edit.setAttribute('contenteditable', true);
-    edit.innerText = getData(ss.edit);
-    article.innerHTML = edit.outerHTML;
-    edit.focus();
+    $$('input[name="type"]').forEach(e => { e.onclick = () => { $('edit').innerText = getData(e.value); } });
+    article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>${de(fb.srce.img.true)}`;
+    $('edit').innerText = getData(ss.edit);
     section.classList.add('e-s');
     article.classList.add('e-a');
-    article.innerHTML += de(fb.srce.img.true);
-    setImageEdit();
     var int = setInterval(save, 60 * 1000, true);
-    edit.addEventListener('keydown', e => {
-        var k = e.keyCode;
-        if (event.ctrlKey && (k == 83 || k == 115)) {
+    $('edit').focus();
+    setImageEdit();
+    $('edit').onkeydown = e => {
+        var edit = $('edit');
+        if (e.ctrlKey && e.keyCode == 83) {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (k == 18 && /iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+        } else if (e.keyCode == 18) { // && /iPhone|ipad|iPod/i.test(navigator.userAgent)) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
@@ -342,11 +346,11 @@ function edit() {
                 edit.setAttribute('data-eng', 'true');
                 $('ke').innerHTML = '영';
             }
-        } else if (k == 9) {
+        } else if (e.keyCode == 9) {
             e.preventDefault();
             insert_text('\u00a0\u00a0\u00a0\u00a0');
         }
-    });
+    }
 }
 
 function saved() {
@@ -355,7 +359,7 @@ function saved() {
 }
 
 function save(autosave = false, callback = saved) {
-    var d = en($('edit').innerText.replaceAll('\u00a0', ' '));
+    var d = en($('edit').innerText);
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
@@ -387,11 +391,11 @@ function del(callback = setData) {
         var new_dict = {}
         new_dict[url[2]] = deleteField();
         updateDoc(fb.html, new_dict);
-        callback(getData(ss.log));
         if (!Object.keys(fb.dict).length) {
             deleteDoc(fb.html);
             fb.dict = undefined;
         }
+        callback(getData(ss.log));
     }
 }
 
@@ -415,9 +419,8 @@ function signin() {
 function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.reload();
-        ss.uid = null;
-        ss.log = false;
+        location.href = '/' + fbc.authDomain.includes('sample') ? 'sample' : '';
+        ss.clear();
     }).catch((e) => {
         alert('로그인 정보가 없습니다.');
     });
