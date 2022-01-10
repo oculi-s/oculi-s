@@ -72,7 +72,6 @@ console.log(url);
     fval(u.trv);
     fb.img = await listAll(ref(st, url.join('/')));
     if (fb.img) { fb.img = fb.img.items; }
-    alert(fb.img);
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
@@ -261,7 +260,7 @@ function createImg(e) {
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
             deleteObject(ref(st, `${url.join('/')}/${n}`));
-            $(`#img p[name=${n}]`).remove();
+            p.remove();
         }
         for (var i = 0; i < fb.img.length; i++) {
             if (fb.img[i].name == e.name) {
