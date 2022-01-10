@@ -72,6 +72,7 @@ console.log(url);
     fval(u.trv);
     fb.img = await listAll(ref(st, url.join('/')));
     if (fb.img) { fb.img = fb.img.items; }
+    alert(fb.img);
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
@@ -256,9 +257,11 @@ function createImg(e) {
     p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
     p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
     p.innerText = e.name;
-    p.innerText = e.name;
     btn.onclick = () => {
-        deleteImg(e.name);
+        if (confirm('삭제하시겠습니까?')) {
+            deleteObject(ref(st, `${url.join('/')}/${n}`));
+            $(`#img p[name=${n}]`).remove();
+        }
         for (var i = 0; i < fb.img.length; i++) {
             if (fb.img[i].name == e.name) {
                 fb.img.pop(i);
@@ -266,7 +269,7 @@ function createImg(e) {
             }
         }
     }
-    btn.classList.add('far', 'fa-trash-alt');
+    btn.classList.append('far', 'fa-trash-alt');
     p.append(btn);
     return p;
 }
@@ -274,7 +277,7 @@ function createImg(e) {
 function setImageEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        fb.img.forEach(e => { $('#img>div').append(createImg(e)); })
+        fb.img.forEach(e => { $('#img>div').append(createImg(e))})
     }
 }
 
@@ -285,13 +288,6 @@ function uploadImg() {
         $('#img>div').append(createImg(imgs[i]));
     }
     $('article input').value = '';
-}
-
-function deleteImg(n) {
-    if (confirm('삭제하시겠습니까?')) {
-        deleteObject(ref(st, `${url.join('/')}/${n}`));
-        $(`#img p[name=${n}]`).remove();
-    }
 }
 
 function insert_text(s) {
@@ -458,4 +454,3 @@ window.collection = collection;
 window.getDocs = getDocs;
 window.getDoc = getDoc;
 window.uploadImg = uploadImg;
-window.deleteImg = deleteImg;
