@@ -254,7 +254,7 @@ function setImageEdit() {
         $('#img>div').innerHTML = '';
         fb.img.forEach(e => {
             var p = document.createElement('p');
-            var but = document.createElement('button')
+            var but = document.createElement('button');
             p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
             p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
             p.innerText = e.name;
@@ -314,19 +314,22 @@ function listener() {
     }
 }
 
-function edit() {
+function edit(callback = setImageEdit) {
     ss.edit = $('input[name="type"]:checked').value;
-    article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>`;
-    $('edit').innerText = getData(ss.edit);
-    $('edit').focus();
+    edit = document.createElement('edit');
+    edit.setAttribute('data-eng' = 'false');
+    edit.setAttribute('contenteditable', true);
+    edit.innerText = getData(ss.edit);
+    article.innerHTML = edit;
+    edit.focus();
     section.classList.add('e-s');
     article.classList.add('e-a');
     article.innerHTML += de(fb.srce.img.true);
     loadImgList(false);
+    callback();
     var int = setInterval(save, 60 * 1000, true);
-    $('edit').addEventListener('keydown', e => {
+    edit.addEventListener('keydown', e => {
         var k = e.keyCode;
-        var edit = $('edit');
         if (event.ctrlKey && (k == 83 || k == 115)) {
             e.preventDefault();
             save();
