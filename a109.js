@@ -68,7 +68,7 @@ url.push('index', 'index', 'index');
 url = url.slice(0, 3);
 console.log(url);
 
-(async() => {
+(async () => {
     fval(u.trv);
     loadImgList();
     fb.srce = await getDoc(doc(db, 'index', 'source'));
@@ -109,8 +109,7 @@ console.log(url);
     setData(getData(ss.log));
     if (ss.prp) { fval(u.prp); }
     head.innerHTML += de(fb.srce.prps[ss.prp]);
-    $('load').style.opacity = 0;
-    setTimeout(() => { $('load').style.display = 'none'; }, 500);
+    unload();
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
     document.addEventListener('keydown', e => {
@@ -121,10 +120,15 @@ console.log(url);
     });
     document.addEventListener('unload', e => { ss.clear(); });
 }).catch(e => {
-    $('load').style.opacity = 0;
+    unload();
     article.innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
+
+function unload() {
+    $('load').style.opacity = 0;
+    setTimeout(() => { $('load').style.display = 'none'; }, 500);
+}
 
 function fval(src, asy = true) {
     fetch(src)
@@ -169,6 +173,7 @@ function setData(index) {
     setFold();
     setImage();
     setScript(e, script);
+    setCode();
 }
 
 function setFold() {
@@ -177,6 +182,20 @@ function setFold() {
             e.onclick = () => { e.classList.toggle('fold') };
             e.classList.add('foldable');
         })
+    }
+}
+
+function setCode() {
+    if (ss.prp && $('code')){
+        var but = document.createElement('button');
+        but.onclick=()=>{
+            var form = new FormData();
+            form.append('initScript', $('pre').innerText.trim());
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', "https://www.jdoodle.com/api/redirect-to-post/c-online-compiler");
+            xhr.send(form);
+        }
+        article.append(but);
     }
 }
 
@@ -229,33 +248,46 @@ function setImage() {
     }
 }
 
-async function loadImgList(reload = true) {
-    if (reload) {
-        fb.img = await listAll(ref(st, url.join('/')));
-        fb.img = fb.img.items;
-    }
+function setImageEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
         fb.img.forEach(e => {
-            $('#img>div').innerHTML += `
-            <p onclick=navigator.clipboard.writeText(this.innerText.trim()) style='color:${de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff"};'>
-            ${e.name}<button onclick=deleteImg('${e.name}') class="far fa-trash-alt"></button></p>`
+            var p = document.createElement('p');
+            var but = document.createElement('button')
+            p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
+            p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
+            p.innerText = e.name;
+            button.onclick = () => { deleteImg(e.name), delete fb.img[e] }
+            button.className = 'far fa-trash-alt';
+            p.append(button);
+            $('#img>div').append(p);
         })
     }
 }
 
-function uploadImg() {
-    var imgs = $('article input').files;
-    for (var i = 0; i < imgs.length; i++) {
-        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i]).then(() => loadImgList())
+async function loadImgList(reload = true, callback = setImageEdit) {
+    if (reload) {
+        fb.img = await listAll(ref(st, url.join('/')));
+        if (fb.img) {
+            fb.img = fb.img.items;
+        }
     }
-    $('article input').value = '';
-
+    callback();
 }
 
-function deleteImg(n) {
+function uploadImg(callback = loadImgList) {
+    var imgs = $('article input').files;
+    for (var i = 0; i < imgs.length; i++) {
+        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i])
+    }
+    $('article input').value = '';
+    callback();
+}
+
+function deleteImg(n, callback = loadImgList) {
     if (confirm('삭제하시겠습니까?')) {
-        deleteObject(ref(st, `${url.join('/')}/${n}`)).then(() => loadImgList())
+        deleteObject(ref(st, `${url.join('/')}/${n}`));
+        callback(false);
     }
 }
 
@@ -316,8 +348,13 @@ function edit() {
     });
 }
 
-function save(autosave = false) {
-    var d = en($('edit').innerText.replace('\u00a0', ' '));
+function saved() {
+    $('es>div>span').style.color = '#6183ff';
+    setTimeout(() => { $('es>div>span').style.color = 'transparent'; }, 1000);
+}
+
+function save(autosave = false, callback = saved) {
+    var d = en($('edit').innerText.replaceAll('\u00a0', ' '));
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
@@ -340,21 +377,20 @@ function save(autosave = false) {
             fval(u.prp, false);
         }
     }
-    $('es>div>span').style.color = '#6183ff';
-    setTimeout(() => { $('es>div>span').style.color = 'transparent'; }, 1000);
+    callback();
 }
 
-function del() {
+function del(callback = setData) {
     if (confirm('삭제하시겠습니까?')) {
         delete fb.dict[url[2]];
         var new_dict = {}
         new_dict[url[2]] = deleteField();
-        updateDoc(fb.html, new_dict).then(() => setData(getData(ss.log)));
+        updateDoc(fb.html, new_dict);
+        callback(getData(ss.log));
         if (!Object.keys(fb.dict).length) {
             deleteDoc(fb.html);
             fb.dict = undefined;
         }
-        console.log('deleted');
     }
 }
 
