@@ -1,4 +1,4 @@
-const fbc = { apiKey: "AIzaSyDZouQJ7YKTZUE6F3LAXPnt_p_ayFGQnF8", authDomain: "sample-65976.firebaseapp.com", projectId: "sample-65976", storageBucket: "sample-65976.appspot.com", messagingSenderId: "258901722942", appId: "1:258901722942:web:91a5be6c8c5cb1b483ce6f", measurementId: "G-GVEQ68YWY4" };
+const fbc = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
 
 import { initializeApp } from "https://jspm.dev/@firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from "https://jspm.dev/@firebase/firestore";
@@ -332,7 +332,6 @@ function edit() {
     article.classList.add('e-a');
     var int = setInterval(save, 60 * 1000, true);
     $('edit').focus();
-    loadImgList();
     setImageEdit();
     $('edit').onkeydown = e => {
         var edit = $('edit');
@@ -380,6 +379,7 @@ function save(autosave = false, callback = saved) {
         updateDoc(fb.html, fb.dict);
     }
     if (!autosave) {
+        loadImgList();
         section.classList.remove('e-s');
         article.classList.remove('e-a');
         setData(de(fb.dict[url[2]][ss.edit]));
