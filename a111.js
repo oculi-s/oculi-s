@@ -121,7 +121,7 @@ console.log(url);
     document.addEventListener('unload', e => { ss.clear(); });
 }).catch(e => {
     unload();
-    article.innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
+    $('article').innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
 
@@ -191,7 +191,7 @@ function setCode() {
         but.innerText = 'Compile';
         but.onclick = () => {
             var form = new FormData();
-            form.append('initScript', $('pre').innerText.trim());
+            form.append('initScript', $('code').innerText.trim());
             var xhr = new XMLHttpRequest();
             xhr.open('POST', "https://www.jdoodle.com/api/redirect-to-post/c-online-compiler");
             xhr.send(form);
@@ -254,13 +254,21 @@ function setImageEdit() {
         $('#img>div').innerHTML = '';
         fb.img.forEach(e => {
             var p = document.createElement('p');
-            var but = document.createElement('button');
+            var btn = document.createElement('button');
             p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
             p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
             p.innerText = e.name;
-            button.onclick = () => { deleteImg(e.name), delete fb.img[e] }
-            button.classList.add('far', 'fa-trash-alt');
-            p.append(button);
+            btn.onclick = () => {
+                deleteImg(e.name);
+                fb.img.forEach(ee=>{
+                    if (ee.name == e.name){
+                        delete fb.img[ee];
+                        break;
+                    }
+                })
+            }
+            btn.classList.add('far', 'fa-trash-alt');
+            p.append(btn);
             $('#img>div').append(p);
         })
     }
@@ -316,7 +324,7 @@ function listener() {
 
 function edit(callback = setImageEdit) {
     ss.edit = $('input[name="type"]:checked').value;
-    edit = document.createElement('edit');
+    var edit = document.createElement('edit');
     edit.setAttribute('data-eng' = 'false');
     edit.setAttribute('contenteditable', true);
     edit.innerText = getData(ss.edit);
