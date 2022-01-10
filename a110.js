@@ -186,9 +186,10 @@ function setFold() {
 }
 
 function setCode() {
-    if (ss.prp && $('code')){
+    if (ss.prp && $('code')) {
         var but = document.createElement('button');
-        but.onclick=()=>{
+        but.innerText = 'Compile';
+        but.onclick = () => {
             var form = new FormData();
             form.append('initScript', $('pre').innerText.trim());
             var xhr = new XMLHttpRequest();
@@ -258,7 +259,7 @@ function setImageEdit() {
             p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
             p.innerText = e.name;
             button.onclick = () => { deleteImg(e.name), delete fb.img[e] }
-            button.className = 'far fa-trash-alt';
+            button.classList.add('far', 'fa-trash-alt');
             p.append(button);
             $('#img>div').append(p);
         })
