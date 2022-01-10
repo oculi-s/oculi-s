@@ -419,7 +419,7 @@ function signin() {
 function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.href = '/' + fbc.authDomain.includes('sample') ? 'sample' : '';
+        location.pathname = '/' + fbc.authDomain.includes('sample') ? 'sample' : '';
         ss.clear();
     }).catch((e) => {
         alert('로그인 정보가 없습니다.');
