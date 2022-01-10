@@ -121,7 +121,7 @@ console.log(url);
     });
     document.addEventListener('unload', e => { ss.clear(); });
 }).catch(e => {
-    console.log(e.stack);
+    $('load').style.opacity = 0;
     article.innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
