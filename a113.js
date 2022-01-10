@@ -70,7 +70,10 @@ console.log(url);
 
 (async () => {
     fval(u.trv);
-    loadImgList();
+    fb.img = await listAll(ref(st, url.join('/')));
+    if (fb.img) {
+        fb.img = fb.img.items;
+    }
     fb.srce = await getDoc(doc(db, 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
@@ -249,54 +252,46 @@ function setImage() {
     }
 }
 
+function createImg(e){
+    var p = document.createElement('p');
+    p.setAttribute('name', e.name);
+    p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
+    p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
+    p.innerText = e.name;
+    p.innerText = e.name;
+    btn.onclick = () => {
+        deleteImg(e.name);
+        for (var i = 0; i < fb.img.length; i++) {
+            if (fb.img[i].name == e.name) {
+                fb.img.pop(i);
+                break;
+            }
+        }
+    }
+    btn.classList.add('far', 'fa-trash-alt');
+    p.append(btn);
+}
+
 function setImageEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        fb.img.forEach(e => {
-            var p = document.createElement('p');
-            var btn = document.createElement('button');
-            p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
-            p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
-            p.innerText = e.name;
-            btn.onclick = () => {
-                deleteImg(e.name);
-								for (var i=0; i<fb.img.length; i++){
-										if(fb.img[i].name==e.name){
-												fb.img.pop(i);
-												break;
-										}
-								}
-            }
-            btn.classList.add('far', 'fa-trash-alt');
-            p.append(btn);
-            $('#img>div').append(p);
-        })
+        fb.img.forEach(e => {$('#img>div').append(createImg(e));})
     }
 }
 
-async function loadImgList(reload = true, callback = setImageEdit) {
-    if (reload) {
-        fb.img = await listAll(ref(st, url.join('/')));
-        if (fb.img) {
-            fb.img = fb.img.items;
-        }
-    }
-    callback();
-}
-
-function uploadImg(callback = loadImgList) {
+function uploadImg() {
     var imgs = $('article input').files;
     for (var i = 0; i < imgs.length; i++) {
-        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i])
+        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i]);
+        $('#img>div').append(createImg(imgs[i]));
     }
     $('article input').value = '';
-    callback();
 }
 
-function deleteImg(n, callback = loadImgList) {
+function deleteImg(n) {
     if (confirm('삭제하시겠습니까?')) {
         deleteObject(ref(st, `${url.join('/')}/${n}`));
-        callback(false);
+        $(`#img p[name=${n}]`).remove();
     }
 }
 
@@ -322,19 +317,18 @@ function listener() {
     }
 }
 
-function edit(callback = setImageEdit) {
+function edit() {
     ss.edit = $('input[name="type"]:checked').value;
     var edit = document.createElement('edit');
     edit.setAttribute('data-eng', 'false');
     edit.setAttribute('contenteditable', true);
     edit.innerText = getData(ss.edit);
-    article.innerHTML = edit;
+    article.innerHTML = edit.outerHTML;
     edit.focus();
     section.classList.add('e-s');
     article.classList.add('e-a');
     article.innerHTML += de(fb.srce.img.true);
-    loadImgList(false);
-    callback();
+    setImageEdit();
     var int = setInterval(save, 60 * 1000, true);
     edit.addEventListener('keydown', e => {
         var k = e.keyCode;
