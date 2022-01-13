@@ -361,12 +361,12 @@ function saved() {
     setTimeout(() => { $('es>div>span').style.color = 'transparent'; }, 1000);
 }
 
-function save(autosave = false, callback = saved) {
+function save(autosave = false, cb = saved) {
     var d = en($('edit').innerText);
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
-        setDoc(fb.html, fb.dict);
+        setDoc(fb.html, fb.dict).then(() => { cb(); })
     } else {
         if (!fb.dict[url[2]]) {
             fb.dict[url[2]] = { auth: 1 };
@@ -375,7 +375,7 @@ function save(autosave = false, callback = saved) {
         if (fb.dict[url[2]].auth < 2) {
             fb.dict[url[2]][!ss.edit] = fb.dict[url[2]].auth ? '' : d;
         }
-        updateDoc(fb.html, fb.dict);
+        updateDoc(fb.html, fb.dict).then(() => { cb(); })
     }
     if (!autosave) {
         loadImgList().then(setData(de(fb.dict[url[2]][ss.edit])))
@@ -385,10 +385,9 @@ function save(autosave = false, callback = saved) {
             fval(u.prp, false);
         }
     }
-    callback();
 }
 
-function del(callback = setData) {
+function del(cb = setData) {
     if (confirm('삭제하시겠습니까?')) {
         delete fb.dict[url[2]];
         var new_dict = {}
@@ -398,7 +397,7 @@ function del(callback = setData) {
             deleteDoc(fb.html);
             fb.dict = undefined;
         }
-        callback(getData(ss.log));
+        cb(getData(ss.log));
     }
 }
 
