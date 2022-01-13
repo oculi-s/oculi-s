@@ -293,11 +293,12 @@ function setImageEdit() {
 
 function uploadImg() {
     var img = $('article input').files;
-    img.forEach(e => {
+    for (i=0; i<img.length; i++) {
+        var e = img[i];
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then(() => {
             $('#img>div').append(createImg(e))
         });
-    })
+    }
     $('article input').value = '';
 }
 
