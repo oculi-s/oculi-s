@@ -43,7 +43,7 @@ head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif
 var mchangeWidth = 0;
 
 function wresize() {
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
         section.classList.add('m-s');
         aside.classList.add('m-a');
         nav.classList.add('m-n');
@@ -72,7 +72,7 @@ url.push('index', 'index', 'index');
 url = url.slice(0, 3);
 console.log(url);
 
-(async() => {
+(async () => {
     ss.edit = true;
     if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
     fval(u.trv);
@@ -114,11 +114,22 @@ console.log(url);
     unload();
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
-    document.onkeydown = e => {
-        if (e.ctrlKey && e.keyCode == 69) {
-            e.preventDefault();
-            edit();
-        }
+    document.onkeyup = e => {
+        if (e.crtlKey)
+            if (e.keyCode == 69) {
+                e.preventDefault();
+                edit();
+            } else if (e.keyCode == 67) {
+                e.preventDefault();
+                navigator.clipboard.writeText(getSelection().toString());
+            } else if (e.keyCode == 88) {
+                e.preventDefault();
+                navigator.clipboard.writeText(getSelection().toString());
+                getSelection().deleteFromDocument();
+            } else if (e.keyCode == 87) {
+                e.preventDefault();
+                insert_text(navigator.clipboard.readText());
+            }
     }
 }).catch(e => {
     unload();
@@ -261,19 +272,16 @@ function createImg(e) {
     var p = document.createElement('p');
     var btn = document.createElement('button');
     p.setAttribute('name', e.name);
-    p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
+    p.onclick = () => {
+        navigator.clipboard.writeText(`<img name=${e.name.trim()}>`);
+    };
     p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
     p.innerText = e.name;
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
-            deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(p.remove());
+            deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(() => { p.remove() });
         }
-        for (var i = 0; i < fb.img.length; i++) {
-            if (fb.img[i].name == e.name) {
-                fb.img.pop(i);
-                break;
-            }
-        }
+        fb.img = fb.img.filter(img => { img.name != e.name });
     }
     btn.classList.add('far', 'fa-trash-alt');
     p.append(btn);
@@ -293,12 +301,11 @@ function setImageEdit() {
 }
 
 function uploadImg() {
-    var imgs = $('article input').files;
-    for (var i = 0; i < imgs.length; i++) {
-        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i]).then(
-            $('#img>div').append(createImg(imgs[i]))
-        );
-    }
+    $('article input').files.forEach(e => {
+        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then(() => {
+            $('#img>div').append(createImg(e))
+        });
+    })
     $('article input').value = '';
 }
 
@@ -318,8 +325,7 @@ function listener() {
     if (!(event.ctrlKey || event.altKey || event.metaKey)) {
         if (k <= 90 && k >= 65) {
             event.preventDefault();
-            var s = String.fromCharCode(k + (event.shiftKey ? 0 : 32));
-            insert_text(s);
+            insert_text(String.fromCharCode(k + (event.shiftKey ? 0 : 32)));
         }
     }
 }
@@ -339,7 +345,7 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (e.keyCode == 18) { // && /iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+        } else if (e.keyCode == 18 && /Mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
