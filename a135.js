@@ -378,7 +378,7 @@ function save(autosave = false, cb = saved) {
         updateDoc(fb.html, fb.dict).then(() => { cb(); })
     }
     if (!autosave) {
-        loadImgList().then(setData(de(fb.dict[url[2]][ss.edit])))
+        loadImgList().then(() => { setData(de(fb.dict[url[2]][ss.edit]))})
         section.classList.remove('e-s');
         article.classList.remove('e-a');
         if (ss.prp) {
