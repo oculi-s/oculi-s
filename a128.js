@@ -65,7 +65,7 @@ function wresize() {
         }
     }
 }
-(() => {
+(async () => {
     var article = '';
     var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
