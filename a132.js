@@ -13,6 +13,7 @@ window.st = getStorage();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
 HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
+FileList.prototype.forEach = Array.prototype.forEach;
 
 const auth = getAuth();
 const ss = localStorage;
@@ -292,13 +293,11 @@ function setImageEdit() {
 }
 
 function uploadImg() {
-    var img = $('article input').files;
-    for (i=0; i<img.length; i++) {
-        var e = img[i];
+    $('article input').files.forEach(e => {
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then(() => {
             $('#img>div').append(createImg(e))
         });
-    }
+    });
     $('article input').value = '';
 }
 
