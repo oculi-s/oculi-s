@@ -73,6 +73,7 @@ var url = '';
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
+    body.classList.add(url[0]);
     console.log(url);
 
     ss.edit = true;
