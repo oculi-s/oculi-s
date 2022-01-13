@@ -115,21 +115,10 @@ console.log(url);
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
     document.onkeyup = e => {
-        if (e.crtlKey)
-            if (e.keyCode == 69) {
-                e.preventDefault();
-                edit();
-            } else if (e.keyCode == 67) {
-                e.preventDefault();
-                navigator.clipboard.writeText(getSelection().toString());
-            } else if (e.keyCode == 88) {
-                e.preventDefault();
-                navigator.clipboard.writeText(getSelection().toString());
-                getSelection().deleteFromDocument();
-            } else if (e.keyCode == 87) {
-                e.preventDefault();
-                insert_text(navigator.clipboard.readText());
-            }
+        if (e.ctrlKey && e.keyCode == 69) {
+            e.preventDefault();
+            edit();
+        }
     }
 }).catch(e => {
     unload();
