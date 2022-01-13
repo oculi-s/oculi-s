@@ -76,7 +76,7 @@ function wresize() {
     if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
     fval(u.trv);
     loadImgList();
-})().then(async () => {
+
     fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
@@ -86,7 +86,7 @@ function wresize() {
     fb.html = doc(db, url[0], url[1]);
     fb.dict = await getDoc(fb.html);
     fb.dict = fb.dict.data();
-}).then(() => {
+})().then(() => {
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ss.log]);
         aside.innerHTML = de(fb.srce.aside[ss.log]);
