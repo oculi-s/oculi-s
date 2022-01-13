@@ -65,18 +65,18 @@ function wresize() {
         }
     }
 }
+(() => {
+    var article = '';
+    var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
+    url.push('index', 'index', 'index');
+    url = url.slice(0, 3);
+    console.log(url);
 
-var article = '';
-var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
-url.push('index', 'index', 'index');
-url = url.slice(0, 3);
-console.log(url);
-
-(async () => {
     ss.edit = true;
     if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
     fval(u.trv);
     loadImgList();
+})().then(async () => {
     fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
@@ -86,7 +86,7 @@ console.log(url);
     fb.html = doc(db, url[0], url[1]);
     fb.dict = await getDoc(fb.html);
     fb.dict = fb.dict.data();
-})().then(() => {
+}).then(() => {
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ss.log]);
         aside.innerHTML = de(fb.srce.aside[ss.log]);
@@ -290,7 +290,8 @@ function setImageEdit() {
 }
 
 function uploadImg() {
-    $('article input').files.forEach(e => {
+    var img = $('article input').files;
+    img.forEach(e => {
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then(() => {
             $('#img>div').append(createImg(e))
         });
