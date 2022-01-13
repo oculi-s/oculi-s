@@ -65,9 +65,11 @@ function wresize() {
         }
     }
 }
+
+var article = '';
+var url = '';
 (async () => {
-    var article = '';
-    var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
+    url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
     console.log(url);
@@ -122,7 +124,7 @@ function wresize() {
     }
 }).catch(e => {
     unload();
-    $('article').innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
+    $('article').innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
 
