@@ -296,7 +296,7 @@ function setImageEdit() {
 function uploadImg() {
     $('article input').files.forEach(e => {
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then(() => {
-            $('#img>div').append(createImg(e))
+            $('#img>div').prepend(createImg(e))
         });
     });
     $('article input').value = '';
