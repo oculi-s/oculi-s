@@ -69,7 +69,7 @@ function wresize() {
 
 var article = '';
 var url = '';
-(async () => {
+(async() => {
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
@@ -87,10 +87,7 @@ var url = '';
     fb.user = fb.user.data();
     head.innerHTML += de(fb.srce.css.true);
     wresize();
-    fb.html = doc(db, url[0], url[1]);
-    fb.dict = await getDoc(fb.html);
-    fb.dict = fb.dict.data();
-})().then(() => {
+
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ss.log]);
         aside.innerHTML = de(fb.srce.aside[ss.log]);
@@ -101,7 +98,11 @@ var url = '';
         body.innerHTML = '';
         signout();
     }
-}).then(() => {
+
+    fb.html = doc(db, url[0], url[1]);
+    fb.dict = await getDoc(fb.html);
+    fb.dict = fb.dict.data();
+})().then(() => {
     var portal = document.createElement('portal');
     for (var i = 0; i < url.length; i++) {
         if (url[i] != 'index') {
