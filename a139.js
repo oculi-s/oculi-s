@@ -119,7 +119,7 @@ var url = '';
     unload();
 }).then(() => {
     if (location.hash) { location.href = location.hash; }
-    document.onkeyup = e => {
+    document.onkeydown = e => {
         if (e.ctrlKey && e.keyCode == 69) {
             e.preventDefault();
             edit();
@@ -266,10 +266,11 @@ function createImg(e) {
     var p = document.createElement('p');
     var btn = document.createElement('button');
     p.setAttribute('name', e.name);
+    p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
     p.onclick = () => {
         navigator.clipboard.writeText(`<img name=${e.name.trim()}>`);
+        p.style.color = "#aaa";
     };
-    p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
     p.innerText = e.name;
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
@@ -296,8 +297,9 @@ function setImageEdit() {
 
 function uploadImg() {
     $('article input').files.forEach(e => {
-        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then(() => {
-            $('#img>div').prepend(createImg(e))
+        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((img) => {
+            $('#img>div').prepend(createImg(e));
+            fb.img[fb.img.length] = img.metadata.ref;
         });
     });
     $('article input').value = '';
@@ -357,9 +359,17 @@ function edit() {
     }
 }
 
-function saved() {
-    $('es>div>span').style.color = '#6183ff';
-    setTimeout(() => { $('es>div>span').style.color = 'transparent'; }, 1000);
+function saved(autosave) {
+    if (!autosave) {
+        setData(de(fb.dict[url[2]][ss.edit]));
+        section.classList.remove('e-s');
+        article.classList.remove('e-a');
+        if (ss.prp) {
+            fval(u.prp, false);
+        }
+    }
+    $('es>div>span').className = 'b';
+    setTimeout(() => { $('es>div>span').className = '' }, 1000);
 }
 
 function save(autosave = false, cb = saved) {
@@ -367,7 +377,7 @@ function save(autosave = false, cb = saved) {
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
-        setDoc(fb.html, fb.dict).then(() => { cb(); })
+        setDoc(fb.html, fb.dict).then(() => { cb(autosave); })
     } else {
         if (!fb.dict[url[2]]) {
             fb.dict[url[2]] = { auth: 1 };
@@ -376,17 +386,7 @@ function save(autosave = false, cb = saved) {
         if (fb.dict[url[2]].auth < 2) {
             fb.dict[url[2]][!ss.edit] = fb.dict[url[2]].auth ? '' : d;
         }
-        updateDoc(fb.html, fb.dict).then(() => { cb(); })
-    }
-    if (!autosave) {
-        loadImgList().then(() => {
-            setData(de(fb.dict[url[2]][ss.edit]));
-            section.classList.remove('e-s');
-            article.classList.remove('e-a');
-            if (ss.prp) {
-                fval(u.prp, false);
-            }
-        })
+        updateDoc(fb.html, fb.dict).then(() => { cb(autosave); })
     }
 }
 

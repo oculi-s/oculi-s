@@ -13,6 +13,7 @@ window.st = getStorage();
 window.$ = document.querySelector.bind(document);
 window.$$ = document.querySelectorAll.bind(document);
 HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
+FileList.prototype.forEach = Array.prototype.forEach;
 
 const auth = getAuth();
 const ss = localStorage;
@@ -43,7 +44,7 @@ head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif
 var mchangeWidth = 0;
 
 function wresize() {
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
         section.classList.add('m-s');
         aside.classList.add('m-a');
         nav.classList.add('m-n');
@@ -67,26 +68,26 @@ function wresize() {
 }
 
 var article = '';
-var url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
-url.push('index', 'index', 'index');
-url = url.slice(0, 3);
-console.log(url);
-
+var url = '';
 (async() => {
+    url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
+    url.push('index', 'index', 'index');
+    url = url.slice(0, 3);
+    body.classList.add(url[0]);
+    console.log(url);
+
     ss.edit = true;
     if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
     fval(u.trv);
     loadImgList();
+
     fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ss.uid));
     fb.user = fb.user.data();
     head.innerHTML += de(fb.srce.css.true);
     wresize();
-    fb.html = doc(db, url[0], url[1]);
-    fb.dict = await getDoc(fb.html);
-    fb.dict = fb.dict.data();
-})().then(() => {
+
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ss.log]);
         aside.innerHTML = de(fb.srce.aside[ss.log]);
@@ -97,7 +98,11 @@ console.log(url);
         body.innerHTML = '';
         signout();
     }
-}).then(() => {
+
+    fb.html = doc(db, url[0], url[1]);
+    fb.dict = await getDoc(fb.html);
+    fb.dict = fb.dict.data();
+})().then(() => {
     var portal = document.createElement('portal');
     for (var i = 0; i < url.length; i++) {
         if (url[i] != 'index') {
@@ -122,7 +127,7 @@ console.log(url);
     }
 }).catch(e => {
     unload();
-    $('article').innerHTML = `\n${e.stack}\n\n${$('script[type=module]').src}`;
+    $('article').innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
     throw e;
 });
 
@@ -261,19 +266,17 @@ function createImg(e) {
     var p = document.createElement('p');
     var btn = document.createElement('button');
     p.setAttribute('name', e.name);
-    p.onclick = () => { navigator.clipboard.writeText(e.name.trim()) };
     p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
+    p.onclick = () => {
+        navigator.clipboard.writeText(`<img name=${e.name.trim()}>`);
+        p.style.color = "#aaa";
+    };
     p.innerText = e.name;
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
-            deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(p.remove());
+            deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(() => { p.remove() });
         }
-        for (var i = 0; i < fb.img.length; i++) {
-            if (fb.img[i].name == e.name) {
-                fb.img.pop(i);
-                break;
-            }
-        }
+        fb.img = fb.img.filter(img => { img.name != e.name });
     }
     btn.classList.add('far', 'fa-trash-alt');
     p.append(btn);
@@ -293,12 +296,12 @@ function setImageEdit() {
 }
 
 function uploadImg() {
-    var imgs = $('article input').files;
-    for (var i = 0; i < imgs.length; i++) {
-        uploadBytes(ref(st, `${url.join('/')}/${imgs[i].name}`), imgs[i]).then(
-            $('#img>div').append(createImg(imgs[i]))
-        );
-    }
+    $('article input').files.forEach(e => {
+        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((img) => {
+            $('#img>div').prepend(createImg(e));
+            fb.img[fb.img.length] = img.metadata.ref;
+        });
+    });
     $('article input').value = '';
 }
 
@@ -318,8 +321,7 @@ function listener() {
     if (!(event.ctrlKey || event.altKey || event.metaKey)) {
         if (k <= 90 && k >= 65) {
             event.preventDefault();
-            var s = String.fromCharCode(k + (event.shiftKey ? 0 : 32));
-            insert_text(s);
+            insert_text(String.fromCharCode(k + (event.shiftKey ? 0 : 32)));
         }
     }
 }
@@ -339,7 +341,7 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (e.keyCode == 18) { // && /iPhone|ipad|iPod/i.test(navigator.userAgent)) {
+        } else if (e.keyCode == 18 && /Mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
             e.preventDefault();
             if (edit.dataset.eng == 'true') {
                 edit.removeEventListener('keydown', listener);
@@ -357,17 +359,25 @@ function edit() {
     }
 }
 
-function saved() {
-    $('es>div>span').style.color = '#6183ff';
-    setTimeout(() => { $('es>div>span').style.color = 'transparent'; }, 1000);
+function saved(autosave) {
+    if (!autosave) {
+        setData(de(fb.dict[url[2]][ss.edit]));
+        section.classList.remove('e-s');
+        article.classList.remove('e-a');
+        if (ss.prp) {
+            fval(u.prp, false);
+        }
+    }
+    $('es>div>span').className = 'b';
+    setTimeout(() => { $('es>div>span').className = '' }, 1000);
 }
 
-function save(autosave = false, callback = saved) {
+function save(autosave = false, cb = saved) {
     var d = en($('edit').innerText);
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
-        setDoc(fb.html, fb.dict);
+        setDoc(fb.html, fb.dict).then(() => { cb(autosave); })
     } else {
         if (!fb.dict[url[2]]) {
             fb.dict[url[2]] = { auth: 1 };
@@ -376,20 +386,11 @@ function save(autosave = false, callback = saved) {
         if (fb.dict[url[2]].auth < 2) {
             fb.dict[url[2]][!ss.edit] = fb.dict[url[2]].auth ? '' : d;
         }
-        updateDoc(fb.html, fb.dict);
+        updateDoc(fb.html, fb.dict).then(() => { cb(autosave); })
     }
-    if (!autosave) {
-        loadImgList().then(setData(de(fb.dict[url[2]][ss.edit])))
-        section.classList.remove('e-s');
-        article.classList.remove('e-a');
-        if (ss.prp) {
-            fval(u.prp, false);
-        }
-    }
-    callback();
 }
 
-function del(callback = setData) {
+function del(cb = setData) {
     if (confirm('삭제하시겠습니까?')) {
         delete fb.dict[url[2]];
         var new_dict = {}
@@ -399,7 +400,7 @@ function del(callback = setData) {
             deleteDoc(fb.html);
             fb.dict = undefined;
         }
-        callback(getData(ss.log));
+        cb(getData(ss.log));
     }
 }
 
