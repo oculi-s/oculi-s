@@ -39,7 +39,7 @@ u.trv = 'https://s3.tradingview.com/tv.js';
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
-head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
+head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.png"/>`
 
 var mchangeWidth = 0;
 
