@@ -1,4 +1,4 @@
-const fbc = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
+const fbc = { apiKey: "AIzaSyDZouQJ7YKTZUE6F3LAXPnt_p_ayFGQnF8", authDomain: "sample-65976.firebaseapp.com", projectId: "sample-65976", storageBucket: "sample-65976.appspot.com", messagingSenderId: "258901722942", appId: "1:258901722942:web:91a5be6c8c5cb1b483ce6f", measurementId: "G-GVEQ68YWY4" };
 
 import { initializeApp } from "https://jspm.dev/@firebase/app";
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from "https://jspm.dev/@firebase/firestore";
@@ -39,7 +39,7 @@ u.trv = 'https://s3.tradingview.com/tv.js';
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
-head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
+head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.png"/>`
 
 var mchangeWidth = 0;
 
@@ -133,7 +133,7 @@ var url = '';
 
 function unload() {
     $('load').style.opacity = 0;
-    setTimeout(() => { $('load').style.display = 'none'; }, 500);
+    setTimeout(() => { $('load').remove(); }, 500);
 }
 
 function fval(src, asy = true) {
