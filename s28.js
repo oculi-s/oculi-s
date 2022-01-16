@@ -353,8 +353,8 @@ function csvParse(s, d = ',') {
 function setChart() {
     fb.csv.forEach(async raw => {
         var e = $(`*[name="${raw.name}"]`);
-        var d = e.parentElement.clientWidth;
         if (e) {
+            var d = e.parentElement.clientWidth;
             e.id = raw.name;
             raw = await getDownloadURL(raw);
             raw = await fetch(raw);
