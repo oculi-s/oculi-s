@@ -19,7 +19,7 @@ const auth = getAuth();
 const ss = localStorage;
 const de = decodeURI;
 const en = encodeURI;
-const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '' };
+window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '', 'csv': '' };
 const iscode = en('</code>');
 const head = document.head;
 const body = document.body;
@@ -79,7 +79,7 @@ var url = '';
     ss.edit = true;
     if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
     fval(u.trv);
-    loadImgList();
+    loadStorage();
 
     fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
@@ -118,7 +118,6 @@ var url = '';
     head.innerHTML += de(fb.srce.prps[ss.prp]);
     unload();
 }).then(() => {
-    if (location.hash) { location.href = location.hash; }
     document.onkeydown = e => {
         if (e.ctrlKey && e.keyCode == 69) {
             e.preventDefault();
@@ -179,6 +178,8 @@ function setData(index) {
     setImage();
     setScript(script);
     setCode();
+    setChart();
+    if (location.hash) { location.href = location.hash; }
 }
 
 function setFold() {
@@ -262,13 +263,19 @@ function setImage() {
     }
 }
 
-function createImg(e) {
+function createFile(e) {
     var p = document.createElement('p');
     var btn = document.createElement('button');
     p.setAttribute('name', e.name);
     p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
     p.onclick = () => {
-        navigator.clipboard.writeText(`<${e.name.trim().includes('webm')?'video autoplay muted':'img'} name=${e.name.trim()}>`);
+        if (/.webm/.test(e.name)) {
+            navigator.clipboard.writeText(`<video autoplay muted name=${e.name.trim()}>`);
+        } else if (/.png|.jpg|.jpeg/.test(e.name)) {
+            navigator.clipboard.writeText(`<img name=${e.name.trim()}>`);
+        } else if (/.csv/.test(e.name)) {
+            navigator.clipboard.writeText(`<chart type=line title=${e.name.split('.')[0]}></chart>`);
+        }
         p.style.color = "#aaa";
     };
     p.innerText = e.name;
@@ -276,33 +283,118 @@ function createImg(e) {
         if (confirm('삭제하시겠습니까?')) {
             deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(() => { p.remove() });
         }
-        fb.img = fb.img.filter(img => { img.name != e.name });
+        if (/.csv/.test(e.name)) {
+            fb.csv = fb.csv.filter(csv => { csv.name != e.name });
+        } else {
+            fb.img = fb.img.filter(img => { img.name != e.name });
+        }
     }
     btn.classList.add('far', 'fa-trash-alt');
     p.append(btn);
     return p;
 }
 
-async function loadImgList() {
-    fb.img = await listAll(ref(st, url.join('/')));
-    if (fb.img) { fb.img = fb.img.items; }
-}
-
-function setImageEdit() {
-    if ($('#img')) {
-        $('#img>div').innerHTML = '';
-        fb.img.forEach(e => { $('#img>div').append(createImg(e)) })
+async function loadStorage() {
+    var strg = await listAll(ref(st, url.join('/')));
+    if (strg) {
+        fb.img = strg.items.filter(e => /.png|.webm|.jpg|.jpeg/.test(e.name));
+        fb.csv = strg.items.filter(e => /.csv/.test(e.name));
     }
 }
 
-function uploadImg() {
+function setFileEdit() {
+    if ($('#img')) {
+        $('#img>div').innerHTML = '';
+        fb.img.forEach(e => { $('#img>div').append(createFile(e)) })
+        fb.csv.forEach(e => { $('#img>div').append(createFile(e)) })
+    }
+}
+
+function uploadFile() {
     $('article input').files.forEach(e => {
-        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((img) => {
-            $('#img>div').prepend(createImg(e));
-            fb.img[fb.img.length] = img.metadata.ref;
+        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
+            $('#img>div').prepend(createFile(e));
+            if (/.csv/.test(e.name)) {
+                fb.csv[fb.csv.length] = file.metadata.ref;
+            } else {
+                fb.img[fb.img.length] = file.metadata.ref;
+            }
         });
     });
     $('article input').value = '';
+}
+
+function csvParse(s, d = ',') {
+    var p = new RegExp((
+            "(\\" + d + "|\\r?\\n|\\r|^)" +
+            "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+            "([^\"\\" + d + "\\r\\n]*))"
+        ),
+        "gi"
+    );
+    var arr = [
+        []
+    ];
+    var tarr = null;
+    while (tarr = p.exec(s)) {
+        var sd = tarr[1];
+        var v;
+        if (sd.length && sd !== d) { arr.push([]); }
+        if (tarr[2]) {
+            v = tarr[2].replace(new RegExp("\"\"", "g"), "\"");
+        } else {
+            v = tarr[3];
+        }
+        arr[arr.length - 1].push(v);
+    }
+    return arr;
+}
+
+function setChart() {
+    fb.csv.forEach(async raw => {
+        var e = $(`*[name="${raw.name}"]`);
+        var d = e.parentElement.clientWidth;
+        if (e) {
+            e.id = raw.name;
+            raw = await getDownloadURL(raw);
+            raw = await fetch(raw);
+            raw = await raw.text();
+            if (e.tagName == 'TBL') {
+                var arr = csvParse(raw);
+                var t = document.createElement('table');
+                var m = arr[0].length;
+                for (var i = 0; i < arr.length; i++) {
+                    var tr = document.createElement('tr');
+                    for (var j = 0; j < m; j++) {
+                        tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
+                    }
+                    t.append(tr);
+                }
+                e.append(t);
+            } else {
+                Highcharts.chart(e.id, {
+                    chart: {
+                        type: e.type,
+                        width: 400 < d ? 400 : d
+                    },
+                    title: { text: e.title },
+                    data: { csv: raw },
+                    legend: {
+                        enabled: false,
+                        layout: 'vertical',
+                        align: 'right'
+                    },
+                    plotOptions: {
+                        series: {
+                            stacking: e.stack == '1' ? 'normal' : '',
+                            dataLabels: { enabled: true }
+                        },
+                        column: { stacking: 'normal', dataLabels: { enabled: true } },
+                    }
+                });
+            }
+        }
+    })
 }
 
 function insert_text(s) {
@@ -328,13 +420,13 @@ function listener() {
 
 function edit() {
     $$('input[name="type"]').forEach(e => { e.onclick = () => { ss.edit = e.value, $('edit').innerText = getData(e.value); } });
-    article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>${de(fb.srce.img.true)}`;
+    article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>${de(fb.srce.file.true)}`;
     $('edit').innerText = getData(ss.edit);
     section.classList.add('e-s');
     article.classList.add('e-a');
     var int = setInterval(save, 60 * 1000, true);
     $('edit').focus();
-    setImageEdit();
+    setFileEdit();
     $('edit').onkeydown = e => {
         var edit = $('edit');
         if (e.ctrlKey && e.keyCode == 83) {
@@ -361,9 +453,9 @@ function edit() {
 
 function saved(autosave) {
     if (!autosave) {
-        setData(de(fb.dict[url[2]][ss.edit]));
         section.classList.remove('e-s');
         article.classList.remove('e-a');
+        setData(de(fb.dict[url[2]][ss.edit]));
         if (ss.prp) {
             fval(u.prp, false);
         }
@@ -372,12 +464,12 @@ function saved(autosave) {
     setTimeout(() => { $('es>div>span').className = '' }, 1000);
 }
 
-function save(autosave = false, cb = saved) {
+function save(autosave = false) {
     var d = en($('edit').innerText);
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
-        setDoc(fb.html, fb.dict).then(() => { cb(autosave); })
+        setDoc(fb.html, fb.dict).then(() => { saved(autosave); })
     } else {
         if (!fb.dict[url[2]]) {
             fb.dict[url[2]] = { auth: 1 };
@@ -386,21 +478,20 @@ function save(autosave = false, cb = saved) {
         if (fb.dict[url[2]].auth < 2) {
             fb.dict[url[2]][!ss.edit] = fb.dict[url[2]].auth ? '' : d;
         }
-        updateDoc(fb.html, fb.dict).then(() => { cb(autosave); })
+        updateDoc(fb.html, fb.dict).then(() => { saved(autosave); })
     }
 }
 
-function del(cb = setData) {
+function del() {
     if (confirm('삭제하시겠습니까?')) {
         delete fb.dict[url[2]];
         var new_dict = {}
         new_dict[url[2]] = deleteField();
-        updateDoc(fb.html, new_dict);
+        updateDoc(fb.html, new_dict).then(() => { setData(getData(ss.log)); });
         if (!Object.keys(fb.dict).length) {
             deleteDoc(fb.html);
             fb.dict = undefined;
         }
-        cb(getData(ss.log));
     }
 }
 
@@ -431,34 +522,12 @@ function signout() {
     });
 }
 
-function makeChart(id, raw) {
-    var e = document.getElementById(id);
-    return Highcharts.chart(id, {
-        chart: { type: e.dataset.type },
-        title: { text: e.dataset.title },
-        data: { csv: raw },
-        legend: {
-            enabled: false,
-            layout: 'vertical',
-            align: 'right'
-        },
-        plotOptions: {
-            series: {
-                stacking: e.dataset.stack == '1' ? 'normal' : '',
-                dataLabels: { enabled: true }
-            },
-            column: { stacking: 'normal', dataLabels: { enabled: true } },
-        }
-    })
-}
-
 window.save = save;
 window.edit = edit;
 window.del = del;
 window.signin = signin;
 window.signout = signout;
-window.makeChart = makeChart;
 window.collection = collection;
 window.getDocs = getDocs;
 window.getDoc = getDoc;
-window.uploadImg = uploadImg;
+window.uploadFile = uploadFile;
