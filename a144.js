@@ -326,16 +326,14 @@ function uploadFile() {
 
 function csvParse(s, d = ',') {
     var p = new RegExp((
-            "(\\" + d + "|\\r?\\n|\\r|^)" +
-            "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
-            "([^\"\\" + d + "\\r\\n]*))"
-        ),
-        "gi"
-    );
+        "(\\" + d + "|\\r?\\n|\\r|^)" +
+        "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+        "([^\"\\" + d + "\\r\\n]*))"
+    ), "gi");
     var arr = [
         []
     ];
-    var tarr = null;
+    var tarr;
     while (tarr = p.exec(s)) {
         var sd = tarr[1];
         var v;
@@ -351,50 +349,52 @@ function csvParse(s, d = ',') {
 }
 
 function setChart() {
-    fb.csv.forEach(async raw => {
-        var e = $(`*[name="${raw.name}"]`);
-        if (e) {
-            var d = e.parentElement.clientWidth;
-            e.id = raw.name;
-            raw = await getDownloadURL(raw);
-            raw = await fetch(raw);
-            raw = await raw.text();
-            if (e.tagName == 'TBL') {
-                var arr = csvParse(raw);
-                var t = document.createElement('table');
-                var m = arr[0].length;
-                for (var i = 0; i < arr.length; i++) {
-                    var tr = document.createElement('tr');
-                    for (var j = 0; j < m; j++) {
-                        tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
+    if (fb.csv.length) {
+        fb.csv.forEach(async raw => {
+            var e = $(`*[name="${raw.name}"]`);
+            if (e) {
+                var d = e.parentElement.clientWidth;
+                e.id = raw.name;
+                raw = await getDownloadURL(raw);
+                raw = await fetch(raw);
+                raw = await raw.text();
+                if (e.tagName == 'TBL') {
+                    var arr = csvParse(raw);
+                    var t = document.createElement('table');
+                    var m = arr[0].length;
+                    for (var i = 0; i < arr.length; i++) {
+                        var tr = document.createElement('tr');
+                        for (var j = 0; j < m; j++) {
+                            tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
+                        }
+                        t.append(tr);
                     }
-                    t.append(tr);
-                }
-                e.append(t);
-            } else {
-                Highcharts.chart(e.id, {
-                    chart: {
-                        type: e.type,
-                        width: 400 < d ? 400 : d
-                    },
-                    title: { text: e.title },
-                    data: { csv: raw },
-                    legend: {
-                        enabled: false,
-                        layout: 'vertical',
-                        align: 'right'
-                    },
-                    plotOptions: {
-                        series: {
-                            stacking: e.stack == '1' ? 'normal' : '',
-                            dataLabels: { enabled: true }
+                    e.append(t);
+                } else {
+                    Highcharts.chart(e.id, {
+                        chart: {
+                            type: e.type,
+                            width: 400 < d ? 400 : d
                         },
-                        column: { stacking: 'normal', dataLabels: { enabled: true } },
-                    }
-                });
+                        title: { text: e.title },
+                        data: { csv: raw },
+                        legend: {
+                            enabled: false,
+                            layout: 'vertical',
+                            align: 'right'
+                        },
+                        plotOptions: {
+                            series: {
+                                stacking: e.stack == '1' ? 'normal' : '',
+                                dataLabels: { enabled: true }
+                            },
+                            column: { stacking: 'normal', dataLabels: { enabled: true } },
+                        }
+                    });
+                }
             }
-        }
-    })
+        })
+    }
 }
 
 function insert_text(s) {
