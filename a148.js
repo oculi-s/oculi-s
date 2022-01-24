@@ -298,8 +298,8 @@ function createFile(e) {
 async function loadStorage() {
     var strg = await listAll(ref(st, url.join('/')));
     if (strg) {
-        fb.img = strg.items.filter(e => /.png|.webm|.mp4|.jpg|.jpeg/.test(e.name));
-        fb.csv = strg.items.filter(e => /.csv/.test(e.name));
+        fb.img = strg.items.filter(e => /.png|.webm|.mp4|.mov|.jpg|.jpeg/.test(e.name.toLowerCase()));
+        fb.csv = strg.items.filter(e => /.csv/.test(e.name.toLowerCase()));
     }
 }
 
