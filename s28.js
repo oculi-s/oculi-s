@@ -25,6 +25,7 @@ const head = document.head;
 const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
 const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
+const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
 body.innerHTML = `<load style="${css_load}"><img src='/main.gif' style="${css_gif}"></load>`;
 body.innerHTML += `<nav></nav><section><article></article></section><aside></aside>`;
 body.onresize = wresize;
@@ -297,7 +298,7 @@ function createFile(e) {
 async function loadStorage() {
     var strg = await listAll(ref(st, url.join('/')));
     if (strg) {
-        fb.img = strg.items.filter(e => /.png|.webm|.jpg|.jpeg/.test(e.name));
+        fb.img = strg.items.filter(e => /.png|.webm|.mp4|.jpg|.jpeg/.test(e.name));
         fb.csv = strg.items.filter(e => /.csv/.test(e.name));
     }
 }
@@ -326,16 +327,14 @@ function uploadFile() {
 
 function csvParse(s, d = ',') {
     var p = new RegExp((
-            "(\\" + d + "|\\r?\\n|\\r|^)" +
-            "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
-            "([^\"\\" + d + "\\r\\n]*))"
-        ),
-        "gi"
-    );
+        "(\\" + d + "|\\r?\\n|\\r|^)" +
+        "(?:\"([^\"]*(?:\"\"[^\"]*)*)\"|" +
+        "([^\"\\" + d + "\\r\\n]*))"
+    ), "gi");
     var arr = [
         []
     ];
-    var tarr = null;
+    var tarr;
     while (tarr = p.exec(s)) {
         var sd = tarr[1];
         var v;
@@ -351,50 +350,58 @@ function csvParse(s, d = ',') {
 }
 
 function setChart() {
-    fb.csv.forEach(async raw => {
-        var e = $(`*[name="${raw.name}"]`);
-        if (e) {
-            var d = e.parentElement.clientWidth;
-            e.id = raw.name;
-            raw = await getDownloadURL(raw);
-            raw = await fetch(raw);
-            raw = await raw.text();
-            if (e.tagName == 'TBL') {
-                var arr = csvParse(raw);
-                var t = document.createElement('table');
-                var m = arr[0].length;
-                for (var i = 0; i < arr.length; i++) {
-                    var tr = document.createElement('tr');
-                    for (var j = 0; j < m; j++) {
-                        tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
+    if (fb.csv.length) {
+        fb.csv.forEach(async raw => {
+            var e = $(`*[name="${raw.name}"]`);
+            if (e) {
+                var d = e.parentElement.clientWidth;
+                e.id = raw.name;
+                raw = await getDownloadURL(raw);
+                raw = await fetch(raw);
+                raw = await raw.text();
+                if (e.tagName == 'TBL') {
+                    var arr = csvParse(raw);
+                    var t = document.createElement('table');
+                    var m = arr[0].length;
+                    for (var i = 0; i < arr.length; i++) {
+                        var tr = document.createElement('tr');
+                        for (var j = 0; j < m; j++) {
+                            tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
+                        }
+                        t.append(tr);
                     }
-                    t.append(tr);
-                }
-                e.append(t);
-            } else {
-                Highcharts.chart(e.id, {
-                    chart: {
-                        type: e.type,
-                        width: 400 < d ? 400 : d
-                    },
-                    title: { text: e.title },
-                    data: { csv: raw },
-                    legend: {
-                        enabled: false,
-                        layout: 'vertical',
-                        align: 'right'
-                    },
-                    plotOptions: {
-                        series: {
-                            stacking: e.stack == '1' ? 'normal' : '',
-                            dataLabels: { enabled: true }
+                    e.append(t);
+                } else {
+                    Highcharts.chart(e.id, {
+                        chart: {
+                            type: e.getAttribute('type'),
+                            width: 400 < d ? 400 : d
                         },
-                        column: { stacking: 'normal', dataLabels: { enabled: true } },
-                    }
-                });
+                        title: { text: e.getAttribute('title') },
+                        data: { csv: raw },
+                        legend: {
+                            enabled: false,
+                            layout: 'vertical',
+                            align: 'right'
+                        },
+                        plotOptions: {
+                            series: {
+                                stacking: e.getAttribute('stack') == '1' ? 'normal' : '',
+                                dataLabels: { enabled: true }
+                            },
+                            column: { stacking: 'normal', dataLabels: { enabled: true } },
+                        }
+                    });
+                }
             }
-        }
-    })
+        })
+    }
+    if ($('trv')) {
+        $$('trv').forEach(e => {
+            e.id = e.getAttribute('name');
+            new TradingView.widget(trv_opt(e.id));
+        });
+    }
 }
 
 function insert_text(s) {
