@@ -374,10 +374,10 @@ function setChart() {
                 } else {
                     Highcharts.chart(e.id, {
                         chart: {
-                            type: e.type,
+                            type: e.getAttribute('type'),
                             width: 400 < d ? 400 : d
                         },
-                        title: { text: e.title },
+                        title: { text: e.getAttribute('title') },
                         data: { csv: raw },
                         legend: {
                             enabled: false,
@@ -386,7 +386,7 @@ function setChart() {
                         },
                         plotOptions: {
                             series: {
-                                stacking: e.stack == '1' ? 'normal' : '',
+                                stacking: e.getAttribute('stack') == '1' ? 'normal' : '',
                                 dataLabels: { enabled: true }
                             },
                             column: { stacking: 'normal', dataLabels: { enabled: true } },
