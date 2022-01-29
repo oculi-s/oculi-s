@@ -256,9 +256,11 @@ function loadStorage() {
             fb.img = strg.items.filter(e => is.vid.test(e.name) || is.img.test(e.name));
             fb.csv = strg.items.filter(e => is.csv.test(e.name));
         }
-    }).catch(e => {
-        $$('img, video').forEach(e => { e.classList.add('exceed') });
-    })
+    }).catch(() => {
+        var exc = document.createElement('exc');
+        exc.className = 'far fa-image r';
+        section.prepend(exc);
+    });
 }
 
 function setImage() {
