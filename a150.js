@@ -16,11 +16,12 @@ HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
 FileList.prototype.forEach = Array.prototype.forEach;
 
 const auth = getAuth();
-const ss = localStorage;
+const ls = localStorage;
+const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
-window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': '', 'csv': '' };
-const iscode = en('</code>');
+window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': [], 'csv': [] };
+const is = { 'code': en('</code>'), 'csv': RegExp('/.csv/'), 'img': RegExp('/.png|.jpg|.jpeg/'), 'vid': RegExp('/.mp4|.mov/') };
 const head = document.head;
 const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
@@ -77,23 +78,23 @@ var url = '';
     body.classList.add(url[0]);
     console.log(url);
 
-    ss.edit = true;
-    if (!('uid' in ss)) { ss.log = false, ss.uid = null; }
+    ls.edit = true;
+    if (!('uid' in ls)) { ls.log = false, ls.uid = null; }
     fval(u.trv);
     loadStorage();
 
     fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
-    fb.user = await getDoc(doc(db, 'user', ss.uid));
+    fb.user = await getDoc(doc(db, 'user', ls.uid));
     fb.user = fb.user.data();
     head.innerHTML += de(fb.srce.css.true);
     wresize();
 
     if (fb.user) {
-        nav.innerHTML = de(fb.srce.nav[ss.log]);
-        aside.innerHTML = de(fb.srce.aside[ss.log]);
-        if (ss.uid != 'null' && ss.uid != 'undefined') {
-            $('aside>span').innerHTML = auth.currentUser.email;
+        nav.innerHTML = de(fb.srce.nav[ls.log]);
+        aside.innerHTML = de(fb.srce.aside[ls.log]);
+        if (ls.uid != 'null' && ls.uid != 'undefined') {
+            $('aside>p').innerHTML = auth.currentUser.email;
         }
     } else {
         body.innerHTML = '';
@@ -114,9 +115,9 @@ var url = '';
     section.innerHTML += de(fb.srce.es[fb.user.auth]);
 
     article = $('article');
-    setData(getData(ss.log));
-    if (ss.prp) { fval(u.prp); }
-    head.innerHTML += de(fb.srce.prps[ss.prp]);
+    setData(getData(ls.log));
+    if (ls.prp) { fval(u.prp); }
+    head.innerHTML += de(fb.srce.prps[ls.prp]);
     unload();
 }).then(() => {
     document.onkeydown = e => {
@@ -146,7 +147,7 @@ function getData(x) {
     if (fb.dict) {
         if (url[2] in fb.dict) {
             var r = fb.dict[url[2]][x];
-            ss.prp = r.includes(iscode);
+            ls.prp = r.includes(is.code);
             return de(r);
         } else {
             return de(fb.srce.create.true);
@@ -193,7 +194,7 @@ function setFold() {
 }
 
 function setCode() {
-    if (ss.prp && $('code')) {
+    if (ls.prp && $('code')) {
         var but = document.createElement('button');
         but.innerText = 'Compile';
         but.onclick = () => {
@@ -248,20 +249,31 @@ function setIndex() {
     }
 }
 
+function loadStorage() {
+    listAll(ref(st, url.join('/'))).then(strg => {
+        if (strg) {
+            strg.items.forEach(async e => { e.src = await getDownloadURL(e) });
+            fb.img = strg.items.filter(e => is.vid.test(e.name) || is.img.test(e.name));
+            fb.csv = strg.items.filter(e => is.csv.test(e.name));
+        }
+    }).catch(e => {
+        $$('img, video').forEach(e => { e.classList.add('exceed') });
+    })
+}
+
 function setImage() {
-    if (fb.img.length) {
-        fb.img.forEach(async e => {
-            var el = $(`*[name="${e.name}"]`);
-            if (el) {
-                var imgLink = await getDownloadURL(e);
-                el.src = imgLink;
-                el.onclick = () => {
-                    el.classList.toggle("show");
-                    body.classList.toggle("blur");
-                };
-            }
-        })
-    }
+    fb.img.forEach(async e => {
+        var el = $(`*[name="${e.name}"]`);
+        if (el) {
+            if (!e.src)
+                e.src = await getDownloadURL(e);
+            el.src = e.src;
+            el.onclick = () => {
+                el.classList.toggle("show");
+                body.classList.toggle("blur");
+            };
+        }
+    })
 }
 
 function createFile(e) {
@@ -270,11 +282,11 @@ function createFile(e) {
     p.setAttribute('name', e.name);
     p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
     p.onclick = () => {
-        if (/.webm/.test(e.name)) {
+        if (is.vid.test(e.name)) {
             navigator.clipboard.writeText(`<video autoplay muted name=${e.name.trim()}>`);
-        } else if (/.png|.jpg|.jpeg/.test(e.name)) {
+        } else if (is.img.test(e.name)) {
             navigator.clipboard.writeText(`<img name=${e.name.trim()}>`);
-        } else if (/.csv/.test(e.name)) {
+        } else if (is.csv.test(e.name)) {
             navigator.clipboard.writeText(`<chart type=line title=${e.name.split('.')[0]}></chart>`);
         }
         p.style.color = "#aaa";
@@ -284,7 +296,7 @@ function createFile(e) {
         if (confirm('삭제하시겠습니까?')) {
             deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(() => { p.remove() });
         }
-        if (/.csv/.test(e.name)) {
+        if (is.csv.test(e.name)) {
             fb.csv = fb.csv.filter(csv => { csv.name != e.name });
         } else {
             fb.img = fb.img.filter(img => { img.name != e.name });
@@ -293,14 +305,6 @@ function createFile(e) {
     btn.classList.add('far', 'fa-trash-alt');
     p.append(btn);
     return p;
-}
-
-async function loadStorage() {
-    var strg = await listAll(ref(st, url.join('/')));
-    if (strg) {
-        fb.img = strg.items.filter(e => /.png|.webm|.mp4|.mov|.jpg|.jpeg/.test(e.name.toLowerCase()));
-        fb.csv = strg.items.filter(e => /.csv/.test(e.name.toLowerCase()));
-    }
 }
 
 function setFileEdit() {
@@ -315,7 +319,7 @@ function uploadFile() {
     $('article input').files.forEach(e => {
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
             $('#img>div').prepend(createFile(e));
-            if (/.csv/.test(e.name)) {
+            if (is.csv.test(e.name)) {
                 fb.csv[fb.csv.length] = file.metadata.ref;
             } else {
                 fb.img[fb.img.length] = file.metadata.ref;
@@ -350,58 +354,54 @@ function csvParse(s, d = ',') {
 }
 
 function setChart() {
-    if (fb.csv.length) {
-        fb.csv.forEach(async raw => {
-            var e = $(`*[name="${raw.name}"]`);
-            if (e) {
-                var d = e.parentElement.clientWidth;
-                e.id = raw.name;
-                raw = await getDownloadURL(raw);
-                raw = await fetch(raw);
-                raw = await raw.text();
-                if (e.tagName == 'TBL') {
-                    var arr = csvParse(raw);
-                    var t = document.createElement('table');
-                    var m = arr[0].length;
-                    for (var i = 0; i < arr.length; i++) {
-                        var tr = document.createElement('tr');
-                        for (var j = 0; j < m; j++) {
-                            tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
-                        }
-                        t.append(tr);
+    fb.csv.forEach(async raw => {
+        var e = $(`*[name="${raw.name}"]`);
+        if (e) {
+            var d = e.parentElement.clientWidth;
+            e.id = raw.name;
+            raw = await getDownloadURL(raw);
+            raw = await fetch(raw);
+            raw = await raw.text();
+            if (e.tagName == 'TBL') {
+                var arr = csvParse(raw);
+                var t = document.createElement('table');
+                var m = arr[0].length;
+                for (var i = 0; i < arr.length; i++) {
+                    var tr = document.createElement('tr');
+                    for (var j = 0; j < m; j++) {
+                        tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
                     }
-                    e.append(t);
-                } else {
-                    Highcharts.chart(e.id, {
-                        chart: {
-                            type: e.getAttribute('type'),
-                            width: 400 < d ? 400 : d
-                        },
-                        title: { text: e.getAttribute('title') },
-                        data: { csv: raw },
-                        legend: {
-                            enabled: false,
-                            layout: 'vertical',
-                            align: 'right'
-                        },
-                        plotOptions: {
-                            series: {
-                                stacking: e.getAttribute('stack') == '1' ? 'normal' : '',
-                                dataLabels: { enabled: true }
-                            },
-                            column: { stacking: 'normal', dataLabels: { enabled: true } },
-                        }
-                    });
+                    t.append(tr);
                 }
+                e.append(t);
+            } else {
+                Highcharts.chart(e.id, {
+                    chart: {
+                        type: e.type,
+                        width: 400 < d ? 400 : d
+                    },
+                    title: { text: e.title },
+                    data: { csv: raw },
+                    legend: {
+                        enabled: false,
+                        layout: 'vertical',
+                        align: 'right'
+                    },
+                    plotOptions: {
+                        series: {
+                            stacking: e.stack == '1' ? 'normal' : '',
+                            dataLabels: { enabled: true }
+                        },
+                        column: { stacking: 'normal', dataLabels: { enabled: true } },
+                    }
+                });
             }
-        })
-    }
-    if ($('trv')) {
-        $$('trv').forEach(e => {
-            e.id = e.getAttribute('name');
-            new TradingView.widget(trv_opt(e.id));
-        });
-    }
+        }
+    })
+    $$('trv').forEach(e => {
+        e.id = e.getAttribute('name');
+        new TradingView.widget(trv_opt(e.id));
+    });
 }
 
 function insert_text(s) {
@@ -426,9 +426,9 @@ function listener() {
 }
 
 function edit() {
-    $$('input[name="type"]').forEach(e => { e.onclick = () => { ss.edit = e.value, $('edit').innerText = getData(e.value); } });
+    $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>${de(fb.srce.file.true)}`;
-    $('edit').innerText = getData(ss.edit);
+    $('edit').innerText = getData(ls.edit);
     section.classList.add('e-s');
     article.classList.add('e-a');
     var int = setInterval(save, 60 * 1000, true);
@@ -462,8 +462,8 @@ function saved(autosave) {
     if (!autosave) {
         section.classList.remove('e-s');
         article.classList.remove('e-a');
-        setData(de(fb.dict[url[2]][ss.edit]));
-        if (ss.prp) {
+        setData(de(fb.dict[url[2]][ls.edit]));
+        if (ls.prp) {
             fval(u.prp, false);
         }
     }
@@ -481,9 +481,9 @@ function save(autosave = false) {
         if (!fb.dict[url[2]]) {
             fb.dict[url[2]] = { auth: 1 };
         }
-        fb.dict[url[2]][ss.edit] = d;
-        if (fb.dict[url[2]].auth < 2) {
-            fb.dict[url[2]][!ss.edit] = fb.dict[url[2]].auth ? '' : d;
+        fb.dict[url[2]][ls.edit] = d;
+        if (fb.dict[url[2]].auth == 1) {
+            fb.dict[url[2]][!ls.edit] = '';
         }
         updateDoc(fb.html, fb.dict).then(() => { saved(autosave); })
     }
@@ -494,7 +494,7 @@ function del() {
         delete fb.dict[url[2]];
         var new_dict = {}
         new_dict[url[2]] = deleteField();
-        updateDoc(fb.html, new_dict).then(() => { setData(getData(ss.log)); });
+        updateDoc(fb.html, new_dict).then(() => { setData(getData(ls.log)); });
         if (!Object.keys(fb.dict).length) {
             deleteDoc(fb.html);
             fb.dict = undefined;
@@ -505,8 +505,8 @@ function del() {
 function signin() {
     signInWithEmailAndPassword(auth, $('#id').value, $('#pw').value)
         .then(u => {
-            ss.uid = u.user.uid;
-            ss.log = true;
+            ls.uid = u.user.uid;
+            ls.log = true;
             location.reload();
         }).catch((e) => {
             if (e.code.split('/')[1] == 'invalid-email') {
@@ -523,7 +523,7 @@ function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
         location.href = '/' + (fbc.authDomain.includes('sample') ? 'sample' : '');
-        ss.clear();
+        ls.clear();
     }).catch((e) => {
         alert('로그인 정보가 없습니다.');
     });
