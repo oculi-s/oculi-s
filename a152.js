@@ -21,7 +21,7 @@ const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
 window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': [], 'csv': [] };
-const is = { 'code': en('</code>'), 'csv': RegExp('/.csv/'), 'img': RegExp('/.png|.jpg|.jpeg/'), 'vid': RegExp('/.mp4|.mov/') };
+const is = { 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
@@ -240,11 +240,13 @@ function setIndex() {
     H = $$('h2, h3, h4, h5');
     if ($('index')) {
         var temp = '';
-        indexing('', 1, 0);
-        H.forEach(e => {
-            temp += `<${e.tagName}><a href="#${e.id}" target=_self>${e.tid}</a> ${e.innerText}</${e.tagName}>`
-            e.innerHTML = `<a href="#">${e.tid}</a> ` + e.innerHTML;
-        });
+        if (H.length) {
+            indexing('', 1, 0);
+            H.forEach(e => {
+                temp += `<${e.tagName}><a href="#${e.id}" target=_self>${e.tid}</a> ${e.innerText}</${e.tagName}>`
+                e.innerHTML = `<a href="#">${e.tid}</a> ` + e.innerHTML;
+            });
+        }
         $('index').innerHTML = temp;
     }
 }
@@ -256,26 +258,47 @@ function loadStorage() {
             fb.img = strg.items.filter(e => is.vid.test(e.name) || is.img.test(e.name));
             fb.csv = strg.items.filter(e => is.csv.test(e.name));
         }
-    }).catch(() => {
+    }).catch(e => {
         var exc = document.createElement('exc');
         exc.className = 'far fa-image r';
         section.prepend(exc);
+        throw e;
     });
 }
 
 function setImage() {
-    fb.img.forEach(async e => {
-        var el = $(`*[name="${e.name}"]`);
-        if (el) {
-            if (!e.src)
-                e.src = await getDownloadURL(e);
-            el.src = e.src;
+    if (url[0] == 'life') {
+        $$('article>div>h4').forEach(h4 => {
+            var el = h4.nextElementSibling;
+            h4.onclick = async() => {
+                if (!el.src) {
+                    var il = fb.img.filter(e => e.name == el.name);
+                    if (il.length) {
+                        el.src = await getDownloadURL(il[0])
+                    }
+                }
+                el.classList.toggle('view');
+            }
             el.onclick = () => {
                 el.classList.toggle("show");
                 body.classList.toggle("blur");
             };
-        }
-    })
+        });
+    } else {
+        fb.img.forEach(async e => {
+            var el = $(`*[name="${e.name}"]`);
+            if (el) {
+                if (!e.src) {
+                    e.src = await getDownloadURL(e);
+                    el.src = e.src;
+                }
+                el.onclick = () => {
+                    el.classList.toggle("show");
+                    body.classList.toggle("blur");
+                };
+            }
+        })
+    }
 }
 
 function createFile(e) {
@@ -299,9 +322,9 @@ function createFile(e) {
             deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(() => { p.remove() });
         }
         if (is.csv.test(e.name)) {
-            fb.csv = fb.csv.filter(csv => { csv.name != e.name });
+            fb.csv = fb.csv.filter(csv => csv.name != e.name);
         } else {
-            fb.img = fb.img.filter(img => { img.name != e.name });
+            fb.img = fb.img.filter(img => img.name != e.name);
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
