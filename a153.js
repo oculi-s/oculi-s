@@ -254,7 +254,9 @@ function setIndex() {
 function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
-            strg.items.forEach(async e => { e.src = await getDownloadURL(e) });
+            if (url[0] != 'life') {
+                strg.items.forEach(async e => { e.src = await getDownloadURL(e) });
+            }
             fb.img = strg.items.filter(e => is.vid.test(e.name) || is.img.test(e.name));
             fb.csv = strg.items.filter(e => is.csv.test(e.name));
         }
@@ -290,8 +292,8 @@ function setImage() {
             if (el) {
                 if (!e.src) {
                     e.src = await getDownloadURL(e);
-                    el.src = e.src;
                 }
+                el.src = e.src;
                 el.onclick = () => {
                     el.classList.toggle("show");
                     body.classList.toggle("blur");
@@ -308,9 +310,9 @@ function createFile(e) {
     p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
     p.onclick = () => {
         if (is.vid.test(e.name)) {
-            navigator.clipboard.writeText(`<video autoplay muted name=${e.name.trim()}>`);
+            navigator.clipboard.writeText(`<video autoplay muted name="${e.name.trim()}">`);
         } else if (is.img.test(e.name)) {
-            navigator.clipboard.writeText(`<img name=${e.name.trim()}>`);
+            navigator.clipboard.writeText(`<img name="${e.name.trim()}">`);
         } else if (is.csv.test(e.name)) {
             navigator.clipboard.writeText(`<chart type=line title=${e.name.split('.')[0]}></chart>`);
         }
