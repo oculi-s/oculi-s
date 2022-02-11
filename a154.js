@@ -20,8 +20,8 @@ const ls = localStorage;
 const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
-window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': [], 'csv': [] };
-const is = { 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg'), 'vid': RegExp('.mp4|.mov') };
+const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': [], 'csv': [] };
+const is = { 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
@@ -43,7 +43,9 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
 head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
-var mchangeWidth = 0;
+if (!'mchangeWidth' in ss) {
+    ss.mchangeWidth = 0;
+}
 
 function wresize() {
     if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
@@ -52,20 +54,20 @@ function wresize() {
         nav.classList.add('m-n');
     } else if (!section.classList.contains('m-s')) {
         if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
+            if (!ss.mchangeWidth) {
+                ss.mchangeWidth = innerWidth;
+            }
             section.classList.add('m-s');
             aside.classList.add('m-a');
             nav.classList.add('m-n');
-            if (!mchangeWidth) {
-                mchangeWidth = window.innerWidth;
-            }
         }
-    } else if (window.innerWidth > mchangeWidth) {
+    } else if (innerWidth > ss.mchangeWidth) {
+        if (innerWidth < ss.mchangeWidth) {
+            ss.mchangeWidth = innerWidth;
+        }
         section.classList.remove('m-s');
         aside.classList.remove('m-a');
         nav.classList.remove('m-n');
-        if (mchangeWidth) {
-            mchangeWidth = window.innerWidth;
-        }
     }
 }
 
@@ -186,9 +188,14 @@ function setData(index) {
 
 function setFold() {
     if ($('h1')) {
-        $$(`article>${$('h1').dataset.fold}`).forEach((e) => {
+        var f = $('h1').dataset.fold;
+        var b = $('h1').dataset.blind;
+        $$(`article>*:not(index) ${f}, article>${f}`).forEach((e) => {
             e.onclick = () => { e.classList.toggle('fold') };
             e.classList.add('foldable');
+        })
+        $$(`article>*:not(index) ${b}, article>${b}`).forEach((e) => {
+            e.classList.add('blind');
         })
     }
 }
@@ -269,24 +276,33 @@ function loadStorage() {
 }
 
 function setImage() {
-    if (url[0] == 'life') {
-        $$('article>div>h4').forEach(h4 => {
-            var el = h4.nextElementSibling;
-            h4.onclick = async() => {
+    $$('img').forEach(e => {
+        e.onclick = () => {
+            e.classList.toggle("show");
+            body.classList.toggle("blur");
+        };
+    })
+    $$('blind, .blind').forEach(b => {
+        var el = b.nextElementSibling;
+        b.onclick = async() => {
+            if (!el.src) {
+                var il = fb.img.filter(e => e.name == el.name);
+                if (il.length) {
+                    el.src = await getDownloadURL(il[0]);
+                }
+            }
+            el.childNodes.forEach(async el => {
                 if (!el.src) {
                     var il = fb.img.filter(e => e.name == el.name);
                     if (il.length) {
-                        el.src = await getDownloadURL(il[0])
+                        el.src = await getDownloadURL(il[0]);
                     }
                 }
-                el.classList.toggle('view');
-            }
-            el.onclick = () => {
-                el.classList.toggle("show");
-                body.classList.toggle("blur");
-            };
-        });
-    } else {
+            });
+            b.classList.toggle('view');
+        }
+    });
+    if (url[0] != 'life') {
         fb.img.forEach(async e => {
             var el = $(`*[name="${e.name}"]`);
             if (el) {
@@ -294,12 +310,23 @@ function setImage() {
                     e.src = await getDownloadURL(e);
                 }
                 el.src = e.src;
-                el.onclick = () => {
-                    el.classList.toggle("show");
-                    body.classList.toggle("blur");
-                };
+                if (el.tagName.toLowerCase() == 'iframe') {
+                    el.setAttribute('scrolling', 'no')
+                    var wrap = document.createElement('div');
+                    var full = document.createElement('full');
+                    wrap.innerHTML = el.outerHTML;
+                    full.className = 'fas fa-expand';
+                    full.onclick = () => {
+                        wrap.firstChild.classList.toggle("show");
+                        body.classList.toggle("blur");
+                    }
+                    wrap.append(full);
+                    wrap.style.position = 'relative';
+                    wrap.style.width = 'fit-content';
+                    el.replaceWith(wrap);
+                }
             }
-        })
+        });
     }
 }
 
@@ -442,16 +469,6 @@ function insert_text(s) {
     sel.addRange(range);
 }
 
-function listener() {
-    var k = event.keyCode;
-    if (!(event.ctrlKey || event.altKey || event.metaKey)) {
-        if (k <= 90 && k >= 65) {
-            event.preventDefault();
-            insert_text(String.fromCharCode(k + (event.shiftKey ? 0 : 32)));
-        }
-    }
-}
-
 function edit() {
     $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>${de(fb.srce.file.true)}`;
@@ -467,17 +484,6 @@ function edit() {
             e.preventDefault();
             save();
             clearInterval(int);
-        } else if (e.keyCode == 18 && /Mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
-            e.preventDefault();
-            if (edit.dataset.eng == 'true') {
-                edit.removeEventListener('keydown', listener);
-                edit.setAttribute('data-eng', 'false');
-                $('ke').innerHTML = '한';
-            } else {
-                edit.addEventListener('keydown', listener);
-                edit.setAttribute('data-eng', 'true');
-                $('ke').innerHTML = '영';
-            }
         } else if (e.keyCode == 9) {
             e.preventDefault();
             insert_text('\u00a0\u00a0\u00a0\u00a0');
@@ -485,8 +491,8 @@ function edit() {
     }
 }
 
-function saved(autosave) {
-    if (!autosave) {
+function saved(as) {
+    if (!as) {
         section.classList.remove('e-s');
         article.classList.remove('e-a');
         setData(de(fb.dict[url[2]][ls.edit]));
@@ -498,12 +504,44 @@ function saved(autosave) {
     setTimeout(() => { $('es>div>span').className = '' }, 1000);
 }
 
-function save(autosave = false) {
+function clipbImg(as) {
+    if ($('edit img')) {
+        var farray = fb.img.concat(fb.csv);
+        $$('edit img').forEach(e => {
+            if (!e.name) {
+                var i;
+                for (i = 0; i <= farray.length; i++) {
+                    if (farray.filter(t => t.name == `img${i}.png`).length == 0) {
+                        e.setAttribute('name', `img${i}.png`);
+                        break;
+                    }
+                }
+                fetch(e.src)
+                    .then(r => r.blob())
+                    .then(r => {
+                        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), r)
+                            .then(async f => {
+                                f = f.metadata.ref;
+                                f.src = await getDownloadURL(f);
+                                fb.img[fb.img.length] = f;
+                                $(`*[name="${e.name}"]`).src = f.src;
+                            })
+                    })
+            };
+            if (!as) {
+                e.outerText = `<img name=${e.name}>`;
+            }
+        })
+    }
+}
+
+function save(as = false) {
+    clipbImg(as);
     var d = en($('edit').innerText);
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
-        setDoc(fb.html, fb.dict).then(() => { saved(autosave); })
+        setDoc(fb.html, fb.dict).then(() => { saved(as); })
     } else {
         if (!fb.dict[url[2]]) {
             fb.dict[url[2]] = { auth: 1 };
@@ -512,7 +550,7 @@ function save(autosave = false) {
         if (fb.dict[url[2]].auth == 1) {
             fb.dict[url[2]][!ls.edit] = '';
         }
-        updateDoc(fb.html, fb.dict).then(() => { saved(autosave); })
+        updateDoc(fb.html, fb.dict).then(() => { saved(as); })
     }
 }
 
