@@ -179,11 +179,28 @@ function setData(index) {
     article.innerHTML = e.innerHTML;
     setIndex();
     setFold();
+    setMenu();
     setImage();
     setScript(script);
     setCode();
     setChart();
     if (location.hash) { location.href = location.hash; }
+}
+
+function setMenu() {
+    if ($('from')) {
+        $$('from').forEach(async e => {
+            e.onclick = () => { alert(e) };
+            e.onclick = () => { e.classList.toggle('view'); }
+            e.innerHTML = `<a href=/from/${e.getAttribute('name')}/><b>${e.innerHTML}</b></a>`;
+            var d = await getDoc(doc(db, 'from', e.getAttribute('name')));
+            d = d.data();
+            var t = document.createElement('div');
+            t.classList.add('from');
+            t.innerHTML = de(d.index.true).split('</h1>')[1];
+            e.after(t);
+        })
+    }
 }
 
 function setFold() {
@@ -560,6 +577,8 @@ function del() {
         var new_dict = {}
         new_dict[url[2]] = deleteField();
         updateDoc(fb.html, new_dict).then(() => { setData(getData(ls.log)); });
+        section.classList.remove('e-s');
+        article.classList.remove('e-a');
         if (!Object.keys(fb.dict).length) {
             deleteDoc(fb.html);
             fb.dict = undefined;
