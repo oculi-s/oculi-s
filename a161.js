@@ -175,8 +175,8 @@ function setData(index) {
     e.innerHTML = index.replaceAll('\u00a0', ' ');
     var scrsrc = e.$$('script[src]');
     var script = e.$$('script:not([src])');
-    scrsrc.forEach(scr => e.remove(scr));
-    script.forEach(scr => e.remove(scr));
+    scrsrc.forEach(scr => { scr.remove() });
+    script.forEach(scr => { scr.remove() });
     article.innerHTML = e.innerHTML;
     setIndex();
     setFold();
@@ -206,7 +206,7 @@ function setMenu() {
             t.innerHTML = d;
             var h1 = t.$('h1');
             if (h1) {
-                t.remove(h1);
+                h1.remove();
                 h1 = h1.innerHTML;
             }
             e.innerHTML = `<a href=/from/${name}/><b>${h1 ? h1 : e.innerHTML}</b></a>`;
