@@ -20,7 +20,7 @@ const ls = localStorage;
 const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
-const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'img': [], 'csv': [] };
+const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': '', 'img': [], 'csv': [] };
 const is = { 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
@@ -73,7 +73,7 @@ function wresize() {
 
 var article = '';
 var url = '';
-(async() => {
+(async () => {
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
@@ -190,14 +190,20 @@ function setData(index) {
 function setMenu() {
     if ($('from')) {
         $$('from').forEach(async e => {
-            e.onclick = () => { alert(e) };
+            var name = e.getAttribute('name');
             e.onclick = () => { e.classList.toggle('view'); }
-            e.innerHTML = `<a href=/from/${e.getAttribute('name')}/><b>${e.innerHTML}</b></a>`;
-            var d = await getDoc(doc(db, 'from', e.getAttribute('name')));
-            d = d.data();
+            e.innerHTML = `<a href=/from/${name}/><b>${e.innerHTML}</b></a>`;
+            if (name in fb.from){
+                var d = fb.from[name];
+            }else{
+                var d = await getDoc(doc(db, 'from', name));
+                d = d.data();
+                d = de(d.index.true).split('</h1>')[1];
+                fb.from[name] = d;
+            }
             var t = document.createElement('div');
             t.classList.add('from');
-            t.innerHTML = de(d.index.true).split('</h1>')[1];
+            t.innerHTML = d;
             e.after(t);
         })
     }
@@ -301,7 +307,7 @@ function setImage() {
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async() => {
+        b.onclick = async () => {
             if (!el.src) {
                 var il = fb.img.filter(e => e.name == el.name);
                 if (il.length) {
