@@ -192,7 +192,6 @@ function setMenu() {
         $$('from').forEach(async e => {
             var name = e.getAttribute('name');
             e.onclick = () => { e.classList.toggle('view'); }
-            e.innerHTML = `<a href=/from/${name}/><b>${e.innerHTML}</b></a>`;
             if (name in fb.from) {
                 var d = fb.from[name];
             } else {
@@ -204,6 +203,9 @@ function setMenu() {
             var t = document.createElement('div');
             t.classList.add('from');
             t.innerHTML = d;
+            var h1 = t.$('h1');
+            t.remove(h1);
+            e.innerHTML = `<a href=/from/${name}/><b>${h1.innerHTML}</b></a>`;
             e.after(t);
         })
     }
