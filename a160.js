@@ -191,22 +191,25 @@ function setData(index) {
 function setMenu() {
     if ($('from')) {
         $$('from').forEach(async e => {
-            var name = e.getAttribute('name');
+            var name = e.getAttribute('name').toLowerCase();
             e.onclick = () => { e.classList.toggle('view'); }
             if (name in fb.from) {
                 var d = fb.from[name];
             } else {
                 var d = await getDoc(doc(db, 'from', name));
                 d = d.data();
-                d = de(d.index.true).split('</h1>')[1];
+                d = de(d.index.true);
                 fb.from[name] = d;
             }
             var t = document.createElement('div');
             t.classList.add('from');
             t.innerHTML = d;
             var h1 = t.$('h1');
-            t.remove(h1);
-            e.innerHTML = `<a href=/from/${name}/><b>${h1.innerHTML}</b></a>`;
+            if (h1) {
+                t.remove(h1);
+                h1 = h1.innerHTML;
+            }
+            e.innerHTML = `<a href=/from/${name}/><b>${h1 ? h1 : e.innerHTML}</b></a>`;
             e.after(t);
         })
     }
