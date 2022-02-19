@@ -20,7 +20,7 @@ const ls = localStorage;
 const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
-const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': '', 'img': [], 'csv': [] };
+const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': [], 'csv': [] };
 const is = { 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
@@ -193,9 +193,9 @@ function setMenu() {
             var name = e.getAttribute('name');
             e.onclick = () => { e.classList.toggle('view'); }
             e.innerHTML = `<a href=/from/${name}/><b>${e.innerHTML}</b></a>`;
-            if (name in fb.from){
+            if (name in fb.from) {
                 var d = fb.from[name];
-            }else{
+            } else {
                 var d = await getDoc(doc(db, 'from', name));
                 d = d.data();
                 d = de(d.index.true).split('</h1>')[1];
