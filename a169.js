@@ -36,7 +36,7 @@ document.title = '불로구';
 const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
-const clip = clip;
+const clip = $('clip');
 const u = {};
 u.prp = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js';
 u.trv = 'https://s3.tradingview.com/tv.js';
@@ -674,6 +674,7 @@ function signout() {
         alert('로그아웃 되었습니다.');
         location.href = '/' + (fbc.authDomain.includes('sample') ? 'sample' : '');
         ls.clear();
+        ss.clear();
     }).catch((e) => {
         alert('로그인 정보가 없습니다.');
     });
