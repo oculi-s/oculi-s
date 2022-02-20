@@ -279,7 +279,7 @@ function setIndex() {
         if (H.length) {
             indexing('', 1, 0);
             H.forEach(e => {
-                temp += `<${e.tagName}><a href="#${e.id}" target=_self>${e.tid}</a> ${e.innerText}</${e.tagName}>`
+                temp += `<${e.tagName}><a href="#${e.id}">${e.tid}</a> ${e.innerText}</${e.tagName}>`
                 e.innerHTML = `<a href="#">${e.tid}</a> ` + e.innerHTML;
             });
         }
