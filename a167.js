@@ -52,7 +52,7 @@ if (!('clipBoard' in ss)) {
 }
 
 function wresize() {
-    if (/Android|iPhone|ipad|iPod/.test(navigator.platform)) {
+    if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
         section.classList.add('m-s');
         aside.classList.add('m-a');
         nav.classList.add('m-n');
@@ -539,8 +539,8 @@ function edit() {
             e.preventDefault();
             insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
         }
-        if (/Win|iPhone|ipad|iPod/.test(navigator.platform)) {
-            if (e.ctrlKey && [67, 88].includes(e.keyCode)) {
+        if (/iPhone|ipad|iPod/i.test(navigator.platform)) {
+            if (e.keyCode == 91 && [67, 88].includes(e.keyCode)) {
                 var sel = getSelection();
                 var d = sel.toString();
                 if (d.length) {
