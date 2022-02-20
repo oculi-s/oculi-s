@@ -36,6 +36,7 @@ document.title = '불로구';
 const nav = $('nav');
 const section = $('section');
 const aside = $('aside');
+const clip = clip;
 const u = {};
 u.prp = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js';
 u.trv = 'https://s3.tradingview.com/tv.js';
@@ -44,10 +45,10 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
 head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
-if (!('mchangeWidth' in ss)) {
+if (ss.mchangeWidth == undefined) {
     ss.mchangeWidth = 0;
 }
-if (!('clipBoard' in ss)) {
+if (ss.clipBoard == undefined) {
     ss.clipBoard = JSON.stringify({ 'index': -1 });
 }
 
@@ -58,7 +59,7 @@ function wresize() {
         nav.classList.add('m-n');
     } else if (!section.classList.contains('m-s')) {
         if (section.offsetLeft < (nav.offsetLeft + nav.offsetWidth)) {
-            if (!ss.mchangeWidth) {
+            if (ss.mchangeWidth < innerWidth) {
                 ss.mchangeWidth = innerWidth;
             }
             section.classList.add('m-s');
@@ -191,6 +192,7 @@ function setData(index) {
     if (location.hash) { location.href = location.hash; }
     section.classList.remove('e-s');
     article.classList.remove('e-a');
+    clip.classList.remove('clip');
 }
 
 function setMenu() {
@@ -538,30 +540,30 @@ function edit() {
         } else if (e.keyCode == 9) {
             e.preventDefault();
             insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
-        }
-        if (/iPhone|ipad|iPod/i.test(navigator.platform)) {
-            if (e.keyCode == 91 && [67, 88].includes(e.keyCode)) {
-                var sel = getSelection();
-                var d = sel.toString();
-                if (d.length) {
-                    var clip = JSON.parse(ss.clipBoard);
-                    var t = document.createElement('p');
-                    t.innerText = d;
-                    t.onclick = () => { navigator.clipboard.writeText(t.innerText); }
-                    clip[++clip.index] = d;
-                    clip.index %= 5;
-                    $('clip').append(t);
-                    if ($('clip').childNodes.length > 5) {
-                        $('clip').firstChild.remove();
-                    }
-                    ss.clipBoard = JSON.stringify(clip);
-                }
-            }
-            if (e.altKey && e.keyCode == 86) {
+        } else if (e.altKey && e.keyCode == 86) {
+            if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
+                e.preventDefault();
                 var r = getSelection().getRangeAt(0).getBoundingClientRect();
-                $('clip').classList.toggle('clip');
-                $('clip').style.top = r.bottom;
-                $('clip').style.left = r.right;
+                clip.classList.toggle('clip');
+                clip.style.top = r.bottom;
+                clip.style.left = r.right;
+            }
+        } else if (e.metaKey) {
+            if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
+                var d = window.getSelection().toString();
+                if (d.length) {
+                    var s = JSON.parse(ss.clipBoard);
+                    var p = document.createElement('p');
+                    p.innerText = d;
+                    p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
+                    s[++s.index] = d;
+                    s.index %= 5;
+                    clip.append(p);
+                    if (clip.childNodes.length > 5) {
+                        clip.firstChild.remove();
+                    }
+                    ss.clipBoard = JSON.stringify(s);
+                }
             }
         }
     }
