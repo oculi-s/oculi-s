@@ -197,9 +197,13 @@ function setMenu() {
                 var d = fb.from[name];
             } else {
                 var d = await getDoc(doc(db, 'from', name));
-                d = d.data();
-                d = de(d.index.true);
-                fb.from[name] = d;
+                if (d) {
+                    d = d.data();
+                    d = de(d.index.true);
+                    fb.from[name] = d;
+                } else {
+                    e.innerHTML = name;
+                }
             }
             var t = document.createElement('div');
             t.classList.add('from');
@@ -213,8 +217,8 @@ function setMenu() {
             e.after(t);
         })
     }
-    if (url[0]=='drug'){
-        if ($('pubchem')){
+    if (url[0] == 'drug') {
+        if ($('pubchem')) {
             var i = document.createElement('iframe');
             i.src = `https://pubchem.ncbi.nlm.nih.gov/compound/${url[1]}#section=3D-Conformer&embed=true`
             $('pubchem').append(i);
