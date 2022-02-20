@@ -213,6 +213,13 @@ function setMenu() {
             e.after(t);
         })
     }
+    if (url[0]=='drug'){
+        var d = document.createElement('div');
+        var i = document.createElement('iframe');
+        i.src = `https://pubchem.ncbi.nlm.nih.gov/compound/${url[1]}#section=3D-Conformer&embed=true`
+        d.append(i);
+        article.prepend(d);
+    }
 }
 
 function setFold() {
