@@ -29,7 +29,7 @@ const css_load = `z-index:5; position: fixed; width:100%; height:100%; backgroun
 const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
 const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
 body.innerHTML = `<load style="${css_load}"><img src='/main.gif' style="${css_gif}"></load>`;
-body.innerHTML += `<nav></nav><section><article></article></section><aside></aside>`;
+body.innerHTML += `<nav></nav><section><article></article></section><aside></aside><clip></clip>`;
 body.onresize = wresize;
 document.title = '불로구';
 
@@ -44,12 +44,15 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
 head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
-if (!'mchangeWidth' in ss) {
+if (!('mchangeWidth' in ss)) {
     ss.mchangeWidth = 0;
+}
+if (!('clipBoard' in ss)) {
+    ss.clipBoard = JSON.stringify({ 'index': -1 });
 }
 
 function wresize() {
-    if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
+    if (/Android|iPhone|ipad|iPod/.test(navigator.platform)) {
         section.classList.add('m-s');
         aside.classList.add('m-a');
         nav.classList.add('m-n');
@@ -74,7 +77,7 @@ function wresize() {
 
 var article = '';
 var url = '';
-(async () => {
+(async() => {
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
@@ -186,6 +189,8 @@ function setData(index) {
     setCode();
     setChart();
     if (location.hash) { location.href = location.hash; }
+    section.classList.remove('e-s');
+    article.classList.remove('e-a');
 }
 
 function setMenu() {
@@ -199,8 +204,12 @@ function setMenu() {
                 var d = await getDoc(doc(db, 'from', name));
                 if (d) {
                     d = d.data();
-                    d = de(d.index.true);
-                    fb.from[name] = d;
+                    if (d) {
+                        d = de(d.index.true);
+                        fb.from[name] = d;
+                    } else {
+                        e.innerHTML = name;
+                    }
                 } else {
                     e.innerHTML = name;
                 }
@@ -324,7 +333,7 @@ function setImage() {
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async () => {
+        b.onclick = async() => {
             if (!el.src) {
                 var il = fb.img.filter(e => e.name == el.name);
                 if (il.length) {
@@ -498,8 +507,7 @@ function setChart() {
     });
 }
 
-function insert_text(s) {
-    var sel = getSelection();
+function insert_text(sel, s) {
     var range = sel.getRangeAt(0);
     var node = document.createTextNode(s);
     sel.deleteFromDocument();
@@ -515,18 +523,46 @@ function edit() {
     $('edit').innerText = getData(ls.edit);
     section.classList.add('e-s');
     article.classList.add('e-a');
-    var int = setInterval(save, 60 * 1000, true);
+    var autosave = setInterval(save, 60 * 1000, true);
+    var autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
     $('edit').focus();
     setFileEdit();
     $('edit').onkeydown = e => {
-        var edit = $('edit');
+        clearTimeout(autostop);
+        autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
         if (e.ctrlKey && e.keyCode == 83) {
             e.preventDefault();
             save();
-            clearInterval(int);
+            clearInterval(autosave);
+            clearTimeout(autostop);
         } else if (e.keyCode == 9) {
             e.preventDefault();
-            insert_text('\u00a0\u00a0\u00a0\u00a0');
+            insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
+        }
+        if (/Win|iPhone|ipad|iPod/.test(navigator.platform)) {
+            if (e.ctrlKey && [67, 88].includes(e.keyCode)) {
+                var sel = getSelection();
+                var d = sel.toString();
+                if (d.length) {
+                    var clip = JSON.parse(ss.clipBoard);
+                    var t = document.createElement('p');
+                    t.innerText = d;
+                    t.onclick = () => { navigator.clipboard.writeText(t.innerText); }
+                    clip[++clip.index] = d;
+                    clip.index %= 5;
+                    $('clip').append(t);
+                    if ($('clip').childNodes.length > 5) {
+                        $('clip').firstChild.remove();
+                    }
+                    ss.clipBoard = JSON.stringify(clip);
+                }
+            }
+            if (e.altKey && e.keyCode == 86) {
+                var r = getSelection().getRangeAt(0).getBoundingClientRect();
+                $('clip').classList.toggle('clip');
+                $('clip').style.top = r.bottom;
+                $('clip').style.left = r.right;
+            }
         }
     }
 }
@@ -600,12 +636,17 @@ function del() {
         var new_dict = {}
         new_dict[url[2]] = deleteField();
         updateDoc(fb.html, new_dict).then(() => { setData(getData(ls.log)); });
-        section.classList.remove('e-s');
-        article.classList.remove('e-a');
         if (!Object.keys(fb.dict).length) {
             deleteDoc(fb.html);
             fb.dict = undefined;
         }
+        listAll(ref(st, url.join('/'))).then(strg => {
+            if (strg) {
+                strg.items.forEach(async e => { deleteObject(ref(st, `${url.join('/')}/${e.name}`)) });
+                fb.img = [];
+                fb.csv = [];
+            }
+        })
     }
 }
 
