@@ -82,7 +82,7 @@ var url = '';
         if (c[j] != undefined) {
             var p = document.createElement('p');
             p.innerText = c[j];
-            p.onclick = () => { navigator.clipboard.writeText(c[j]); }
+            p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
             clip.append(p);
         }
     }
