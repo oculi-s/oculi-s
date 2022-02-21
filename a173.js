@@ -78,7 +78,7 @@ var url = '';
     for (var i = 0; i < 5; i++) {
         if (ss.clipBoard[i]) {
             var p = document.createElement('p');
-            p.innerText = d;
+            p.innerText = ss.clipBoard[i];
             p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
             clip.append(p);
         }
