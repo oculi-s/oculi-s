@@ -562,8 +562,8 @@ function edit() {
                     var p = document.createElement('p');
                     p.innerText = d;
                     p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
-                    s[++s.index] = d;
-                    s.index %= 5;
+                    s[s.index] = d;
+                    s.index = (s.index + 1) % 5;
                     clip.append(p);
                     if (clip.childNodes.length > 5) {
                         clip.firstChild.remove();
