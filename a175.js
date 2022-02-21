@@ -77,9 +77,10 @@ var url = '';
 (async () => {
     var c = JSON.parse(ss.clipBoard);
     for (var i = 0; i < 5; i++) {
-        if (c[i] != undefined) {
+        var j = (c[index] + i) % 5;
+        if (c[j] != undefined) {
             var p = document.createElement('p');
-            p.innerText = c[i];
+            p.innerText = c[j];
             p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
             clip.append(p);
         }
