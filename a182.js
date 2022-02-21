@@ -551,7 +551,7 @@ function edit() {
             if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
                 e.preventDefault();
                 var r = getSelection().getRangeAt(0).getBoundingClientRect();
-                clip.classList.toggle('clip');
+                clip.classList.add('clip');
                 clip.style.top = r.bottom;
                 clip.style.left = r.right;
             }
