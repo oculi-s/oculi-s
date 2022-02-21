@@ -81,7 +81,7 @@ var url = '';
         if (c[j] != undefined) {
             var p = document.createElement('p');
             p.innerText = c[j];
-            p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
+            p.onclick = () => { navigator.clipboard.writeText(c[j]); }
             clip.append(p);
         }
     }
