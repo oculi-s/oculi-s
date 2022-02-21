@@ -46,7 +46,8 @@ head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/aja
 head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
 if (ss.mchangeWidth == undefined) { ss.mchangeWidth = 0; }
-if (ss.clipBoard == undefined) { ss.clipBoard = JSON.stringify({ 'index': 0 }); }
+if (ls.clipBoard == undefined) { ls.clipBoard = JSON.stringify({ 'index': 0 }); }
+clip.onclick = ()=>{clip.classList.toggle('clip')}
 
 function wresize() {
     if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
@@ -75,7 +76,7 @@ function wresize() {
 var article = '';
 var url = '';
 (async () => {
-    var c = JSON.parse(ss.clipBoard);
+    var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
         var j = (c.index + i) % 5;
         if (c[j] != undefined) {
@@ -558,7 +559,7 @@ function edit() {
             if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
                 var d = window.getSelection().toString();
                 if (d.length) {
-                    var s = JSON.parse(ss.clipBoard);
+                    var s = JSON.parse(ls.clipBoard);
                     var p = document.createElement('p');
                     p.innerText = d;
                     p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
@@ -568,7 +569,7 @@ function edit() {
                     if (clip.childNodes.length > 5) {
                         clip.firstChild.remove();
                     }
-                    ss.clipBoard = JSON.stringify(s);
+                    ls.clipBoard = JSON.stringify(s);
                 }
             }
         }
