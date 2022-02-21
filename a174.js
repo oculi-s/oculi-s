@@ -75,10 +75,11 @@ function wresize() {
 var article = '';
 var url = '';
 (async () => {
+    var c = JSON.parse(ss.clipBoard);
     for (var i = 0; i < 5; i++) {
-        if (ss.clipBoard[i]) {
+        if (c[i] != undefined) {
             var p = document.createElement('p');
-            p.innerText = ss.clipBoard[i];
+            p.innerText = c[i];
             p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
             clip.append(p);
         }
