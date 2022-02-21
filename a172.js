@@ -45,8 +45,8 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
 head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
-if (ss.mchangeWidth == undefined) {ss.mchangeWidth = 0;}
-if (ls.clipBoard == undefined) {ls.clipBoard = JSON.stringify({ 'index': -1 });}
+if (ss.mchangeWidth == undefined) { ss.mchangeWidth = 0; }
+if (ss.clipBoard == undefined) { ss.clipBoard = JSON.stringify({ 'index': -1 }); }
 
 function wresize() {
     if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
@@ -74,7 +74,15 @@ function wresize() {
 
 var article = '';
 var url = '';
-(async() => {
+(async () => {
+    for (var i = 0; i < 5; i++) {
+        if (ss.clipBoard[i]) {
+            var p = document.createElement('p');
+            p.innerText = d;
+            p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
+            clip.append(p);
+        }
+    }
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
@@ -331,7 +339,7 @@ function setImage() {
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async() => {
+        b.onclick = async () => {
             if (!el.src) {
                 var il = fb.img.filter(e => e.name == el.name);
                 if (il.length) {
@@ -548,7 +556,7 @@ function edit() {
             if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
                 var d = window.getSelection().toString();
                 if (d.length) {
-                    var s = JSON.parse(ls.clipBoard);
+                    var s = JSON.parse(ss.clipBoard);
                     var p = document.createElement('p');
                     p.innerText = d;
                     p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
@@ -558,7 +566,7 @@ function edit() {
                     if (clip.childNodes.length > 5) {
                         clip.firstChild.remove();
                     }
-                    ls.clipBoard = JSON.stringify(s);
+                    ss.clipBoard = JSON.stringify(s);
                 }
             }
         }
