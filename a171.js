@@ -45,12 +45,8 @@ head.innerHTML += `<meta name="viewport" content="width=device-width, initial-sc
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
 head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
-if (ss.mchangeWidth == undefined) {
-    ss.mchangeWidth = 0;
-}
-if (ss.clipBoard == undefined) {
-    ss.clipBoard = JSON.stringify({ 'index': -1 });
-}
+if (ss.mchangeWidth == undefined) {ss.mchangeWidth = 0;}
+if (ls.clipBoard == undefined) {ls.clipBoard = JSON.stringify({ 'index': -1 });}
 
 function wresize() {
     if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
@@ -86,7 +82,7 @@ var url = '';
     console.log(url);
 
     ls.edit = true;
-    if (!('uid' in ls)) { ls.log = false, ls.uid = null; }
+    if (ls.uid == undefined) { ls.log = false, ls.uid = null; }
     fval(u.trv);
     loadStorage();
 
@@ -552,7 +548,7 @@ function edit() {
             if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
                 var d = window.getSelection().toString();
                 if (d.length) {
-                    var s = JSON.parse(ss.clipBoard);
+                    var s = JSON.parse(ls.clipBoard);
                     var p = document.createElement('p');
                     p.innerText = d;
                     p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
@@ -562,7 +558,7 @@ function edit() {
                     if (clip.childNodes.length > 5) {
                         clip.firstChild.remove();
                     }
-                    ss.clipBoard = JSON.stringify(s);
+                    ls.clipBoard = JSON.stringify(s);
                 }
             }
         }
