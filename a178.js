@@ -46,7 +46,7 @@ head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/aja
 head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
 
 if (ss.mchangeWidth == undefined) { ss.mchangeWidth = 0; }
-if (ss.clipBoard == undefined) { ss.clipBoard = JSON.stringify({ 'index': -1 }); }
+if (ss.clipBoard == undefined) { ss.clipBoard = JSON.stringify({ 'index': 0 }); }
 
 function wresize() {
     if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
