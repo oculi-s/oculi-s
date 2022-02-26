@@ -237,12 +237,16 @@ function setMenu() {
     }
     if ($('pubchem')) {
         $$('pubchem').forEach(e => {
+            var type = e.getAttribute('type');
             var name = e.getAttribute('name');
             if (!name){
                 name = url[1];
             }
+            if (!type){
+                type = '3D-Conformer';
+            }
             var i = document.createElement('iframe');
-            i.src = `https://pubchem.ncbi.nlm.nih.gov/compound/${name}#section=3D-Conformer&embed=true`
+            i.src = `https://pubchem.ncbi.nlm.nih.gov/compound/${name}#section=${type}&embed=true`
             e.append(i);
         })
     }
