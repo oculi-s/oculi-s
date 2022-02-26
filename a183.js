@@ -47,7 +47,7 @@ head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif
 
 if (ss.mchangeWidth == undefined) { ss.mchangeWidth = 0; }
 if (ls.clipBoard == undefined) { ls.clipBoard = JSON.stringify({ 'index': 0 }); }
-clip.onclick = ()=>{clip.classList.toggle('clip')}
+clip.onclick = () => { clip.classList.toggle('clip') }
 
 function wresize() {
     if (/Android|iPhone|ipad|iPod/i.test(navigator.platform)) {
@@ -235,12 +235,16 @@ function setMenu() {
             e.after(t);
         })
     }
-    if (url[0] == 'drug') {
-        if ($('pubchem')) {
+    if ($('pubchem')) {
+        $$('pubchem').forEach(e => {
+            var name = e.getAttribute('name');
+            if (!name){
+                name = url[1];
+            }
             var i = document.createElement('iframe');
-            i.src = `https://pubchem.ncbi.nlm.nih.gov/compound/${url[1]}#section=3D-Conformer&embed=true`
-            $('pubchem').append(i);
-        }
+            i.src = `https://pubchem.ncbi.nlm.nih.gov/compound/${name}#section=3D-Conformer&embed=true`
+            e.append(i);
+        })
     }
 }
 
