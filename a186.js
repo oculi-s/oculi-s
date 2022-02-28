@@ -640,22 +640,24 @@ function clipbImg(as) {
 }
 
 function save(as = false) {
-    clipbImg(as);
-    var d = en($('edit').innerText);
-    d = d.replaceAll("&alpha;", "α").replaceAll("&beta;", "β").replaceAll("&gamma;", "γ").replaceAll("&delta;", "δ");
-    if (fb.dict == undefined) {
-        fb.dict = {};
-        fb.dict[url[2]] = { auth: 1, true: d, false: '' };
-        setDoc(fb.html, fb.dict).then(() => { saved(as); })
-    } else {
-        if (!fb.dict[url[2]]) {
-            fb.dict[url[2]] = { auth: 1 };
+    if ($('edit')) {
+        clipbImg(as);
+        var d = en($('edit').innerText);
+        d = d.replaceAll("&alpha;", "α").replaceAll("&beta;", "β").replaceAll("&gamma;", "γ").replaceAll("&delta;", "δ");
+        if (fb.dict == undefined) {
+            fb.dict = {};
+            fb.dict[url[2]] = { auth: 1, true: d, false: '' };
+            setDoc(fb.html, fb.dict).then(() => { saved(as); })
+        } else {
+            if (!fb.dict[url[2]]) {
+                fb.dict[url[2]] = { auth: 1 };
+            }
+            fb.dict[url[2]][ls.edit] = d;
+            if (fb.dict[url[2]].auth == 1) {
+                fb.dict[url[2]][!ls.edit] = '';
+            }
+            updateDoc(fb.html, fb.dict).then(() => { saved(as); })
         }
-        fb.dict[url[2]][ls.edit] = d;
-        if (fb.dict[url[2]].auth == 1) {
-            fb.dict[url[2]][!ls.edit] = '';
-        }
-        updateDoc(fb.html, fb.dict).then(() => { saved(as); })
     }
 }
 
