@@ -75,17 +75,15 @@ function wresize() {
 
 var article = '';
 var url = '';
-(async () => {
+(async() => {
     var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
         var j = (c.index + i) % 5;
         if (c[j] != undefined) {
-            var p = document.createElement('p');
-            p.innerText = c[j];
-            p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
-            clip.append(p);
+            clip.innerHTML += `<p>${c[j]}</p>`;
         }
     }
+    clip.childNodes.forEach(e => { e.onclick = () => { navigator.clipboard.writeText(e.innerText) } })
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
@@ -239,10 +237,10 @@ function setMenu() {
         $$('pubchem').forEach(e => {
             var type = e.getAttribute('type');
             var name = e.getAttribute('name');
-            if (!name){
+            if (!name) {
                 name = url[1];
             }
-            if (!type){
+            if (!type) {
                 type = '3D-Conformer';
             }
             var i = document.createElement('iframe');
@@ -350,7 +348,7 @@ function setImage() {
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async () => {
+        b.onclick = async() => {
             if (!el.src) {
                 var il = fb.img.filter(e => e.name == el.name);
                 if (il.length) {
@@ -398,10 +396,15 @@ function setImage() {
 
 function createFile(e) {
     var p = document.createElement('p');
+    var span = document.createElement('span');
     var btn = document.createElement('button');
     p.setAttribute('name', e.name);
-    p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
-    p.onclick = () => {
+    if (fb.dict) {
+        p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
+    } else {
+        p.style.color = "#aaa";
+    }
+    span.onclick = () => {
         if (is.vid.test(e.name)) {
             navigator.clipboard.writeText(`<video autoplay muted name="${e.name.trim()}">`);
         } else if (is.img.test(e.name)) {
@@ -411,7 +414,7 @@ function createFile(e) {
         }
         p.style.color = "#aaa";
     };
-    p.innerText = e.name;
+    span.innerText = e.name;
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
             deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(() => { p.remove() });
@@ -423,7 +426,7 @@ function createFile(e) {
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
-    p.append(btn);
+    p.append(span, btn);
     return p;
 }
 
@@ -559,7 +562,7 @@ function edit() {
             if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
                 e.preventDefault();
                 var r = getSelection().getRangeAt(0).getBoundingClientRect();
-                clip.classList.add('clip');
+                clip.classList.toggle('clip');
                 clip.style.top = r.bottom;
                 clip.style.left = r.right;
             }
@@ -570,7 +573,10 @@ function edit() {
                     var s = JSON.parse(ls.clipBoard);
                     var p = document.createElement('p');
                     p.innerText = d;
-                    p.onclick = () => { navigator.clipboard.writeText(p.innerText); }
+                    p.onclick = () => {
+                        console.log(p.innerText);
+                        navigator.clipboard.writeText(d);
+                    }
                     s[s.index] = d;
                     s.index = (s.index + 1) % 5;
                     clip.append(p);
@@ -580,6 +586,11 @@ function edit() {
                     ls.clipBoard = JSON.stringify(s);
                 }
             }
+        }
+    }
+    $('edit').onkeyup = e => {
+        if ((e.ctrlKey || e.metaKey) && e.keyCode == 86) {
+            clipbImg(true);
         }
     }
 }
@@ -602,8 +613,7 @@ function clipbImg(as) {
         var farray = fb.img.concat(fb.csv);
         $$('edit img').forEach(e => {
             if (!e.name) {
-                var i;
-                for (i = 0; i <= farray.length; i++) {
+                for (var i = 0; i <= farray.length; i++) {
                     if (farray.filter(t => t.name == `img${i}.png`).length == 0) {
                         e.setAttribute('name', `img${i}.png`);
                         break;
@@ -618,6 +628,7 @@ function clipbImg(as) {
                                 f.src = await getDownloadURL(f);
                                 fb.img[fb.img.length] = f;
                                 $(`*[name="${e.name}"]`).src = f.src;
+                                $('#img>div').append(createFile(f));
                             })
                     })
             };
@@ -631,6 +642,7 @@ function clipbImg(as) {
 function save(as = false) {
     clipbImg(as);
     var d = en($('edit').innerText);
+    d = d.replaceAll("&alpha;", "α").replaceAll("&beta;", "β").replaceAll("&gamma;", "γ").replaceAll("&delta;", "δ");
     if (fb.dict == undefined) {
         fb.dict = {};
         fb.dict[url[2]] = { auth: 1, true: d, false: '' };
@@ -649,13 +661,17 @@ function save(as = false) {
 
 function del() {
     if (confirm('삭제하시겠습니까?')) {
-        delete fb.dict[url[2]];
-        var new_dict = {}
-        new_dict[url[2]] = deleteField();
-        updateDoc(fb.html, new_dict).then(() => { setData(getData(ls.log)); });
-        if (!Object.keys(fb.dict).length) {
-            deleteDoc(fb.html);
-            fb.dict = undefined;
+        if (fb.dict) {
+            delete fb.dict[url[2]];
+            var new_dict = {}
+            new_dict[url[2]] = deleteField();
+            updateDoc(fb.html, new_dict).then(() => { setData(getData(ls.log)); });
+            if (!Object.keys(fb.dict).length) {
+                deleteDoc(fb.html);
+                fb.dict = undefined;
+            }
+        } else {
+            setData(getData(ls.log));
         }
         listAll(ref(st, url.join('/'))).then(strg => {
             if (strg) {
