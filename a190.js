@@ -372,8 +372,8 @@ function setImage() {
         }
     });
     if (url[0] != 'life') {
-        Object.entries(fb.img).forEach(async ([name, e]) => {
-            var el = $(`*[name="${name}"]`);
+        Object.values(fb.img).forEach(async e => {
+            var el = $(`*[name="${e.name}"]`);
             if (el) {
                 if (!e.src) { e.src = await getDownloadURL(e); }
                 el.src = e.src;
@@ -436,8 +436,8 @@ function createFile(name, e) {
 function setFileEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        Object.values(fb.img).forEach(([name, e]) => { $('#img>div').append(createFile(name, e)) })
-        Object.values(fb.csv).forEach(([name, e]) => { $('#img>div').append(createFile(name, e)) })
+        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e.name, e)) })
+        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e.name, e)) })
     }
 }
 
