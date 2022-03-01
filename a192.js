@@ -541,7 +541,8 @@ function insert_text(sel, s) {
     sel.addRange(range);
 }
 
-var autosave, autostop;
+var autosave;
+var autostop;
 function edit() {
     $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>${de(fb.srce.file.true)}`;
