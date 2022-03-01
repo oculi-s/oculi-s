@@ -436,17 +436,17 @@ function createFile(name, e) {
 function setFileEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
-        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
+        Object.values(fb.img).forEach(([name, e]) => { $('#img>div').append(createFile(name, e)) })
+        Object.values(fb.csv).forEach(([name, e]) => { $('#img>div').append(createFile(name, e)) })
     }
 }
 
 function uploadFile() {
     $('article input').files.forEach(e => {
-        uploadBytes(ref(st, `${url.join('/')}/${name}`), e).then((file) => {
-            $('#img>div').prepend(createFile(e));
+        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
+            $('#img>div').prepend(createFile(e.name, e));
             var f = file.metadata.ref;
-            if (is.csv.test(name)) {
+            if (is.csv.test(f.name)) {
                 fb.csv[f.name] = f;
             } else {
                 fb.img[f.name] = f;
@@ -630,7 +630,7 @@ function clipbImg(as) {
                                 f.src = await getDownloadURL(f);
                                 fb.img[f.name] = f;
                                 $(`*[name="${e.name}"]`).src = f.src;
-                                $('#img>div').append(createFile(f));
+                                $('#img>div').append(createFile(f.name, f));
                             })
                     })
             };
