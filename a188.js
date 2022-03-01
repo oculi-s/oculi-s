@@ -541,6 +541,7 @@ function insert_text(sel, s) {
     sel.addRange(range);
 }
 
+var autosave, autostop;
 function edit() {
     $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
     article.innerHTML = `<edit data-eng="false" contenteditable=true></edit>${de(fb.srce.file.true)}`;
@@ -557,8 +558,6 @@ function edit() {
         if (e.ctrlKey && e.keyCode == 83) {
             e.preventDefault();
             save();
-            clearInterval(autosave);
-            clearTimeout(autostop);
         } else if (e.keyCode == 9) {
             e.preventDefault();
             insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
@@ -598,6 +597,8 @@ function edit() {
 
 function saved(as) {
     if (!as) {
+        clearInterval(autosave);
+        clearTimeout(autostop);
         section.classList.remove('e-s');
         article.classList.remove('e-a');
         setData(de(fb.dict[url[2]][ls.edit]));
@@ -664,6 +665,8 @@ function save(as = false) {
 
 function del() {
     if (confirm('삭제하시겠습니까?')) {
+        clearInterval(autosave);
+        clearTimeout(autostop);
         if (fb.dict) {
             delete fb.dict[url[2]];
             var new_dict = {}
