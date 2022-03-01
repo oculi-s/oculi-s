@@ -21,7 +21,7 @@ const ls = localStorage;
 const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
-const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': [], 'csv': [] };
+const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': {}, 'csv': {} };
 const is = { 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
@@ -75,12 +75,14 @@ function wresize() {
 
 var article = '';
 var url = '';
-(async() => {
+(async () => {
     var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
         var j = (c.index + i) % 5;
         if (c[j] != undefined) {
-            clip.innerHTML += `<p>${c[j]}</p>`;
+            var p = document.createElement('p');
+            p.innerText = c[j];
+            clip.append(p);
         }
     }
     clip.childNodes.forEach(e => { e.onclick = () => { navigator.clipboard.writeText(e.innerText) } })
@@ -254,11 +256,11 @@ function setFold() {
     if ($('h1')) {
         var f = $('h1').dataset.fold;
         var b = $('h1').dataset.blind;
-        $$(`article>*:not(index) ${f}, article>${f}`).forEach((e) => {
+        $$(`article>*:not(index) ${f}, article>${f}`).forEach(e => {
             e.onclick = () => { e.classList.toggle('fold') };
             e.classList.add('foldable');
         })
-        $$(`article>*:not(index) ${b}, article>${b}`).forEach((e) => {
+        $$(`article>*:not(index) ${b}, article>${b}`).forEach(e => {
             e.classList.add('blind');
         })
     }
@@ -326,10 +328,15 @@ function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
             if (url[0] != 'life') {
-                strg.items.forEach(async e => { e.src = await getDownloadURL(e) });
+                strg.items.forEach(async e => {
+                    if (is.vid.test(e.name) || is.img.test(e.name)) {
+                        fb.img[e.name] = e;
+                    } else if (is.csv.test(e.name)) {
+                        fb.csv[e.name] = e;
+                    }
+                    e.src = await getDownloadURL(e);
+                });
             }
-            fb.img = strg.items.filter(e => is.vid.test(e.name) || is.img.test(e.name));
-            fb.csv = strg.items.filter(e => is.csv.test(e.name));
         }
     }).catch(e => {
         var exc = document.createElement('exc');
@@ -348,18 +355,16 @@ function setImage() {
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async() => {
+        b.onclick = async () => {
             if (!el.src) {
-                var il = fb.img.filter(e => e.name == el.name);
-                if (il.length) {
-                    el.src = await getDownloadURL(il[0]);
+                if (el.name in fb.img) {
+                    el.src = await getDownloadURL(fb.img[el.name]);
                 }
             }
             el.childNodes.forEach(async el => {
                 if (!el.src) {
-                    var il = fb.img.filter(e => e.name == el.name);
-                    if (il.length) {
-                        el.src = await getDownloadURL(il[0]);
+                    if (el.name in fb.img) {
+                        el.src = await getDownloadURL(fb.img[el.name]);
                     }
                 }
             });
@@ -367,12 +372,10 @@ function setImage() {
         }
     });
     if (url[0] != 'life') {
-        fb.img.forEach(async e => {
-            var el = $(`*[name="${e.name}"]`);
+        Object.entries(fb.img).forEach(async ([name, e]) => {
+            var el = $(`*[name="${name}"]`);
             if (el) {
-                if (!e.src) {
-                    e.src = await getDownloadURL(e);
-                }
+                if (!e.src) { e.src = await getDownloadURL(e); }
                 el.src = e.src;
                 if (el.tagName.toLowerCase() == 'iframe') {
                     el.setAttribute('scrolling', 'no')
@@ -394,35 +397,35 @@ function setImage() {
     }
 }
 
-function createFile(e) {
+function createFile(name, e) {
     var p = document.createElement('p');
     var span = document.createElement('span');
     var btn = document.createElement('button');
-    p.setAttribute('name', e.name);
+    p.setAttribute('name', name);
     if (fb.dict) {
-        p.style.color = de(fb.dict[url[2]].true).includes(e.name) ? "#aaa" : "#fff";
+        p.style.color = de(fb.dict[url[2]].true).includes(name) ? "#aaa" : "#fff";
     } else {
         p.style.color = "#aaa";
     }
     span.onclick = () => {
-        if (is.vid.test(e.name)) {
-            navigator.clipboard.writeText(`<video autoplay muted name="${e.name.trim()}">`);
-        } else if (is.img.test(e.name)) {
-            navigator.clipboard.writeText(`<img name="${e.name.trim()}">`);
-        } else if (is.csv.test(e.name)) {
-            navigator.clipboard.writeText(`<chart type=line title=${e.name.split('.')[0]}></chart>`);
+        if (is.vid.test(name)) {
+            navigator.clipboard.writeText(`<video autoplay muted name="${name.trim()}">`);
+        } else if (is.img.test(name)) {
+            navigator.clipboard.writeText(`<img name="${name.trim()}">`);
+        } else if (is.csv.test(name)) {
+            navigator.clipboard.writeText(`<chart type=line title=${name.split('.')[0]}></chart>`);
         }
         p.style.color = "#aaa";
     };
-    span.innerText = e.name;
+    span.innerText = name;
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
-            deleteObject(ref(st, `${url.join('/')}/${e.name}`)).then(() => { p.remove() });
+            deleteObject(ref(st, `${url.join('/')}/${name}`)).then(() => { p.remove() });
         }
-        if (is.csv.test(e.name)) {
-            fb.csv = fb.csv.filter(csv => csv.name != e.name);
+        if (is.csv.test(name)) {
+            delete fb.csv[name];
         } else {
-            fb.img = fb.img.filter(img => img.name != e.name);
+            delete fb.csv[name];
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
@@ -433,19 +436,20 @@ function createFile(e) {
 function setFileEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        fb.img.forEach(e => { $('#img>div').append(createFile(e)) })
-        fb.csv.forEach(e => { $('#img>div').append(createFile(e)) })
+        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
+        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
     }
 }
 
 function uploadFile() {
     $('article input').files.forEach(e => {
-        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
+        uploadBytes(ref(st, `${url.join('/')}/${name}`), e).then((file) => {
             $('#img>div').prepend(createFile(e));
-            if (is.csv.test(e.name)) {
-                fb.csv[fb.csv.length] = file.metadata.ref;
+            var f = file.metadata.ref;
+            if (is.csv.test(name)) {
+                fb.csv[f.name] = f;
             } else {
-                fb.img[fb.img.length] = file.metadata.ref;
+                fb.img[f.name] = f;
             }
         });
     });
@@ -477,11 +481,11 @@ function csvParse(s, d = ',') {
 }
 
 function setChart() {
-    fb.csv.forEach(async raw => {
-        var e = $(`*[name="${raw.name}"]`);
+    Object.keys(fb.csv).forEach(async ([name, raw]) => {
+        var e = $(`*[name="${name}"]`);
         if (e) {
             var d = e.parentElement.clientWidth;
-            e.id = raw.name;
+            e.id = name;
             raw = await getDownloadURL(raw);
             raw = await fetch(raw);
             raw = await raw.text();
@@ -573,10 +577,7 @@ function edit() {
                     var s = JSON.parse(ls.clipBoard);
                     var p = document.createElement('p');
                     p.innerText = d;
-                    p.onclick = () => {
-                        console.log(p.innerText);
-                        navigator.clipboard.writeText(d);
-                    }
+                    p.onclick = () => { navigator.clipboard.writeText(d); }
                     s[s.index] = d;
                     s.index = (s.index + 1) % 5;
                     clip.append(p);
@@ -610,12 +611,12 @@ function saved(as) {
 
 function clipbImg(as) {
     if ($('edit img')) {
-        var farray = fb.img.concat(fb.csv);
         $$('edit img').forEach(e => {
             if (!e.name) {
-                for (var i = 0; i <= farray.length; i++) {
-                    if (farray.filter(t => t.name == `img${i}.png`).length == 0) {
+                for (var i = 0; i <= Object.keys(fb.img).length; i++) {
+                    if (fb.img[`img${i}.png`] == undefined) {
                         e.setAttribute('name', `img${i}.png`);
+                        fb.img[`img${i}.png`] = e;
                         break;
                     }
                 }
@@ -626,7 +627,7 @@ function clipbImg(as) {
                             .then(async f => {
                                 f = f.metadata.ref;
                                 f.src = await getDownloadURL(f);
-                                fb.img[fb.img.length] = f;
+                                fb.img[f.name] = f;
                                 $(`*[name="${e.name}"]`).src = f.src;
                                 $('#img>div').append(createFile(f));
                             })
@@ -678,8 +679,8 @@ function del() {
         listAll(ref(st, url.join('/'))).then(strg => {
             if (strg) {
                 strg.items.forEach(async e => { deleteObject(ref(st, `${url.join('/')}/${e.name}`)) });
-                fb.img = [];
-                fb.csv = [];
+                fb.img = {};
+                fb.csv = {};
             }
         })
     }
