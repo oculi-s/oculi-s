@@ -559,6 +559,8 @@ function edit() {
         if (e.ctrlKey && e.keyCode == 83) {
             e.preventDefault();
             save();
+            clearInterval(autosave);
+            clearTimeout(autostop);
         } else if (e.keyCode == 9) {
             e.preventDefault();
             insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
@@ -603,9 +605,7 @@ function saved(as) {
         section.classList.remove('e-s');
         article.classList.remove('e-a');
         setData(de(fb.dict[url[2]][ls.edit]));
-        if (ls.prp) {
-            fval(u.prp, false);
-        }
+        if (ls.prp) { fval(u.prp, false); }
     }
     $('es>div>span').className = 'b';
     setTimeout(() => { $('es>div>span').className = '' }, 1000);
