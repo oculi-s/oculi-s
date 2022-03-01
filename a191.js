@@ -397,7 +397,7 @@ function setImage() {
     }
 }
 
-function createFile(name, e) {
+function createFile(name) {
     var p = document.createElement('p');
     var span = document.createElement('span');
     var btn = document.createElement('button');
@@ -436,15 +436,15 @@ function createFile(name, e) {
 function setFileEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e.name, e)) })
-        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e.name, e)) })
+        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e.name)) })
+        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e.name)) })
     }
 }
 
 function uploadFile() {
     $('article input').files.forEach(e => {
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
-            $('#img>div').prepend(createFile(e.name, e));
+            $('#img>div').prepend(createFile(e.name));
             var f = file.metadata.ref;
             if (is.csv.test(f.name)) {
                 fb.csv[f.name] = f;
@@ -616,8 +616,10 @@ function clipbImg(as) {
             if (!e.name) {
                 for (var i = 0; i <= Object.keys(fb.img).length; i++) {
                     if (fb.img[`img${i}.png`] == undefined) {
-                        e.setAttribute('name', `img${i}.png`);
-                        fb.img[`img${i}.png`] = e;
+                        var name = `img${i}.png`;
+                        e.setAttribute('name', name);
+                        fb.img[name] = e;
+                        $('#img>div').append(createFile(name));
                         break;
                     }
                 }
@@ -630,7 +632,6 @@ function clipbImg(as) {
                                 f.src = await getDownloadURL(f);
                                 fb.img[f.name] = f;
                                 $(`*[name="${e.name}"]`).src = f.src;
-                                $('#img>div').append(createFile(f.name, f));
                             })
                     })
             };
