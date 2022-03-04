@@ -574,9 +574,11 @@ function edit() {
     var autosave = setInterval(save, 60 * 1000, true);
     var autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
     $('edit').focus();
-    $('edit').onkeydown = e => {
+    $('edit').oninput = e => {
         clearTimeout(autostop);
         autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
+    }
+    $('edit').onkeydown = e => {
         if (e.ctrlKey && e.keyCode == 83) {
             e.preventDefault();
             save();
