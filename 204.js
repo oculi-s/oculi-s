@@ -555,22 +555,25 @@ function edit() {
     getData(ls.edit).split(/\n/).forEach(e => {
         var p = document.createElement('p');
         p.innerText = e;
-        if (!is.lazyload) {
-            var t = document.createElement('p');
-            t.innerHTML = e;
-            if (t.$('img')) {
+        var t = document.createElement('p');
+        t.innerHTML = e;
+        if (t.$('img')) {
+            if (!is.lazyload) {
                 var img = t.$('img');
                 if (img.getAttribute('name')) {
                     if (img.name && img.name in fb.img) {
                         img.src = fb.img[img.name].src;
                     }
                     $('edit').append(t);
+                    
                 } else {
                     $('edit').append(p);
                 }
-            } else if (e.length) {
+            } else {
                 $('edit').append(p);
             }
+        } else if (e.length) {
+            $('edit').append(p);
         }
     })
     section.classList.add('e-s');
