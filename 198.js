@@ -1,4 +1,5 @@
-const fbc = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
+var fbc = await fetch('/fbc.json');
+var fbc = await fbc.json();
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js';
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js';
@@ -22,16 +23,16 @@ const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
 const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': {}, 'csv': {} };
-const is = { 'sample': fbc.authDomain.includes('sample'), 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
+const is = { 'sample': fbc.authDomain.includes('sample') ? '/sample' : '', 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
 const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
 const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
-body.innerHTML = `<load style="${css_load}"><img src='${is.sample ? '/sample' : ''}/main.gif' style="${css_gif}"></load>`;
+body.innerHTML = `<load style="${css_load}"><img src='${is.sample}/main.gif' style="${css_gif}"></load>`;
 body.innerHTML += `<nav></nav><section><article></article></section><aside></aside><clip></clip>`;
 body.onresize = wresize;
-document.title = '불로구';
+document.title = is.sample.length ? '불로구' : '블로그';
 
 const nav = $('nav');
 const section = $('section');
@@ -43,7 +44,7 @@ u.trv = 'https://s3.tradingview.com/tv.js';
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
-head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="${is.sample ? '/sample/main.png' : '/title.gif'}"/>`
+head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="${is.sample.length ? '/sample/main.png' : '/title.gif'}"/>`
 
 if (ss.mchangeWidth == undefined) { ss.mchangeWidth = 0; }
 if (ls.clipBoard == undefined) { ls.clipBoard = JSON.stringify({ 'index': 0 }); }
@@ -87,9 +88,10 @@ var url = '';
     }
     clip.childNodes.forEach(e => { e.onclick = () => { navigator.clipboard.writeText(e.innerText) } })
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
+    if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
-    body.classList.add(url[0]);
+    section.classList.add(url[0]);
     console.log(url);
 
     ls.edit = true;
@@ -97,7 +99,7 @@ var url = '';
     fval(u.trv);
     loadStorage();
 
-    fb.srce = await getDoc(doc(db, is.sample ? 'sample' : 'index', 'source'));
+    fb.srce = await getDoc(doc(db, is.sample.length ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ls.uid));
     fb.user = fb.user.data();
@@ -231,7 +233,7 @@ function setMenu() {
                 h1.remove();
                 h1 = h1.innerHTML;
             }
-            e.innerHTML = `<a href=/from/${name}/><b>${h1 ? h1 : e.innerHTML}</b></a>`;
+            e.innerHTML = `<a href=${is.sample}/from/${name}/><b>${h1 ? h1 : e.innerHTML}</b></a>`;
             e.after(t);
         })
     }
@@ -683,7 +685,6 @@ function clipbImg(as = true) {
 function save(as = false) {
     if ($('edit')) {
         clipbImg(as);
-        // $$('edit br').forEach(e => { e.replaceWith('\n\n') })
         var d = en($('edit').innerText);
         d = d.replaceAll("&alpha;", "α").replaceAll("&beta;", "β").replaceAll("&gamma;", "γ").replaceAll("&delta;", "δ");
         if (fb.dict == undefined) {
