@@ -327,27 +327,26 @@ function setIndex() {
 }
 
 function loadStorage() {
-    if (fb.user) {
-        listAll(ref(st, url.join('/'))).then(strg => {
-            if (strg) {
-                if (url[0] != 'life') {
-                    strg.items.forEach(async e => {
-                        if (is.vid.test(e.name) || is.img.test(e.name)) {
-                            fb.img[e.name] = e;
-                        } else if (is.csv.test(e.name)) {
-                            fb.csv[e.name] = e;
-                        }
-                        e.src = await getDownloadURL(e);
-                    });
-                }
+    listAll(ref(st, url.join('/'))).then(strg => {
+        if (strg) {
+            if (url[0] != 'life') {
+                strg.items.forEach(async e => {
+                    if (is.vid.test(e.name) || is.img.test(e.name)) {
+                        fb.img[e.name] = e;
+                    } else if (is.csv.test(e.name)) {
+                        fb.csv[e.name] = e;
+                    }
+                    e.src = await getDownloadURL(e);
+                });
             }
-        }).catch(e => {
-            var exc = document.createElement('exc');
-            exc.className = 'far fa-image r';
-            section.prepend(exc);
-            throw e;
-        });
-    }
+        }
+    }).catch(e => {
+        unload();
+        var exc = document.createElement('exc');
+        exc.className = 'far fa-image r';
+        section.prepend(exc);
+        throw e;
+    });
 }
 
 function setImage() {
