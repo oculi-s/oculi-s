@@ -1,4 +1,4 @@
-var fbc = await fetch(`${location.pathname.split('/')[1] == 'sample'?'/sample':''}/fbc.json`);
+var fbc = await fetch(`${location.pathname.split('/')[1] == 'sample' ? '/sample' : ''}/fbc.json`);
 var fbc = await fbc.json();
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js';
@@ -76,7 +76,7 @@ function wresize() {
 
 var article = '';
 var url = '';
-(async() => {
+(async () => {
     var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
         var j = (c.index + i) % 5;
@@ -91,6 +91,7 @@ var url = '';
     if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
     url.push('index', 'index', 'index');
     url = url.slice(0, 3);
+    is.lazyload = url[0] == 'life';
     section.classList.add(url[0]);
     console.log(url);
 
@@ -329,7 +330,7 @@ function setIndex() {
 function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
-            if (url[0] != 'life') {
+            if (is.lazyload) {
                 strg.items.forEach(async e => {
                     if (is.vid.test(e.name) || is.img.test(e.name)) {
                         fb.img[e.name] = e;
@@ -358,7 +359,7 @@ function setImage() {
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async() => {
+        b.onclick = async () => {
             if (!el.src) {
                 if (el.name in fb.img) {
                     el.src = await getDownloadURL(fb.img[el.name]);
@@ -374,7 +375,7 @@ function setImage() {
             b.classList.toggle('view');
         }
     });
-    if (url[0] != 'life') {
+    if (is.lazyload) {
         Object.values(fb.img).forEach(async e => {
             var el = $(`*[name="${e.name}"]`);
             if (el) {
@@ -484,7 +485,7 @@ function csvParse(s, d = ',') {
 }
 
 function setChart() {
-    Object.keys(fb.csv).forEach(async([name, raw]) => {
+    Object.keys(fb.csv).forEach(async ([name, raw]) => {
         var e = $(`*[name="${name}"]`);
         if (e) {
             var d = e.parentElement.clientWidth;
@@ -552,22 +553,24 @@ function edit() {
     $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
     article.innerHTML = `<edit contenteditable=true></edit>${de(fb.srce.file.true)}`;
     getData(ls.edit).split(/\n/).forEach(e => {
-        var t = document.createElement('p');
-        t.innerHTML = e;
         var p = document.createElement('p');
         p.innerText = e;
-        if (t.$('img')) {
-            var img = t.$('img');
-            if (img.getAttribute('name')) {
-                if (img.name && img.name in fb.img) {
-                    img.src = fb.img[img.name].src;
+        if (is.lazyload) {
+            var t = document.createElement('p');
+            t.innerHTML = e;
+            if (t.$('img')) {
+                var img = t.$('img');
+                if (img.getAttribute('name')) {
+                    if (img.name && img.name in fb.img) {
+                        img.src = fb.img[img.name].src;
+                    }
+                    $('edit').append(t);
+                } else {
+                    $('edit').append(p);
                 }
-                $('edit').append(t);
-            } else {
+            } else if (e.length) {
                 $('edit').append(p);
             }
-        } else if (e.length) {
-            $('edit').append(p);
         }
     })
     section.classList.add('e-s');
