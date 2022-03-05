@@ -1,4 +1,4 @@
-var fbc = await fetch('/fbc.json');
+var fbc = await fetch(`${location.pathname.split('/')[1] == 'sample'?'/sample':''}/fbc.json`);
 var fbc = await fbc.json();
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js';
