@@ -1,4 +1,4 @@
-const fbc = { apiKey: "AIzaSyAuuLVy94PUS8YtEfhibbtHewCsrImhhfM", authDomain: "futures-1dff5.firebaseapp.com", databaseURL: "https://futures-1dff5-default-rtdb.firebaseio.com", projectId: "futures-1dff5", storageBucket: "futures-1dff5.appspot.com", messagingSenderId: "204808828169", appId: "1:204808828169:web:6af7aac7a9966fa6854fd8", measurementId: "G-2GV70QZBQ2" };
+const fbc = { apiKey: "AIzaSyDZouQJ7YKTZUE6F3LAXPnt_p_ayFGQnF8", authDomain: "sample-65976.firebaseapp.com", projectId: "sample-65976", storageBucket: "sample-65976.appspot.com", messagingSenderId: "258901722942", appId: "1:258901722942:web:91a5be6c8c5cb1b483ce6f", measurementId: "G-GVEQ68YWY4" };
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js';
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js';
@@ -22,13 +22,13 @@ const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
 const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': {}, 'csv': {} };
-const is = { 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
+const is = { 'sample': fbc.authDomain.includes('sample'), 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
 const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
 const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
-body.innerHTML = `<load style="${css_load}"><img src='/main.gif' style="${css_gif}"></load>`;
+body.innerHTML = `<load style="${css_load}"><img src='${is.sample ? '/sample/main.png' : '/title.gif'}' style="${css_gif}"></load>`;
 body.innerHTML += `<nav></nav><section><article></article></section><aside></aside><clip></clip>`;
 body.onresize = wresize;
 document.title = '불로구';
@@ -43,7 +43,7 @@ u.trv = 'https://s3.tradingview.com/tv.js';
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
-head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="/main.gif"/>`
+head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="${is.sample ? '/sample' : ''}/main.gif"/>`
 
 if (ss.mchangeWidth == undefined) { ss.mchangeWidth = 0; }
 if (ls.clipBoard == undefined) { ls.clipBoard = JSON.stringify({ 'index': 0 }); }
@@ -97,7 +97,7 @@ var url = '';
     fval(u.trv);
     loadStorage();
 
-    fb.srce = await getDoc(doc(db, fbc.authDomain.includes('sample') ? 'sample' : 'index', 'source'));
+    fb.srce = await getDoc(doc(db, is.sample ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ls.uid));
     fb.user = fb.user.data();
@@ -749,7 +749,7 @@ function signin() {
 function signout() {
     signOut(auth).then(() => {
         alert('로그아웃 되었습니다.');
-        location.href = '/' + (fbc.authDomain.includes('sample') ? 'sample' : '');
+        location.href = '/' + (is.sample ? 'sample' : '');
         ls.clear();
         ss.clear();
     }).catch((e) => {
