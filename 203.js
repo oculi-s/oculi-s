@@ -330,7 +330,7 @@ function setIndex() {
 function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
-            if (is.lazyload) {
+            if (!is.lazyload) {
                 strg.items.forEach(async e => {
                     if (is.vid.test(e.name) || is.img.test(e.name)) {
                         fb.img[e.name] = e;
@@ -375,7 +375,7 @@ function setImage() {
             b.classList.toggle('view');
         }
     });
-    if (is.lazyload) {
+    if (!is.lazyload) {
         Object.values(fb.img).forEach(async e => {
             var el = $(`*[name="${e.name}"]`);
             if (el) {
@@ -555,7 +555,7 @@ function edit() {
     getData(ls.edit).split(/\n/).forEach(e => {
         var p = document.createElement('p');
         p.innerText = e;
-        if (is.lazyload) {
+        if (!is.lazyload) {
             var t = document.createElement('p');
             t.innerHTML = e;
             if (t.$('img')) {
