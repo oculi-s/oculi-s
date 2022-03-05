@@ -28,7 +28,7 @@ const body = document.body;
 const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
 const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
 const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
-body.innerHTML = `<load style="${css_load}"><img src='${is.sample ? '/sample/main.png' : '/title.gif'}' style="${css_gif}"></load>`;
+body.innerHTML = `<load style="${css_load}"><img src='${is.sample ? '/sample' : ''}/main.gif' style="${css_gif}"></load>`;
 body.innerHTML += `<nav></nav><section><article></article></section><aside></aside><clip></clip>`;
 body.onresize = wresize;
 document.title = '불로구';
@@ -43,7 +43,7 @@ u.trv = 'https://s3.tradingview.com/tv.js';
 
 head.innerHTML += `<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, user-scalable=no" />`;
 head.innerHTML += `<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.8.2/css/all.min.css">`;
-head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="${is.sample ? '/sample' : ''}/main.gif"/>`
+head.innerHTML += `<link rel="shortcut icon" type="image/x-icon" href="${is.sample ? '/sample/main.png' : '/title.gif'}"/>`
 
 if (ss.mchangeWidth == undefined) { ss.mchangeWidth = 0; }
 if (ls.clipBoard == undefined) { ls.clipBoard = JSON.stringify({ 'index': 0 }); }
