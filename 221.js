@@ -620,7 +620,7 @@ function setFileStatus() {
         sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
     }
     var perc = (sum / (50 * kb * kb) * 100).toFixed(1);
-    $('status').innerText = `${numByte(sum)} / 50MB (${perc})`;
+    $('status').innerText = `${numByte(sum)} / 50MB (${perc}%)`;
     div.style.width = perc * $('status').style.width;
     $('status').append(div);
 }
