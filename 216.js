@@ -609,8 +609,8 @@ function setFileEdit() {
 }
 
 function setFileStatus() {
-    var sum = sum(fb.img.map(e => e.meta.size));
-    sum += sum(fb.csv.map(e => e.meta.size));
+    var sum = Object.keys(fb.img).map(e => e.meta.size).reduce((a, b) => a + b);
+    sum += Object.keys(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
     var perc = (sum / (50 * kb * kb)).toFixed(1);
     $('status>div').innerHTML = `${numByte(sum)} (${perc})`;
     $('status>div').style.width = perc * $('status').style.width;
