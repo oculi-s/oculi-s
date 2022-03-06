@@ -622,6 +622,7 @@ function setFileStatus() {
     var perc = (sum / (50 * kb * kb) * 100).toFixed(1);
     $('status').innerText = `${numByte(sum)} / 50MB (${perc}%)`;
     div.style.width = perc * $('status').style.width;
+    div.innerHTML = ' ';
     $('status').append(div);
 }
 
