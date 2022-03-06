@@ -430,13 +430,10 @@ function createFile(e) {
         if (confirm('삭제하시겠습니까?')) {
             deleteObject(ref(st, `${url.join('/')}/${name}`)).then(() => {
                 p.remove();
+                delete fb.csv[name];
+                delete fb.img[name];
                 setFileStatus();
             });
-        }
-        if (is.csv.test(name)) {
-            fb.csv = fb.csv.filter(e => e.name != name);
-        } else {
-            fb.img = fb.img.filter(e => e.name != name);
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
@@ -621,8 +618,8 @@ function setFileStatus() {
     if (Object.keys(fb.csv).length) {
         sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
     }
-    var perc = (sum / (50 * kb * kb)).toFixed(1);
-    $('status').innerText = `${numByte(sum)} / 50MB (${perc * 100}%)`;
+    var perc = sum / (50 * kb * kb);
+    $('status').innerText = `${numByte(sum)} / 50MB (${(perc * 100).toFixed(1)}%)`;
     div.style.width = `${perc * $('status').clientWidth}px`;
     $('status').append(div);
 }
