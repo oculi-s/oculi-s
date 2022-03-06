@@ -468,6 +468,7 @@ function uploadFile() {
         });
     });
     $('article input').value = '';
+    setFileStatus();
 }
 
 function clipbImg(as = true) {
@@ -505,6 +506,7 @@ function clipbImg(as = true) {
                             })
                     })
                 e.setAttribute('from', 'false');
+                setFileStatus();
             };
             if (!as) {
                 e.outerText = `<img name=${e.name}>`;
@@ -609,10 +611,9 @@ function setFileEdit() {
 function setFileStatus() {
     var sum = sum(fb.img.map(e => e.meta.size));
     sum += sum(fb.csv.map(e => e.meta.size));
-    var div = document.createElement('div');
-    div.innerHTML = numByte(sum);
-    div.style.width = sum / (50 * kb * kb) * $('status').style.width;
-    $('status').append(div);
+    var perc = (sum / (50 * kb * kb)).toFixed(1);
+    $('status>div').innerHTML = `${numByte(sum)} (${perc})`;
+    $('status>div').style.width = perc * $('status').style.width;
 }
 
 var autosave;
