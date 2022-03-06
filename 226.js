@@ -75,9 +75,18 @@ function wresize() {
     }
 }
 
-var article = '';
-var url = '';
+var article;
+var url;
 (async () => {
+    url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
+    if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
+    url.push('index', 'index', 'index');
+    url = url.slice(0, 3);
+    is.lazyload = url[0] == 'life';
+    section.classList.add(url[0]);
+    console.log(url);
+    loadStorage();
+    
     var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
         var j = (c.index + i) % 5;
@@ -88,32 +97,24 @@ var url = '';
         }
     }
     clip.childNodes.forEach(e => { e.onclick = () => { navigator.clipboard.writeText(e.innerText) } })
-    url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
-    if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
-    url.push('index', 'index', 'index');
-    url = url.slice(0, 3);
-    is.lazyload = url[0] == 'life';
-    section.classList.add(url[0]);
-    console.log(url);
-
+    
     ls.edit = true;
     if (ls.uid == undefined) { ls.log = false, ls.uid = null; }
     fval(u.trv);
-    loadStorage();
 
     fb.srce = await getDoc(doc(db, is.sample.length ? 'sample' : 'index', 'source'));
     fb.srce = fb.srce.data();
     fb.user = await getDoc(doc(db, 'user', ls.uid));
     fb.user = fb.user.data();
     head.innerHTML += de(fb.srce.css.true);
-    wresize();
-
+    
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ls.log]);
         aside.innerHTML = de(fb.srce.aside[ls.log]);
         if (ls.uid != 'null' && ls.uid != 'undefined') {
             $('aside>p').innerHTML = auth.currentUser.email;
         }
+        wresize();
     } else {
         body.innerHTML = '';
         signout();
@@ -134,9 +135,9 @@ var url = '';
 
     article = $('article');
     setData(getData(ls.log));
+    unload();
     if (ls.prp) { fval(u.prp); }
     head.innerHTML += de(fb.srce.prps[ls.prp]);
-    unload();
 }).then(() => {
     document.onkeydown = e => {
         if (e.ctrlKey && e.keyCode == 69) {
@@ -151,8 +152,10 @@ var url = '';
 });
 
 function unload() {
-    $('load').style.opacity = 0;
-    setTimeout(() => { $('load').remove(); }, 500);
+    if ($('load')){
+        $('load').style.opacity = 0;
+        setTimeout(() => { $('load').remove(); }, 500);
+    }
 }
 
 function fval(src, asy = true) {
