@@ -3,7 +3,7 @@ var fbc = await fbc.json();
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js';
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js';
-import { getStorage, ref, listAll, getDownloadURL, uploadBytes, deleteObject } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-storage.js';
+import { getStorage, ref, listAll, getMetadata, getDownloadURL, uploadBytes, deleteObject } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-storage.js';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js';
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
@@ -331,13 +331,14 @@ function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
             strg.items.forEach(async e => {
+                e.meta = await getMetadata(e);
+                if (!is.lazyload) {
+                    e.src = await getDownloadURL(e);
+                }
                 if (is.vid.test(e.name) || is.img.test(e.name)) {
                     fb.img[e.name] = e;
                 } else if (is.csv.test(e.name)) {
                     fb.csv[e.name] = e;
-                }
-                if (!is.lazyload) {
-                    e.src = await getDownloadURL(e);
                 }
             });
         }
@@ -407,7 +408,7 @@ function createFile(e) {
     var size = document.createElement('span');
     var span = document.createElement('span');
     var btn = document.createElement('button');
-    size.innerText = e.size;
+    size.innerText = e.meta.size;
     p.setAttribute('name', name);
     if (fb.dict) {
         p.style.color = de(fb.dict[url[2]].true).includes(name) ? "#aaa" : "#fff";
