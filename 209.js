@@ -405,17 +405,17 @@ function setImage() {
 
 function createFile(e) {
     var name = e.name;
-    var size = e.meta.size;
+    var s = e.meta.size;
     var p = document.createElement('p');
     var size = document.createElement('span');
     var span = document.createElement('span');
     var btn = document.createElement('button');
-    if (size > 1000 * 1000) {
-        size.innerText = size / (1000 * 1000) + ' MB';
-    } else if (size > 1000) {
-        size.innerText = size / 1000 + ' KB';
+    if (s > 1000 * 1000) {
+        size.innerText = s / (1000 * 1000) + ' MB';
+    } else if (s > 1000) {
+        size.innerText = s / 1000 + ' KB';
     } else{
-        size.innerText = size + ' B';
+        size.innerText = s + ' B';
     }
     p.setAttribute('name', name);
     if (fb.dict) {
