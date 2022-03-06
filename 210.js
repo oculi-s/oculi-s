@@ -411,11 +411,11 @@ function createFile(e) {
     var span = document.createElement('span');
     var btn = document.createElement('button');
     if (s > 1000 * 1000) {
-        size.innerText = s / (1000 * 1000) + ' MB';
+        size.innerText = (s / (1000 * 1000)).toFixed(2) + ' MB';
     } else if (s > 1000) {
-        size.innerText = s / 1000 + ' KB';
+        size.innerText = (s / 1000).toFixed(2) + ' KB';
     } else{
-        size.innerText = s + ' B';
+        size.innerText = s.toFixed(2) + ' B';
     }
     p.setAttribute('name', name);
     if (fb.dict) {
