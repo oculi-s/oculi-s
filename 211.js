@@ -331,15 +331,13 @@ function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
             strg.items.forEach(async e => {
-                e.meta = { "size": 0 };
-                e.meta = await getMetadata(e);
-                if (!is.lazyload) {
-                    e.src = await getDownloadURL(e);
-                }
                 if (is.vid.test(e.name) || is.img.test(e.name)) {
                     fb.img[e.name] = e;
                 } else if (is.csv.test(e.name)) {
                     fb.csv[e.name] = e;
+                }
+                if (!is.lazyload) {
+                    e.src = await getDownloadURL(e);
                 }
             });
         }
@@ -404,19 +402,25 @@ function setImage() {
 }
 
 function createFile(e) {
+    if (e.meta == undefined) {
+        getMetadata(e).then(m => {
+            e.meta = m;
+            var s = e.meta.size;
+            var size = document.createElement('span');
+            if (s > 1000 * 1000) {
+                size.innerText = (s / (1000 * 1000)).toFixed(2) + ' MB';
+            } else if (s > 1000) {
+                size.innerText = (s / 1000).toFixed(2) + ' KB';
+            } else {
+                size.innerText = s.toFixed(2) + ' B';
+            }
+            p.append(size);
+        })
+    }
     var name = e.name;
-    var s = e.meta.size;
     var p = document.createElement('p');
-    var size = document.createElement('span');
     var span = document.createElement('span');
     var btn = document.createElement('button');
-    if (s > 1000 * 1000) {
-        size.innerText = (s / (1000 * 1000)).toFixed(2) + ' MB';
-    } else if (s > 1000) {
-        size.innerText = (s / 1000).toFixed(2) + ' KB';
-    } else{
-        size.innerText = s.toFixed(2) + ' B';
-    }
     p.setAttribute('name', name);
     if (fb.dict) {
         p.style.color = de(fb.dict[url[2]].true).includes(name) ? "#aaa" : "#fff";
@@ -445,7 +449,8 @@ function createFile(e) {
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
-    p.append(span, size, btn);
+    p.prepend(span);
+    p.append(btn);
     return p;
 }
 
