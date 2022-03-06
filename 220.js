@@ -429,11 +429,12 @@ function createFile(e) {
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
             deleteObject(ref(st, `${url.join('/')}/${name}`)).then(() => { p.remove() });
+            setFileStatus();
         }
         if (is.csv.test(name)) {
-            delete fb.csv[name];
+            fb.csv = fb.csv.filter(e => e.name != name);
         } else {
-            delete fb.csv[name];
+            fb.img = fb.img.filter(e => e.name != name);
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
@@ -612,13 +613,13 @@ function setFileStatus() {
     $('status').innerText = '';
     var div = document.createElement('div');
     var sum = 0;
-    if (Object.keys(fb.img).length){
+    if (Object.keys(fb.img).length) {
         sum += Object.values(fb.img).map(e => e.meta.size).reduce((a, b) => a + b);
     }
-    if (Object.keys(fb.csv).length){
+    if (Object.keys(fb.csv).length) {
         sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
     }
-    var perc = (sum / (50 * kb * kb)).toFixed(1);
+    var perc = (sum / (50 * kb * kb) * 100).toFixed(1);
     $('status').innerText = `${numByte(sum)} / 50MB (${perc})`;
     div.style.width = perc * $('status').style.width;
     $('status').append(div);
