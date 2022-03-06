@@ -331,6 +331,7 @@ function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
             strg.items.forEach(async e => {
+                e.meta = { "size": 0 };
                 e.meta = await getMetadata(e);
                 if (!is.lazyload) {
                     e.src = await getDownloadURL(e);
@@ -404,11 +405,18 @@ function setImage() {
 
 function createFile(e) {
     var name = e.name;
+    var size = e.meta.size;
     var p = document.createElement('p');
     var size = document.createElement('span');
     var span = document.createElement('span');
     var btn = document.createElement('button');
-    size.innerText = e.meta.size;
+    if (size > 1000 * 1000) {
+        size.innerText = size / (1000 * 1000) + ' MB';
+    } else if (size > 1000) {
+        size.innerText = size / 1000 + ' KB';
+    } else{
+        size.innerText = size + ' B';
+    }
     p.setAttribute('name', name);
     if (fb.dict) {
         p.style.color = de(fb.dict[url[2]].true).includes(name) ? "#aaa" : "#fff";
@@ -569,7 +577,7 @@ function edit() {
                         img.src = fb.img[img.name].src;
                     }
                     $('edit').append(t);
-                    
+
                 } else {
                     $('edit').append(p);
                 }
