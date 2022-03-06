@@ -330,16 +330,16 @@ function setIndex() {
 function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
-            if (!is.lazyload) {
-                strg.items.forEach(async e => {
-                    if (is.vid.test(e.name) || is.img.test(e.name)) {
-                        fb.img[e.name] = e;
-                    } else if (is.csv.test(e.name)) {
-                        fb.csv[e.name] = e;
-                    }
+            strg.items.forEach(async e => {
+                if (is.vid.test(e.name) || is.img.test(e.name)) {
+                    fb.img[e.name] = e;
+                } else if (is.csv.test(e.name)) {
+                    fb.csv[e.name] = e;
+                }
+                if (!is.lazyload) {
                     e.src = await getDownloadURL(e);
-                });
-            }
+                }
+            });
         }
     }).catch(e => {
         unload();
