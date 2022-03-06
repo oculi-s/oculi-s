@@ -39,6 +39,7 @@ const section = $('section');
 const aside = $('aside');
 const clip = $('clip');
 const u = {};
+const kb = 1024;
 u.prp = 'https://cdn.jsdelivr.net/gh/google/code-prettify@master/loader/run_prettify.js';
 u.trv = 'https://s3.tradingview.com/tv.js';
 
@@ -437,24 +438,19 @@ function createFile(e) {
     }
     btn.classList.add('far', 'fa-trash-alt');
     if (e.meta) {
-        var s = e.meta.size;
-        if (s > 1000 * 1000) {
-            size.innerText = (s / (1000 * 1000)).toFixed(2) + ' MB';
-        } else if (s > 1000) {
-            size.innerText = (s / 1000).toFixed(2) + ' KB';
-        } else {
-            size.innerText = s.toFixed(2) + ' B';
-        }
+        size.innerText = numByte(e.meta.size);
     }
     p.append(span, size, btn);
     return p;
 }
 
-function setFileEdit() {
-    if ($('#img')) {
-        $('#img>div').innerHTML = '';
-        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
-        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
+function numByte(s) {
+    if (s > kb * kb) {
+        return (s / (kb * kb)).toFixed(2) + ' MB';
+    } else if (s > kb) {
+        return (s / kb).toFixed(2) + ' KB';
+    } else {
+        return s.toFixed(2) + ' B';
     }
 }
 
@@ -602,13 +598,30 @@ function insert_text(sel, s) {
     sel.addRange(range);
 }
 
+function setFileEdit() {
+    if ($('#img')) {
+        $('#img>div').innerHTML = '';
+        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
+        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
+    }
+}
+
+function setFileStatus() {
+    var sum = sum(fb.img.map(e => e.meta.size));
+    sum += sum(fb.csv.map(e => e.meta.size));
+    var div = document.createElement('div');
+    div.innerHTML = numByte(sum);
+    div.style.width = sum / (50 * kb * kb) * $('status').style.width;
+    $('status').append(div);
+}
+
 var autosave;
 var autostop;
-
 
 function edit() {
     $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
     article.innerHTML = `<edit contenteditable=true></edit>${de(fb.srce.file.true)}`;
+
     getData(ls.edit).split(/\n/).forEach(e => {
         var p = document.createElement('p');
         p.innerText = e;
@@ -636,6 +649,7 @@ function edit() {
     section.classList.add('e-s');
     article.classList.add('e-a');
     setFileEdit();
+    setFileStatus();
 
     var autosave = setInterval(save, 60 * 1000, true);
     var autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
