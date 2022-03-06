@@ -336,6 +336,7 @@ function loadStorage() {
                 } else if (is.csv.test(e.name)) {
                     fb.csv[e.name] = e;
                 }
+                getMetadata(e).then(m => { e.meta = m; })
                 if (!is.lazyload) {
                     e.src = await getDownloadURL(e);
                 }
@@ -402,21 +403,7 @@ function setImage() {
 }
 
 function createFile(e) {
-    if (e.meta == undefined) {
-        getMetadata(e).then(m => {
-            e.meta = m;
-            var s = e.meta.size;
-            var size = document.createElement('span');
-            if (s > 1000 * 1000) {
-                size.innerText = (s / (1000 * 1000)).toFixed(2) + ' MB';
-            } else if (s > 1000) {
-                size.innerText = (s / 1000).toFixed(2) + ' KB';
-            } else {
-                size.innerText = s.toFixed(2) + ' B';
-            }
-            p.append(size);
-        })
-    }
+    var size = document.createElement('span');
     var name = e.name;
     var p = document.createElement('p');
     var span = document.createElement('span');
@@ -449,8 +436,18 @@ function createFile(e) {
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
-    p.prepend(span);
-    p.append(btn);
+    if (e.meta) {
+        e.meta = m;
+        var s = e.meta.size;
+        if (s > 1000 * 1000) {
+            size.innerText = (s / (1000 * 1000)).toFixed(2) + ' MB';
+        } else if (s > 1000) {
+            size.innerText = (s / 1000).toFixed(2) + ' KB';
+        } else {
+            size.innerText = s.toFixed(2) + ' B';
+        }
+    }
+    p.append(span, size, btn);
     return p;
 }
 
@@ -467,6 +464,7 @@ function uploadFile() {
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
             $('#img>div').prepend(createFile(e));
             var f = file.metadata.ref;
+            f.meta = file.metadata;
             if (is.csv.test(f.name)) {
                 fb.csv[f.name] = f;
             } else {
@@ -475,6 +473,49 @@ function uploadFile() {
         });
     });
     $('article input').value = '';
+}
+
+function clipbImg(as = true) {
+    if ($('edit img')) {
+        $$('edit img').forEach(e => {
+            if (fb.img[e.name] == undefined) {
+                e.removeAttribute('name');
+            } else if (e.src != fb.img[e.name].src) {
+                e.removeAttribute('name');
+            } else if (!e.src) {
+                e.removeAttribute('name');
+            }
+        });
+        $$('edit img').forEach(e => {
+            if (!e.name) {
+                for (var i = 0; i <= Object.keys(fb.img).length; i++) {
+                    if (fb.img[`img${i}.png`] == undefined) {
+                        var name = `img${i}.png`;
+                        e.setAttribute('name', name);
+                        fb.img[name] = e;
+                        $('#img>div').append(createFile(e));
+                        break;
+                    }
+                }
+                fetch(e.src)
+                    .then(r => r.blob())
+                    .then(r => {
+                        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), r)
+                            .then(async f => {
+                                var r = f.metadata.ref;
+                                r.meta = f.metadata;
+                                r.src = await getDownloadURL(r);
+                                fb.img[r.name] = r;
+                                $(`*[name="${e.name}"]`).src = r.src;
+                            })
+                    })
+                e.setAttribute('from', 'false');
+            };
+            if (!as) {
+                e.outerText = `<img name=${e.name}>`;
+            }
+        })
+    }
 }
 
 function csvParse(s, d = ',') {
@@ -662,48 +703,6 @@ function saved(as) {
     }
     $('es>div>span').className = 'b';
     setTimeout(() => { $('es>div>span').className = '' }, 1000);
-}
-
-function clipbImg(as = true) {
-    if ($('edit img')) {
-        $$('edit img').forEach(e => {
-            if (fb.img[e.name] == undefined) {
-                e.removeAttribute('name');
-            } else if (e.src != fb.img[e.name].src) {
-                e.removeAttribute('name');
-            } else if (!e.src) {
-                e.removeAttribute('name');
-            }
-        });
-        $$('edit img').forEach(e => {
-            if (!e.name) {
-                for (var i = 0; i <= Object.keys(fb.img).length; i++) {
-                    if (fb.img[`img${i}.png`] == undefined) {
-                        var name = `img${i}.png`;
-                        e.setAttribute('name', name);
-                        fb.img[name] = e;
-                        $('#img>div').append(createFile(e));
-                        break;
-                    }
-                }
-                fetch(e.src)
-                    .then(r => r.blob())
-                    .then(r => {
-                        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), r)
-                            .then(async f => {
-                                f = f.metadata.ref;
-                                f.src = await getDownloadURL(f);
-                                fb.img[f.name] = f;
-                                $(`*[name="${e.name}"]`).src = f.src;
-                            })
-                    })
-                e.setAttribute('from', 'false');
-            };
-            if (!as) {
-                e.outerText = `<img name=${e.name}>`;
-            }
-        })
-    }
 }
 
 function save(as = false) {
