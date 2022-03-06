@@ -619,10 +619,9 @@ function setFileStatus() {
     if (Object.keys(fb.csv).length) {
         sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
     }
-    var perc = (sum / (50 * kb * kb) * 100).toFixed(1);
-    $('status').innerText = `${numByte(sum)} / 50MB (${perc}%)`;
-    div.style.width = perc * $('status').style.width;
-    div.innerHTML = ' ';
+    var perc = (sum / (50 * kb * kb)).toFixed(1);
+    $('status').innerText = `${numByte(sum)} / 50MB (${perc * 100}%)`;
+    div.style.width = `${perc * $('status').clientWidth}px`;
     $('status').append(div);
 }
 
