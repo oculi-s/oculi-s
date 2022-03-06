@@ -428,8 +428,10 @@ function createFile(e) {
     span.innerText = name;
     btn.onclick = () => {
         if (confirm('삭제하시겠습니까?')) {
-            deleteObject(ref(st, `${url.join('/')}/${name}`)).then(() => { p.remove() });
-            setFileStatus();
+            deleteObject(ref(st, `${url.join('/')}/${name}`)).then(() => {
+                p.remove();
+                setFileStatus();
+            });
         }
         if (is.csv.test(name)) {
             fb.csv = fb.csv.filter(e => e.name != name);
@@ -466,10 +468,10 @@ function uploadFile() {
             } else {
                 fb.img[f.name] = f;
             }
+            setFileStatus();
         });
     });
     $('article input').value = '';
-    setFileStatus();
 }
 
 function clipbImg(as = true) {
@@ -504,10 +506,10 @@ function clipbImg(as = true) {
                                 r.src = await getDownloadURL(r);
                                 fb.img[r.name] = r;
                                 $(`*[name="${e.name}"]`).src = r.src;
+                                setFileStatus();
                             })
                     })
                 e.setAttribute('from', 'false');
-                setFileStatus();
             };
             if (!as) {
                 e.outerText = `<img name=${e.name}>`;
