@@ -609,6 +609,7 @@ function setFileEdit() {
 }
 
 function setFileStatus() {
+    $('status').innerText = '';
     var div = document.createElement('div');
     var sum = 0;
     if (Object.keys(fb.img).length){
