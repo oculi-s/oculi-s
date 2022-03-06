@@ -437,7 +437,6 @@ function createFile(e) {
     }
     btn.classList.add('far', 'fa-trash-alt');
     if (e.meta) {
-        e.meta = m;
         var s = e.meta.size;
         if (s > 1000 * 1000) {
             size.innerText = (s / (1000 * 1000)).toFixed(2) + ' MB';
