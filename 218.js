@@ -609,16 +609,18 @@ function setFileEdit() {
 }
 
 function setFileStatus() {
+    var div = document.createElement('div');
     var sum = 0;
     if (Object.keys(fb.img).length){
-        sum += Object.keys(fb.img).map(e => e.meta.size).reduce((a, b) => a + b);
+        sum += Object.values(fb.img).map(e => e.meta.size).reduce((a, b) => a + b);
     }
     if (Object.keys(fb.csv).length){
-        sum += Object.keys(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
+        sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
     }
     var perc = (sum / (50 * kb * kb)).toFixed(1);
-    $('status>div').innerHTML = `${numByte(sum)} (${perc})`;
-    $('status>div').style.width = perc * $('status').style.width;
+    $('status').innerText = `${numByte(sum)} / 50MB (${perc})`;
+    div.style.width = perc * $('status').style.width;
+    $('status').append(div);
 }
 
 var autosave;
