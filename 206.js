@@ -401,10 +401,13 @@ function setImage() {
     }
 }
 
-function createFile(name) {
+function createFile(e) {
+    var name = e.name;
     var p = document.createElement('p');
+    var size = document.createElement('span');
     var span = document.createElement('span');
     var btn = document.createElement('button');
+    size.innerText = e.size;
     p.setAttribute('name', name);
     if (fb.dict) {
         p.style.color = de(fb.dict[url[2]].true).includes(name) ? "#aaa" : "#fff";
@@ -433,22 +436,22 @@ function createFile(name) {
         }
     }
     btn.classList.add('far', 'fa-trash-alt');
-    p.append(span, btn);
+    p.append(span, size, btn);
     return p;
 }
 
 function setFileEdit() {
     if ($('#img')) {
         $('#img>div').innerHTML = '';
-        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e.name)) })
-        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e.name)) })
+        Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
+        Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
     }
 }
 
 function uploadFile() {
     $('article input').files.forEach(e => {
         uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
-            $('#img>div').prepend(createFile(e.name));
+            $('#img>div').prepend(createFile(e));
             var f = file.metadata.ref;
             if (is.csv.test(f.name)) {
                 fb.csv[f.name] = f;
@@ -665,7 +668,7 @@ function clipbImg(as = true) {
                         var name = `img${i}.png`;
                         e.setAttribute('name', name);
                         fb.img[name] = e;
-                        $('#img>div').append(createFile(name));
+                        $('#img>div').append(createFile(e));
                         break;
                     }
                 }
