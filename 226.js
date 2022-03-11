@@ -22,7 +22,7 @@ const ls = localStorage;
 const ss = sessionStorage;
 const de = decodeURI;
 const en = encodeURI;
-const fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': {}, 'csv': {} };
+window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': {}, 'csv': {} };
 const is = { 'sample': fbc.authDomain.includes('sample') ? '/sample' : '', 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
@@ -77,7 +77,7 @@ function wresize() {
 
 var article;
 var url;
-(async () => {
+(async() => {
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
     url.push('index', 'index', 'index');
@@ -86,7 +86,7 @@ var url;
     section.classList.add(url[0]);
     console.log(url);
     loadStorage();
-    
+
     var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
         var j = (c.index + i) % 5;
@@ -97,7 +97,7 @@ var url;
         }
     }
     clip.childNodes.forEach(e => { e.onclick = () => { navigator.clipboard.writeText(e.innerText) } })
-    
+
     ls.edit = true;
     if (ls.uid == undefined) { ls.log = false, ls.uid = null; }
     fval(u.trv);
@@ -107,7 +107,7 @@ var url;
     fb.user = await getDoc(doc(db, 'user', ls.uid));
     fb.user = fb.user.data();
     head.innerHTML += de(fb.srce.css.true);
-    
+
     if (fb.user) {
         nav.innerHTML = de(fb.srce.nav[ls.log]);
         aside.innerHTML = de(fb.srce.aside[ls.log]);
@@ -152,7 +152,7 @@ var url;
 });
 
 function unload() {
-    if ($('load')){
+    if ($('load')) {
         $('load').style.opacity = 0;
         setTimeout(() => { $('load').remove(); }, 500);
     }
@@ -364,7 +364,7 @@ function setImage() {
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async () => {
+        b.onclick = async() => {
             if (!el.src) {
                 if (el.name in fb.img) {
                     el.src = await getDownloadURL(fb.img[el.name]);
@@ -384,8 +384,10 @@ function setImage() {
         Object.values(fb.img).forEach(async e => {
             var el = $(`*[name="${e.name}"]`);
             if (el) {
-                if (!e.src) { e.src = await getDownloadURL(e); }
-                el.src = e.src;
+                if (!e.src) {
+                    e.src = await getDownloadURL(e);
+                    el.src = e.src;
+                }
                 if (el.tagName.toLowerCase() == 'iframe') {
                     el.setAttribute('scrolling', 'no')
                     var wrap = document.createElement('div');
@@ -543,8 +545,8 @@ function csvParse(s, d = ',') {
 }
 
 function setChart() {
-    Object.keys(fb.csv).forEach(async ([name, raw]) => {
-        var e = $(`*[name="${name}"]`);
+    Object.values(fb.csv).forEach(async raw => {
+        var e = $(`*[name="${raw.name}"]`);
         if (e) {
             var d = e.parentElement.clientWidth;
             e.id = name;
