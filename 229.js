@@ -518,7 +518,7 @@ function clipbImg(as = true) {
                 e.setAttribute('from', 'false');
             };
             if (!as) {
-                e.outerText = `<img name=${e.name}>`;
+                e.innerText = e.innerHTML;
             }
         })
     }
