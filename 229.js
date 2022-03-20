@@ -518,7 +518,7 @@ function clipbImg(as = true) {
                 e.setAttribute('from', 'false');
             };
             if (!as) {
-                e.innerText = e.innerHTML;
+                e.parentNode.innerText = e.parentNode.innerHTML;
             }
         })
     }
