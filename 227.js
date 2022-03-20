@@ -77,7 +77,7 @@ function wresize() {
 
 var article;
 var url;
-(async() => {
+(async () => {
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
     url.push('index', 'index', 'index');
@@ -361,10 +361,14 @@ function setImage() {
             e.classList.toggle("show");
             body.classList.toggle("blur");
         };
+        var cap = document.createElement('caption');
+        cap.innerHTML = e.getAttribute('title');
+        cap.style.width = e.offsetWidth + 'px';
+        e.after(cap);
     })
     $$('blind, .blind').forEach(b => {
         var el = b.nextElementSibling;
-        b.onclick = async() => {
+        b.onclick = async () => {
             if (!el.src) {
                 if (el.name in fb.img) {
                     el.src = await getDownloadURL(fb.img[el.name]);
