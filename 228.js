@@ -652,8 +652,14 @@ function edit() {
                     if (img.name && img.name in fb.img) {
                         img.src = fb.img[img.name].src;
                     }
+                    t.onclick = () => {
+                        if (t.innerText){
+                            t.innerHTML = t.innerText;
+                        }else{
+                            t.innerText = t.innerHTML;
+                        }
+                    }
                     $('edit').append(t);
-
                 } else {
                     $('edit').append(p);
                 }
