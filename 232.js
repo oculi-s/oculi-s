@@ -613,6 +613,7 @@ var autosave;
 var autostop;
 
 function edit() {
+    body.classList.remove('blur');
     $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
     article.innerHTML = `<edit contenteditable=true></edit>${de(fb.srce.file.true)}`;
 
