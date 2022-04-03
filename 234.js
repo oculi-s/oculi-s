@@ -61,13 +61,6 @@ var url;
     section.classList.add(url[0]);
     console.log(url);
     loadStorage();
-    $('nav input').onchange = e => {
-        if (e.target.checked) {
-            document.documentElement.setAttribute('cMode', 'light');
-        } else {
-            document.documentElement.setAttribute('cMode', 'dark');
-        }
-    }
 
     var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
@@ -99,6 +92,13 @@ var url;
     } else {
         body.innerHTML = '';
         signout();
+    }
+    $('nav input').onchange = e => {
+        if (e.target.checked) {
+            document.documentElement.setAttribute('cMode', 'light');
+        } else {
+            document.documentElement.setAttribute('cMode', 'dark');
+        }
     }
 
     fb.html = doc(db, url[0], url[1]);
