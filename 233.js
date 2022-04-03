@@ -52,6 +52,7 @@ clip.onclick = () => { clip.classList.toggle('clip') }
 var article;
 var url;
 (async() => {
+    document.documentElement.setAttribute('cMode', 'dark');
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
     url.push('index', 'index', 'index');
@@ -60,6 +61,13 @@ var url;
     section.classList.add(url[0]);
     console.log(url);
     loadStorage();
+    $('nav input').onchange = e => {
+        if (e.target.checked) {
+            document.documentElement.setAttribute('cMode', 'light');
+        } else {
+            document.documentElement.setAttribute('cMode', 'dark');
+        }
+    }
 
     var c = JSON.parse(ls.clipBoard);
     for (var i = 0; i < 5; i++) {
