@@ -537,7 +537,7 @@ function setChart() {
         var e = $(`*[name="${raw.name}"]`);
         if (e) {
             var d = e.parentElement.clientWidth;
-            e.id = name;
+            e.id = raw.name;
             raw = await getDownloadURL(raw);
             raw = await fetch(raw);
             raw = await raw.text();
