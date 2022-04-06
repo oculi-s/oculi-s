@@ -566,7 +566,6 @@ function setChart() {
                     }
                 }
                 o.chart.type = e.getAttribute('type');
-                o.chart.width = Math.min(400, d);
                 o.title.text = e.getAttribute('title');
                 o.data.csv = raw;
                 o.plotOptions.stacking = e.getAttribute('stack') == '1' ? 'normal' : '';
