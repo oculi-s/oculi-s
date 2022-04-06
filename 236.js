@@ -554,26 +554,23 @@ function setChart() {
                 }
                 e.append(t);
             } else {
-                Highcharts.chart(e.id, {
-                    chart: {
-                        type: e.type,
-                        width: 400 < d ? 400 : d
-                    },
-                    title: { text: e.title },
-                    data: { csv: raw },
-                    legend: {
-                        enabled: false,
-                        layout: 'vertical',
-                        align: 'right'
-                    },
+                var o = {
+                    chart: {},
+                    title: {},
+                    data: {},
+                    legend: { enabled: false, layout: 'vertical', align: 'right' },
                     plotOptions: {
-                        series: {
-                            stacking: e.stack == '1' ? 'normal' : '',
-                            dataLabels: { enabled: true }
-                        },
+                        series: { dataLabels: { enabled: true } },
                         column: { stacking: 'normal', dataLabels: { enabled: true } },
+                        pie: { dataLabels: { enabled: true, distance: -50, } }
                     }
-                });
+                }
+                o.chart.type = e.getAttribute('type');
+                o.chart.width = Math.min(400, d);
+                o.title.text = e.getAttribute('title');
+                o.data.csv = raw;
+                o.plotOptions.stacking = e.getAttribute('stack') == '1' ? 'normal' : '';
+                Highcharts.chart(e.id, o);
             }
         }
     })
