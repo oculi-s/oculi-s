@@ -96,7 +96,7 @@ var url;
         signout();
     }
 
-    $('nav input').onclick = e => {
+    $('nav>div>span').onclick = e => {
         ls.cMode = ls.cMode == 'true' ? 'false' : 'true';
         document.documentElement.setAttribute('cMode', ls.cMode);
     }
