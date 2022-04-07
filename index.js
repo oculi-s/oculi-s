@@ -96,8 +96,8 @@ var url;
         signout();
     }
 
-    $('nav label').onclick = e => {
-        ls.cMode = e.target.checked;
+    $('nav input').onclick = e => {
+        ls.cMode = ls.cMode == 'true' ? 'false' : 'true';
         document.documentElement.setAttribute('cMode', ls.cMode);
     }
 
