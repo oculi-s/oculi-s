@@ -29,10 +29,10 @@ const body = document.body;
 const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
 if (ls.cMode == undefined) { ls.cMode = true; }
 document.documentElement.setAttribute('cMode', ls.cMode);
-const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: ${ls.cMode == 'true'?'#0d1117':'#fff'}; left:0; top:0; transition:ease .5s`;
+const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: ${ls.cMode == 'true' ? '#0d1117' : '#fff'}; left:0; top:0; transition:ease .5s`;
 const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
 
-body.innerHTML = `<load style="${css_load}"><img src='${is.sample}/load_${ls.cMode == 'true'?'dark':'light'}.gif' style="${css_gif}"></load>`;
+body.innerHTML = `<load style="${css_load}"><img src='${is.sample}/load_${is.sample ? 'main' : ls.cMode == 'true' ? 'dark' : 'light'}.gif' style="${css_gif}"></load>`;
 body.innerHTML += `<nav></nav><section><article></article></section><aside></aside><clip></clip>`;
 document.title = is.sample.length ? '불로구' : '블로그';
 
