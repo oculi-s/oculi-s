@@ -26,10 +26,13 @@ window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img':
 const is = { 'sample': fbc.authDomain.includes('sample') ? '/sample' : '', 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
 const head = document.head;
 const body = document.body;
-const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: #0d1117; left:0; top:0; transition:ease .5s`;
-const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
 const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
-body.innerHTML = `<load style="${css_load}"><img src='${is.sample}/main.gif' style="${css_gif}"></load>`;
+if (ls.cMode == undefined) { ls.cMode = true; }
+document.documentElement.setAttribute('cMode', ls.cMode);
+const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: ${ls.cMode == 'true'?'#0d1117':'#fff'}; left:0; top:0; transition:ease .5s`;
+const css_gif = `position:absolute; width:100px; height:100px; top:calc(50% - 50px); left:calc(50% - 50px);`;
+
+body.innerHTML = `<load style="${css_load}"><img src='${is.sample}/load_${ls.cMode == 'true'?'dark':'light'}.gif' style="${css_gif}"></load>`;
 body.innerHTML += `<nav></nav><section><article></article></section><aside></aside><clip></clip>`;
 document.title = is.sample.length ? '불로구' : '블로그';
 
@@ -52,7 +55,6 @@ clip.onclick = () => { clip.classList.toggle('clip') }
 var article;
 var url;
 (async() => {
-    document.documentElement.setAttribute('cMode', 'dark');
     url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
     if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
     url.push('index', 'index', 'index');
@@ -93,12 +95,10 @@ var url;
         body.innerHTML = '';
         signout();
     }
+
     $('nav input').onchange = e => {
-        if (e.target.checked) {
-            document.documentElement.setAttribute('cMode', 'light');
-        } else {
-            document.documentElement.setAttribute('cMode', 'dark');
-        }
+        ls.cMode = e.target.checked;
+        document.documentElement.setAttribute('cMode', ls.cMode);
     }
 
     fb.html = doc(db, url[0], url[1]);
