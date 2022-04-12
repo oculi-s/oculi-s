@@ -3,7 +3,7 @@ var fbc = await fbc.json();
 
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-app.js';
 import { getFirestore, collection, getDocs, doc, getDoc, setDoc, updateDoc, deleteDoc, deleteField } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-firestore.js';
-import { getStorage, ref, listAll, getMetadata, getDownloadURL, uploadBytes, deleteObject } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-storage.js';
+import { getStorage, ref, listAll, getMetadata, getDownloadURL, uploadBytes, deleteObject, uploadBytesResumable } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-storage.js';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js';
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
@@ -316,21 +316,21 @@ function loadStorage() {
     listAll(ref(st, url.join('/'))).then(strg => {
         if (strg) {
             strg.items.forEach(async e => {
+                getMetadata(e).then(m => { e.meta = m; })
+                if (!is.lazyload) {
+                    getDownloadURL(e).then(u => { e.src = u; });
+                }
                 if (is.vid.test(e.name) || is.img.test(e.name)) {
                     fb.img[e.name] = e;
                 } else if (is.csv.test(e.name)) {
                     fb.csv[e.name] = e;
-                }
-                getMetadata(e).then(m => { e.meta = m; })
-                if (!is.lazyload) {
-                    getDownloadURL(e).then(u => { e.src = u; });
                 }
             });
         }
     }).catch(e => {
         unload();
         var exc = document.createElement('exc');
-        exc.className = 'far fa-image r';
+        exc.className = 'fa fa-image r';
         section.prepend(exc);
         throw e;
     });
@@ -369,7 +369,7 @@ function setImage() {
             var el = $(`*[name="${e.name}"]`);
             if (el) {
                 if (!e.src) {
-                    e.src = await getDownloadURL(e);
+                    e.src = await getDownloadURL(fb.img[e.name]);
                     el.src = e.src;
                 } else {
                     el.src = e.src
@@ -379,7 +379,7 @@ function setImage() {
                     var wrap = document.createElement('div');
                     var full = document.createElement('full');
                     wrap.innerHTML = el.outerHTML;
-                    full.className = 'fas fa-expand';
+                    full.className = 'fa fa-expand';
                     full.onclick = () => {
                         wrap.firstChild.classList.toggle("show");
                         body.classList.toggle("blur");
@@ -396,16 +396,16 @@ function setImage() {
 
 
 function createFile(e) {
-    var size = document.createElement('span');
     var name = e.name;
     var p = document.createElement('p');
     var span = document.createElement('span');
+    var size = document.createElement('size');
     var btn = document.createElement('button');
     p.setAttribute('name', name);
     if (fb.dict) {
-        p.style.color = de(fb.dict[url[2]].true).includes(name) ? "#aaa" : "#fff";
-    } else {
-        p.style.color = "#aaa";
+        if (de(fb.dict[url[2]].true).includes(name)) {
+            p.classList.add('exist');
+        }
     }
     span.onclick = () => {
         if (is.vid.test(name)) {
@@ -413,9 +413,9 @@ function createFile(e) {
         } else if (is.img.test(name)) {
             navigator.clipboard.writeText(`<img name="${name.trim()}">`);
         } else if (is.csv.test(name)) {
-            navigator.clipboard.writeText(`<chart type=line title=${name.split('.')[0]}></chart>`);
+            navigator.clipboard.writeText(`<chart type=line name=${name.trim()}></chart>`);
         }
-        p.style.color = "#aaa";
+        p.classList.add('exist');
     };
     span.innerText = name;
     btn.onclick = () => {
@@ -428,9 +428,11 @@ function createFile(e) {
             });
         }
     }
-    btn.classList.add('far', 'fa-trash-alt');
+    btn.classList.add('fa', 'fa-trash');
     if (e.meta) {
         size.innerText = numByte(e.meta.size);
+    } else {
+        size.innerHTML = '<bar></bar>';
     }
     p.append(span, size, btn);
     return p;
@@ -480,7 +482,6 @@ function clipbImg(as = true) {
                     if (fb.img[`img${i}.png`] == undefined) {
                         var name = `img${i}.png`;
                         e.setAttribute('name', name);
-                        fb.img[name] = e;
                         $('#img>div').append(createFile(e));
                         break;
                     }
@@ -488,17 +489,44 @@ function clipbImg(as = true) {
                 fetch(e.src)
                     .then(r => r.blob())
                     .then(r => {
-                        uploadBytes(ref(st, `${url.join('/')}/${e.name}`), r)
-                            .then(async f => {
-                                var r = f.metadata.ref;
-                                r.meta = f.metadata;
-                                r.src = await getDownloadURL(r);
-                                fb.img[r.name] = r;
-                                $(`*[name="${e.name}"]`).src = r.src;
+                        var rf = ref(st, `${url.join('/')}/${e.name}`);
+                        var task = uploadBytesResumable(rf, r);
+                        var size = $(`*[name="${e.name}"]>size`);
+                        size.classList.add('p');
+                        var bar = $(`*[name="${e.name}"]>size>bar`);
+                        if (as) {
+                            task.on('state_changed',
+                                (s) => {
+                                    var v = (s.bytesTransferred / s.totalBytes * 100);
+                                    var p = v.toFixed(2) + '%';
+                                    bar.style.width = p;
+                                    bar.innerText = p;
+                                }
+                            );
+                        }
+
+                        task.then(f => {
+                            rf.meta = f.metadata;
+                            size.classList.remove('p');
+                            size.innerText = numByte(rf.meta.size);
+                            getDownloadURL(rf).then(u => {
                                 setFileStatus();
-                            })
-                    })
-                e.setAttribute('from', 'false');
+                                rf.src = u;
+                                $(`*[name="${e.name}"]`).src = rf.src;
+                            }).then(() => {
+                                e.src = fb.img[e.name].src;
+                                var p = e.parentNode;
+                                p.onclick = () => {
+                                    if (p.innerText) {
+                                        p.innerHTML = p.innerText;
+                                    } else {
+                                        p.innerText = p.innerHTML;
+                                    }
+                                }
+                            });
+                            fb.img[e.name] = rf;
+                        });
+                    });
             };
             if (!as) {
                 e.removeAttribute('src');
@@ -686,10 +714,8 @@ function edit() {
         $('edit').oncopy = addClip;
         $('edit').oncut = addClip;
     }
-    $('edit').onkeyup = e => {
-        if ((e.ctrlKey || e.metaKey) && e.keyCode == 86) {
-            clipbImg();
-        }
+    $('edit').onpaste = () => {
+        setTimeout(() => { clipbImg() }, 300);
     }
 }
 
