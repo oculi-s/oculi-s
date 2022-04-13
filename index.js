@@ -428,7 +428,7 @@ function createFile(e) {
             });
         }
     }
-    btn.classList.add('fa fa-trash');
+    btn.className = 'fa fa-trash';
     if (e.meta) {
         size.innerText = numByte(e.meta.size);
     } else {
