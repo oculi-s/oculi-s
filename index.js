@@ -646,9 +646,33 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
     var autostop;
 
     function edit() {
+        var autosave = setInterval(save, 60 * 1000, true);
+        var autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
+
         body.classList.remove('blur');
         $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
         article.innerHTML = `<edit contenteditable=true></edit>${de(fb.srce.file.true)}`;
+
+        $('edit').focus();
+        $('edit').onkeydown = e => {
+            if (e.ctrlKey && e.keyCode == 83) {
+                e.preventDefault();
+                save();
+                clearInterval(autosave);
+                clearTimeout(autostop);
+            } else if (e.keyCode == 9) {
+                e.preventDefault();
+                insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
+            } else if (e.altKey && e.keyCode == 86) {
+                if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
+                    e.preventDefault();
+                    var r = getSelection().getRangeAt(0).getBoundingClientRect();
+                    clip.classList.toggle('clip');
+                    clip.style.top = r.bottom;
+                    clip.style.left = r.right;
+                }
+            }
+        }
 
         getData(ls.edit).split(/\n/).forEach(e => {
             var p = document.createElement('p');
@@ -685,31 +709,9 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         setFileEdit();
         setFileStatus();
 
-        var autosave = setInterval(save, 60 * 1000, true);
-        var autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
-        $('edit').focus();
         $('edit').oninput = e => {
             clearTimeout(autostop);
             autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
-        }
-        $('edit').onkeydown = e => {
-            if (e.ctrlKey && e.keyCode == 83) {
-                e.preventDefault();
-                save();
-                clearInterval(autosave);
-                clearTimeout(autostop);
-            } else if (e.keyCode == 9) {
-                e.preventDefault();
-                insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
-            } else if (e.altKey && e.keyCode == 86) {
-                if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
-                    e.preventDefault();
-                    var r = getSelection().getRangeAt(0).getBoundingClientRect();
-                    clip.classList.toggle('clip');
-                    clip.style.top = r.bottom;
-                    clip.style.left = r.right;
-                }
-            }
         }
         if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
             $('edit').oncopy = addClip;
