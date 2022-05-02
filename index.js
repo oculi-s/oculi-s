@@ -23,8 +23,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
     const ss = sessionStorage;
     const de = decodeURI;
     const en = encodeURI;
-    window.fb = { 'srce': '', 'html': '', 'dict': '', 'user': '', 'from': {}, 'img': {}, 'csv': {} };
-    const is = { 'sample': fbc.authDomain.includes('sample') ? '/sample' : '', 'code': en('</code>'), 'csv': RegExp('.csv'), 'img': RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), 'vid': RegExp('.mp4|.mov') };
+    const fb = { srce: '', html: '', dict: '', user: '', from: {}, img: {}, csv: {} };
+    const is = { sample: fbc.authDomain.includes('sample') ? '/sample' : '', code: en('</code>'), csv: RegExp('.csv'), img: RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), vid: RegExp('.mp4|.mov') };
     const head = document.head;
     const body = document.body;
     const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
@@ -316,7 +316,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
     function loadStorage() {
         listAll(ref(st, url.join('/'))).then(strg => {
             if (strg) {
-                strg.items.forEach(async e => {
+                strg.items.forEach(e => {
                     getMetadata(e).then(m => { e.meta = m; })
                     if (!is.lazyload) {
                         getDownloadURL(e).then(u => { e.src = u; });
@@ -395,50 +395,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         }
     }
 
-
-    function createFile(e) {
-        var name = e.name;
-        var p = document.createElement('p');
-        var span = document.createElement('span');
-        var size = document.createElement('size');
-        var btn = document.createElement('button');
-        p.setAttribute('name', name);
-        if (fb.dict) {
-            if (de(fb.dict[url[2]].true).includes(name)) {
-                p.classList.add('exist');
-            }
-        }
-        span.onclick = () => {
-            if (is.vid.test(name)) {
-                navigator.clipboard.writeText(`<video autoplay muted name="${name.trim()}">`);
-            } else if (is.img.test(name)) {
-                navigator.clipboard.writeText(`<img name="${name.trim()}">`);
-            } else if (is.csv.test(name)) {
-                navigator.clipboard.writeText(`<chart type=line name=${name.trim()}></chart>`);
-            }
-            p.classList.add('exist');
-        };
-        span.innerText = name;
-        btn.onclick = () => {
-            if (confirm('삭제하시겠습니까?')) {
-                deleteObject(ref(st, `${url.join('/')}/${name}`)).then(() => {
-                    p.remove();
-                    delete fb.csv[name];
-                    delete fb.img[name];
-                    setFileStatus();
-                });
-            }
-        }
-        btn.className = 'fa fa-trash';
-        if (e.meta) {
-            size.innerText = numByte(e.meta.size);
-        } else {
-            size.innerHTML = '<bar></bar>';
-        }
-        p.append(span, size, btn);
-        return p;
-    }
-
     function numByte(s) {
         if (s > kb * kb) {
             return (s / (kb * kb)).toFixed(2) + ' MB';
@@ -452,7 +408,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
     function uploadFile() {
         $('article input').files.forEach(e => {
             uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
-                $('#img>div').prepend(createFile(e));
                 var f = file.metadata.ref;
                 f.meta = file.metadata;
                 if (is.csv.test(f.name)) {
@@ -460,75 +415,82 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
                 } else {
                     fb.img[f.name] = f;
                 }
+                $('#img>div').prepend(createFile(f));
                 setFileStatus();
             });
         });
         $('article input').value = '';
     }
 
+    function imgOnclick(e) {
+        if (e.innerText) {
+            e.innerHTML = e.innerText;
+        } else {
+            e.innerText = e.innerHTML;
+        }
+        e.focus();
+    }
+
     function clipbImg(as = true) {
         if ($('edit img')) {
-            $$('edit img').forEach(e => {
-                if (fb.img[e.name] == undefined) {
-                    e.removeAttribute('name');
-                } else if (e.src != fb.img[e.name].src) {
-                    e.removeAttribute('name');
-                } else if (!e.src) {
-                    e.removeAttribute('name');
+            var imgs = $$('edit img');
+            imgs.forEach(e => {
+                if (fb.img[e.name] != 'pending') {
+                    if (fb.img[e.name] == undefined) {
+                        e.removeAttribute('name');
+                    } else if (e.src != fb.img[e.name].src) {
+                        e.removeAttribute('name');
+                    } else if (!e.src) {
+                        e.removeAttribute('name');
+                    }
                 }
-            });
-            $$('edit img').forEach(e => {
                 if (!e.name) {
                     for (var i = 0; i <= Object.keys(fb.img).length; i++) {
-                        if (fb.img[`img${i}.png`] == undefined) {
-                            var name = `img${i}.png`;
+                        var name = `img${i}.png`;
+                        if (fb.img[name] == undefined) {
                             e.setAttribute('name', name);
-                            $('#img>div').append(createFile(e));
+                            $('#img>div').append(createFile(e, true));
+                            fb.img[name] = 'pending';
                             break;
                         }
                     }
-                    fetch(e.src)
-                        .then(r => r.blob())
-                        .then(r => {
-                            var rf = ref(st, `${url.join('/')}/${e.name}`);
-                            var task = uploadBytesResumable(rf, r);
-                            var size = $(`*[name="${e.name}"]>size`);
-                            size.classList.add('p');
-                            var bar = $(`*[name="${e.name}"]>size>bar`);
-                            if (as) {
-                                task.on('state_changed',
-                                    (s) => {
-                                        var v = (s.bytesTransferred / s.totalBytes * 100);
-                                        var p = v.toFixed(2) + '%';
-                                        bar.style.width = p;
-                                        bar.innerText = p;
-                                    }
-                                );
-                            }
+                }
+            });
+            imgs.forEach(e => {
+                fetch(e.src)
+                    .then(r => r.blob())
+                    .then(r => {
+                        var rf = ref(st, `${url.join('/')}/${e.name}`);
+                        var task = uploadBytesResumable(rf, r);
+                        var size = $(`*[name="${e.name}"]>size`);
+                        size.classList.add('p');
+                        var bar = $(`*[name="${e.name}"]>size>bar`);
+                        if (as) {
+                            task.on('state_changed',
+                                (s) => {
+                                    var v = (s.bytesTransferred / s.totalBytes * 100);
+                                    var p = v.toFixed(2) + '%';
+                                    bar.style.width = p;
+                                    bar.innerText = p;
+                                }
+                            );
+                        }
 
-                            task.then(f => {
-                                rf.meta = f.metadata;
-                                size.classList.remove('p');
-                                size.innerText = numByte(rf.meta.size);
-                                getDownloadURL(rf).then(u => {
-                                    setFileStatus();
-                                    rf.src = u;
-                                    $(`*[name="${e.name}"]`).src = rf.src;
-                                }).then(() => {
-                                    e.src = fb.img[e.name].src;
-                                    var p = e.parentNode;
-                                    p.onclick = () => {
-                                        if (p.innerText) {
-                                            p.innerHTML = p.innerText;
-                                        } else {
-                                            p.innerText = p.innerHTML;
-                                        }
-                                    }
-                                });
-                                fb.img[e.name] = rf;
+                        task.then(f => {
+                            rf.meta = f.metadata;
+                            size.classList.remove('p');
+                            size.innerText = numByte(rf.meta.size);
+                            getDownloadURL(rf).then(u => {
+                                setFileStatus();
+                                rf.src = u;
+                                $(`*[name="${e.name}"]`).src = rf.src;
+                            }).then(() => {
+                                e.src = fb.img[e.name].src;
+                                e.parentElement.onclick = () => { imgOnclick(e.parentElement) };
                             });
+                            fb.img[e.name] = rf;
                         });
-                };
+                    });
                 if (!as) {
                     e.removeAttribute('src');
                     e.parentNode.innerText = e.parentNode.innerHTML;
@@ -608,7 +570,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         });
     }
 
-    function insert_text(sel, s) {
+    function insertText(sel, s) {
         var range = sel.getRangeAt(0);
         var node = document.createTextNode(s);
         sel.deleteFromDocument();
@@ -618,28 +580,86 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         sel.addRange(range);
     }
 
-    function setFileEdit() {
-        if ($('#img')) {
-            $('#img>div').innerHTML = '';
-            Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
-            Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
+    function createFile(e, exist = false) {
+        var name = e.name;
+        var p = document.createElement('p');
+        var span = document.createElement('span');
+        var size = document.createElement('size');
+        var btn = document.createElement('button');
+        p.setAttribute('name', name);
+        if (exist) {
+            p.classList.add('exist');
+        } else if (fb.dict) {
+            if (de(fb.dict[url[2]].true).includes(name)) {
+                p.classList.add('exist');
+            }
         }
+        span.onclick = () => {
+            if (is.vid.test(name)) {
+                navigator.clipboard.writeText(`<video autoplay muted name="${name.trim()}">`);
+            } else if (is.img.test(name)) {
+                navigator.clipboard.writeText(`<img name="${name.trim()}">`);
+            } else if (is.csv.test(name)) {
+                navigator.clipboard.writeText(`<chart type=line name=${name.trim()}></chart>`);
+            }
+            p.classList.add('exist');
+        };
+        span.innerText = name;
+        btn.onclick = () => {
+            if (confirm('삭제하시겠습니까?')) {
+                deleteObject(ref(st, `${url.join('/')}/${name}`)).then(() => {
+                    p.remove();
+                    delete fb.csv[name];
+                    delete fb.img[name];
+                    setFileStatus();
+                });
+            }
+        }
+        btn.className = 'fa fa-trash';
+        if (e.meta) {
+            size.innerText = numByte(e.meta.size);
+        } else {
+            size.innerHTML = '<bar></bar>';
+        }
+        p.append(span, size, btn);
+        return p;
+    }
+
+    function setFileEdit() {
+        (async() => {
+            if ($('#img')) {
+                $('#img>div').innerHTML = '';
+                Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
+                Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
+            }
+        })().then(() => {
+            setFileStatus();
+        }).catch(e => {
+            setTimeout(setFileEdit, 1000);
+        });
     }
 
     function setFileStatus() {
-        $('status').innerText = '';
-        var div = document.createElement('div');
-        var sum = 0;
-        if (Object.keys(fb.img).length) {
-            sum += Object.values(fb.img).map(e => e.meta.size).reduce((a, b) => a + b);
-        }
-        if (Object.keys(fb.csv).length) {
-            sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
-        }
-        var perc = sum / (50 * kb * kb);
-        $('status').innerText = `${numByte(sum)} / 50MB (${(perc * 100).toFixed(1)}%)`;
-        div.style.width = `${perc * $('status').clientWidth}px`;
-        $('status').append(div);
+        (async() => {
+            if ($('status')) {
+                $('status').innerText = '';
+                var div = document.createElement('div');
+                var span = document.createElement('span');
+                var sum = 0;
+                if (Object.keys(fb.img).length) {
+                    sum += Object.values(fb.img).map(e => e.meta.size).reduce((a, b) => a + b);
+                }
+                if (Object.keys(fb.csv).length) {
+                    sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
+                }
+                var perc = sum / (50 * kb * kb);
+                span.innerText = `${numByte(sum)} / 50MB (${(perc * 100).toFixed(1)}%)`;
+                div.style.width = `${perc * $('status').clientWidth}px`;
+                $('status').append(span, div)
+            }
+        })().catch(e => {
+            setTimeout(setFileStatus, 1000);
+        });
     }
 
     var autosave;
@@ -662,7 +682,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
                 clearTimeout(autostop);
             } else if (e.keyCode == 9) {
                 e.preventDefault();
-                insert_text(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
+                insertText(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
             } else if (e.altKey && e.keyCode == 86) {
                 if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
                     e.preventDefault();
@@ -676,8 +696,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
 
         getData(ls.edit).split(/\n/).forEach(e => {
             var p = document.createElement('p');
-            p.innerText = e;
             var t = document.createElement('p');
+            p.innerText = e;
             t.innerHTML = e;
             if (t.$('img')) {
                 if (!is.lazyload) {
@@ -686,13 +706,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
                         if (img.name && img.name in fb.img) {
                             img.src = fb.img[img.name].src;
                         }
-                        t.onclick = () => {
-                            if (t.innerText) {
-                                t.innerHTML = t.innerText;
-                            } else {
-                                t.innerText = t.innerHTML;
-                            }
-                        }
+                        t.onclick = () => { imgOnclick(t) };
                         $('edit').append(t);
                     } else {
                         $('edit').append(p);
@@ -707,7 +721,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         section.classList.add('e-s');
         article.classList.add('e-a');
         setFileEdit();
-        setFileStatus();
 
         $('edit').oninput = e => {
             clearTimeout(autostop);
@@ -819,10 +832,10 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
 
     function signout() {
         signOut(auth).then(() => {
-            alert('로그아웃 되었습니다.');
-            location.href = '/' + (is.sample ? 'sample' : '');
             ls.clear();
             ss.clear();
+            alert('로그아웃 되었습니다.');
+            location.href = '/' + (is.sample ? 'sample' : '');
         }).catch((e) => {
             alert('로그인 정보가 없습니다.');
         });
