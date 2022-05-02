@@ -544,7 +544,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             }
             e.append(t);
         } else {
-            var stack = e.getAttribute('stack;')
+            var stack = e.getAttribute('stack');
             var o = {
                 chart: {},
                 title: {},
