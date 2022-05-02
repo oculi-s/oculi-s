@@ -529,46 +529,53 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         return arr;
     }
 
+    function makeChart(e, raw) {
+        if (e.tagName == 'TBL') {
+            var arr = csvParse(raw);
+            var t = document.createElement('table');
+            var m = arr[0].length;
+            for (var i = 0; i < arr.length; i++) {
+                var tr = document.createElement('tr');
+                for (var j = 0; j < m; j++) {
+                    tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
+                }
+                t.append(tr);
+            }
+            e.append(t);
+        } else {
+            var o = {
+                chart: {},
+                title: {},
+                data: {},
+                legend: { enabled: false, layout: 'vertical', align: 'right' },
+                plotOptions: {
+                    series: { dataLabels: { enabled: true } },
+                    column: { stacking: 'normal', dataLabels: { enabled: true } },
+                    pie: { dataLabels: { enabled: true, distance: -50, } }
+                }
+            }
+            o.chart.type = e.getAttribute('type');
+            o.title.text = e.getAttribute('title');
+            o.data.csv = raw;
+            o.plotOptions.stacking = e.getAttribute('stack') == '1' ? 'normal' : '';
+            Highcharts.chart(e.id, o);
+        }
+    }
+
     function setChart() {
-        Object.values(fb.csv).forEach(async raw => {
-            var e = $(`[name="${raw.name}"]`);
-            if (e) {
-                var d = e.parentElement.clientWidth;
-                e.id = raw.name;
+        $$('chart').forEach(async e => {
+            var name = e.getAttribute('name');
+            var data = e.innerHTML;
+            var raw = fb.csv[name];
+            e.id = name;
+            if (raw) {
                 raw = await getDownloadURL(raw);
                 raw = await fetch(raw);
                 raw = await raw.text();
-                if (e.tagName == 'TBL') {
-                    var arr = csvParse(raw);
-                    var t = document.createElement('table');
-                    var m = arr[0].length;
-                    for (var i = 0; i < arr.length; i++) {
-                        var tr = document.createElement('tr');
-                        for (var j = 0; j < m; j++) {
-                            tr.innerHTML += `<t${i == 0 || j == 0 ? 'h' : 'd'}>${arr[i][j]}</t${i == 0 || j == 0 ? 'h' : 'd'}>`;
-                        }
-                        t.append(tr);
-                    }
-                    e.append(t);
-                } else {
-                    var o = {
-                        chart: {},
-                        title: {},
-                        data: {},
-                        legend: { enabled: false, layout: 'vertical', align: 'right' },
-                        plotOptions: {
-                            series: { dataLabels: { enabled: true } },
-                            column: { stacking: 'normal', dataLabels: { enabled: true } },
-                            pie: { dataLabels: { enabled: true, distance: -50, } }
-                        }
-                    }
-                    o.chart.type = e.getAttribute('type');
-                    o.title.text = e.getAttribute('title');
-                    o.data.csv = raw;
-                    o.plotOptions.stacking = e.getAttribute('stack') == '1' ? 'normal' : '';
-                    Highcharts.chart(e.id, o);
-                }
+            } else if (data) {
+                raw = data;
             }
+            makeChart(e, raw);
         })
         $$('trv').forEach(e => {
             e.id = e.getAttribute('name');
