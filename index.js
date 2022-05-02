@@ -23,8 +23,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
     const ss = sessionStorage;
     const de = decodeURI;
     const en = encodeURI;
-    const fb = { srce: '', html: '', dict: '', user: '', from: {}, img: {}, csv: {} };
-    const is = { sample: fbc.authDomain.includes('sample') ? '/sample' : '', code: en('</code>'), csv: RegExp('.csv'), img: RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), vid: RegExp('.mp4|.mov') };
+    window.fb = { srce: '', html: '', dict: '', user: '', from: {}, img: {}, csv: {} };
+    const is = { sample: fbc.authDomain.includes('sample') ? '/sample' : '', code: en('</code>'), csv: RegExp('.csv'), img: RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), vid: RegExp('.mp4|.mov'), loaded: false };
     const head = document.head;
     const body = document.body;
     const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
@@ -367,7 +367,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         });
         if (!is.lazyload) {
             Object.values(fb.img).forEach(async e => {
-                var el = $(`*[name="${e.name}"]`);
+                var el = $(`[name="${e.name}"]`);
                 if (el) {
                     if (!e.src) {
                         e.src = await getDownloadURL(fb.img[e.name]);
@@ -435,13 +435,17 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         if ($('edit img')) {
             var imgs = $$('edit img');
             imgs.forEach(e => {
+                e.new = false;
                 if (fb.img[e.name] != 'pending') {
                     if (fb.img[e.name] == undefined) {
                         e.removeAttribute('name');
+                        e.new = true;
                     } else if (e.src != fb.img[e.name].src) {
                         e.removeAttribute('name');
+                        e.new = true;
                     } else if (!e.src) {
                         e.removeAttribute('name');
+                        e.new = true;
                     }
                 }
                 if (!e.name) {
@@ -457,40 +461,42 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
                 }
             });
             imgs.forEach(e => {
-                fetch(e.src)
-                    .then(r => r.blob())
-                    .then(r => {
-                        var rf = ref(st, `${url.join('/')}/${e.name}`);
-                        var task = uploadBytesResumable(rf, r);
-                        var size = $(`*[name="${e.name}"]>size`);
-                        size.classList.add('p');
-                        var bar = $(`*[name="${e.name}"]>size>bar`);
-                        if (as) {
-                            task.on('state_changed',
-                                (s) => {
-                                    var v = (s.bytesTransferred / s.totalBytes * 100);
-                                    var p = v.toFixed(2) + '%';
-                                    bar.style.width = p;
-                                    bar.innerText = p;
-                                }
-                            );
-                        }
+                if (e.new == true) {
+                    fetch(e.src)
+                        .then(r => r.blob())
+                        .then(r => {
+                            var rf = ref(st, `${url.join('/')}/${e.name}`);
+                            var task = uploadBytesResumable(rf, r);
+                            var size = $(`[name="${e.name}"]>size`);
+                            size.classList.add('p');
+                            var bar = $(`[name="${e.name}"]>size>bar`);
+                            if (as) {
+                                task.on('state_changed',
+                                    (s) => {
+                                        var v = (s.bytesTransferred / s.totalBytes * 100);
+                                        var p = v.toFixed(2) + '%';
+                                        bar.style.width = p;
+                                        bar.innerText = p;
+                                    }
+                                );
+                            }
 
-                        task.then(f => {
-                            rf.meta = f.metadata;
-                            size.classList.remove('p');
-                            size.innerText = numByte(rf.meta.size);
-                            getDownloadURL(rf).then(u => {
-                                setFileStatus();
-                                rf.src = u;
-                                $(`*[name="${e.name}"]`).src = rf.src;
-                            }).then(() => {
-                                e.src = fb.img[e.name].src;
-                                e.parentElement.onclick = () => { imgOnclick(e.parentElement) };
+                            task.then(f => {
+                                rf.meta = f.metadata;
+                                size.classList.remove('p');
+                                size.innerText = numByte(rf.meta.size);
+                                getDownloadURL(rf).then(u => {
+                                    setFileStatus();
+                                    rf.src = u;
+                                    $(`[name="${e.name}"]`).src = rf.src;
+                                }).then(() => {
+                                    e.src = fb.img[e.name].src;
+                                    e.parentElement.onclick = () => { imgOnclick(e.parentElement) };
+                                });
+                                fb.img[e.name] = rf;
                             });
-                            fb.img[e.name] = rf;
                         });
-                    });
+                }
                 if (!as) {
                     e.removeAttribute('src');
                     e.parentNode.innerText = e.parentNode.innerHTML;
@@ -525,7 +531,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
 
     function setChart() {
         Object.values(fb.csv).forEach(async raw => {
-            var e = $(`*[name="${raw.name}"]`);
+            var e = $(`[name="${raw.name}"]`);
             if (e) {
                 var d = e.parentElement.clientWidth;
                 e.id = raw.name;
@@ -616,27 +622,34 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
             }
         }
         btn.className = 'fa fa-trash';
-        if (e.meta) {
-            size.innerText = numByte(e.meta.size);
-        } else {
-            size.innerHTML = '<bar></bar>';
-        }
+        size.innerHTML = '<bar></bar>';
+        setFileSize(e);
         p.append(span, size, btn);
         return p;
     }
 
+    function setFileSize(e) {
+        if (e.meta && $(`[name="${e.name}"]>size`)) {
+            $(`[name="${e.name}"]>size`).innerText = numByte(e.meta.size);
+        } else {
+            setTimeout(() => { setFileSize(e) }, 300);
+        }
+    }
+
     function setFileEdit() {
-        (async() => {
-            if ($('#img')) {
-                $('#img>div').innerHTML = '';
-                Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
-                Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
-            }
-        })().then(() => {
-            setFileStatus();
-        }).catch(e => {
-            setTimeout(setFileEdit, 1000);
-        });
+        if ($('#img')) {
+            $('#img>div').innerHTML = '';
+            Object.values(fb.img).forEach(e => { $('#img>div').append(createFile(e)) })
+            Object.values(fb.csv).forEach(e => { $('#img>div').append(createFile(e)) })
+        }
+    }
+
+    function setFileSrc(e) {
+        if (fb.img[e.name].src != undefined) {
+            e.src = fb.img[e.name].src;
+        } else {
+            setTimeout(() => { setFileSrc(e) }, 1000);
+        }
     }
 
     function setFileStatus() {
@@ -703,8 +716,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
                 if (!is.lazyload) {
                     var img = t.$('img');
                     if (img.getAttribute('name')) {
-                        if (img.name && img.name in fb.img) {
-                            img.src = fb.img[img.name].src;
+                        if (img.name in fb.img) {
+                            setFileSrc(img);
                         }
                         t.onclick = () => { imgOnclick(t) };
                         $('edit').append(t);
@@ -721,6 +734,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
         section.classList.add('e-s');
         article.classList.add('e-a');
         setFileEdit();
+        setFileStatus();
 
         $('edit').oninput = e => {
             clearTimeout(autostop);
