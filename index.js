@@ -544,21 +544,22 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             }
             e.append(t);
         } else {
+            var stack = e.getAttribute('stack;')
             var o = {
                 chart: {},
                 title: {},
                 data: {},
                 legend: { enabled: false, layout: 'vertical', align: 'right' },
                 plotOptions: {
-                    series: { dataLabels: { enabled: true } },
-                    column: { stacking: 'normal', dataLabels: { enabled: true } },
-                    pie: { dataLabels: { enabled: true, distance: -50, } }
+                    series: { dataLabels: { enabled: true }, stacking: stack },
+                    column: { dataLabels: { enabled: true }, stacking: stack },
+                    pie: { dataLabels: { enabled: true, distance: -50, } },
+                    line: { dataLabels: { enabled: true }, stacking: stack }
                 }
             }
             o.chart.type = e.getAttribute('type');
             o.title.text = e.getAttribute('title');
             o.data.csv = raw;
-            o.plotOptions.stacking = e.getAttribute('stack') == '1' ? 'normal' : '';
             Highcharts.chart(e.id, o);
         }
     }
