@@ -4,6 +4,7 @@ import { getStorage, ref, listAll, getMetadata, getDownloadURL, uploadBytes, del
 import { getAuth, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/9.4.1/firebase-auth.js';
 import Highcharts from 'https://code.highcharts.com/es-modules/masters/highcharts.src.js';
 import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
+import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src.js';
 
 (async() => {
     var fbc = await fetch(`${location.pathname.split('/')[1] == 'sample' ? '/sample' : ''}/fbc.json`);
@@ -565,7 +566,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/data.src.js';
     function setChart() {
         $$('chart').forEach(async e => {
             var name = e.getAttribute('name');
-            var data = e.innerHTML;
+            var data = e.innerHTML.trim();
             var raw = fb.csv[name];
             e.id = name;
             if (raw) {
