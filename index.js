@@ -546,20 +546,22 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         } else {
             var stack = e.getAttribute('stack');
             var o = {
-                chart: {},
-                title: {},
-                data: {},
+                chart: {
+                    type: e.getAttribute('type'),
+                    width: e.getAttribute('width'),
+                    height: e.getAttribute('height')
+                },
+                title: { title: e.getAttribute('title') },
+                data: { csv: raw },
                 legend: { enabled: false, layout: 'vertical', align: 'right' },
                 plotOptions: {
                     series: { dataLabels: { enabled: true }, stacking: stack },
                     column: { dataLabels: { enabled: true }, stacking: stack },
                     pie: { dataLabels: { enabled: true, distance: -50, } },
-                    line: { dataLabels: { enabled: true }, stacking: stack }
+                    line: { dataLabels: { enabled: true }, stacking: stack },
+                    bar: { dataLabels: { enabled: true }, stacking: stack }
                 }
             }
-            o.chart.type = e.getAttribute('type');
-            o.title.text = e.getAttribute('title');
-            o.data.csv = raw;
             Highcharts.chart(e.id, o);
         }
     }
@@ -567,7 +569,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     function setChart() {
         $$('chart').forEach(async e => {
             var name = e.getAttribute('name');
-            var data = e.innerHTML.trim();
+            var data = e.innerHTML.trim().replaceAll('\n\n', '\n');
             var raw = fb.csv[name];
             e.id = name;
             if (raw) {
