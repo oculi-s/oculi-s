@@ -546,22 +546,23 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         } else {
             var stack = e.getAttribute('stack');
             var o = {
-                chart: {
-                    type: e.getAttribute('type'),
-                    width: e.getAttribute('width'),
-                    height: e.getAttribute('height')
-                },
-                title: { title: e.getAttribute('title') },
+                chart: {},
+                title: {},
                 data: { csv: raw },
                 legend: { enabled: false, layout: 'vertical', align: 'right' },
                 plotOptions: {
                     series: { dataLabels: { enabled: true }, stacking: stack },
                     column: { dataLabels: { enabled: true }, stacking: stack },
-                    pie: { dataLabels: { enabled: true, distance: -50, } },
+                    pie: { dataLabels: { enabled: false }, label: { enabled: false } },
                     line: { dataLabels: { enabled: true }, stacking: stack },
                     bar: { dataLabels: { enabled: true }, stacking: stack }
                 }
             }
+            o.title.text = e.title;
+            o.chart.type = e.getAttribute('type');
+            o.chart.width = e.getAttribute('width');
+            o.chart.height = e.getAttribute('height');
+            o.chart.margin = 20;
             Highcharts.chart(e.id, o);
         }
     }
