@@ -15,6 +15,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     window.st = getStorage();
     window.$ = document.querySelector.bind(document);
     window.$$ = document.querySelectorAll.bind(document);
+
     HTMLElement.prototype.$ = HTMLElement.prototype.querySelector;
     HTMLElement.prototype.$$ = HTMLElement.prototype.querySelectorAll;
     FileList.prototype.forEach = Array.prototype.forEach;
@@ -24,11 +25,10 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     const ss = sessionStorage;
     const de = decodeURI;
     const en = encodeURI;
-    window.fb = { srce: '', html: '', dict: '', user: '', from: {}, img: {}, csv: {} };
+    window.fb = { from: {}, img: {}, csv: {} };
     const is = { sample: fbc.authDomain.includes('sample') ? '/sample' : '', code: en('</code>'), csv: RegExp('.csv'), img: RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), vid: RegExp('.mp4|.mov'), loaded: false };
     const head = document.head;
     const body = document.body;
-    const trv_opt = (id) => { return { "autosize": true, "symbol": id, "interval": "D", "theme": "dark", "locale": "kr", "enable_publishing": false, "save_image": false, "container_id": id, "hide_top_toolbar": true } }
     if (ls.cMode == undefined) { ls.cMode = 1; }
     document.documentElement.setAttribute('cMode', ls.cMode);
     const css_load = `z-index:5; position: fixed; width:100%; height:100%; background: ${ls.cMode == '1' ? '#0d1117' : '#fff'}; left:0; top:0; transition:ease .5s`;
@@ -56,12 +56,15 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
 
     var article;
     var url;
+
+
     (async() => {
-        url = de(location.pathname).toLowerCase().split('/').slice(1).filter(e => e !== '');
-        if (is.sample.length && url[0] == 'sample') { url = url.slice(1); }
+        url = getUrl(location.pathname);
         url.push('index', 'index', 'index');
         url = url.slice(0, 3);
         is.lazyload = url[0] == 'life';
+        is.tree = url.join('/') == `${(is.sample.length ? 'sample' : 'index')}/source/tree`;
+        window.is = is;
         section.classList.add(url[0]);
         console.log(url);
         loadStorage();
@@ -81,7 +84,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         if (ls.uid == undefined) { ls.log = false, ls.uid = null; }
         fval(u.trv);
 
-        fb.srce = await getDoc(doc(db, is.sample.length ? 'sample' : 'index', 'source'));
+        fb.dsrc = doc(db, is.sample.length ? 'sample' : 'index', 'source');
+        fb.srce = await getDoc(fb.dsrc);
         fb.srce = fb.srce.data();
         fb.user = await getDoc(doc(db, 'user', ls.uid));
         fb.user = fb.user.data();
@@ -134,6 +138,14 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         throw e;
     });
 
+    function getUrl(s) {
+        s = de(s).toLowerCase().split('/').slice(1).filter(e => e != '');
+        if (is.sample.length && s[0] == 'sample') {
+            s = s.slice(1);
+        }
+        return s;
+    };
+
     function unload() {
         if ($('load')) {
             $('load').style.opacity = 0;
@@ -148,7 +160,9 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function getData(x) {
-        if (fb.dict) {
+        if (is.tree) {
+            return fb.srce.tree;
+        } else if (fb.dict) {
             if (url[2] in fb.dict) {
                 var r = fb.dict[url[2]][x];
                 ls.prp = r.includes(is.code);
@@ -172,8 +186,15 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function setData(index) {
-        var e = document.createElement('html')
-        e.innerHTML = index.replaceAll('\u00a0', ' ');
+        var e = document.createElement('html');
+        if (is.tree) {
+            const keys = new Set();
+            JSON.stringify(fb.dict, (k, v) => (keys.add(k), v));
+            e.innerHTML = JSON.stringify(index, Array.from(keys).sort(), 2);
+            article.style['white-space'] = 'break-spaces';
+        } else {
+            e.innerHTML = index.replaceAll('\u00a0', ' ');
+        }
         var scrsrc = e.$$('script[src]');
         var script = e.$$('script:not([src])');
         scrsrc.forEach(scr => { scr.remove() });
@@ -186,6 +207,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         setScript(script);
         setCode();
         setChart();
+        setAnchor();
         if (location.hash) { location.href = location.hash; }
         section.classList.remove('e-s');
         article.classList.remove('e-a');
@@ -243,9 +265,10 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function setFold() {
-        if ($('h1')) {
-            var f = $('h1').dataset.fold;
-            var b = $('h1').dataset.blind;
+        var h1 = $('h1');
+        if (h1) {
+            var f = h1.getAttribute('fold');
+            var b = h1.getAttribute('blind');
             $$(`article>*:not(index) ${f}, article>${f}`).forEach(e => {
                 e.onclick = () => { e.classList.toggle('fold') };
                 e.classList.add('foldable');
@@ -274,6 +297,64 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             }
             article.append(but);
         }
+    }
+
+    function findAnchor(tree, link) {
+        if (!tree[link[0]]) {
+            return false;
+        } else if (link.length > 1 && link[1] != 'index') {
+            return findAnchor(tree[link[0]], link.slice(1));
+        } else {
+            return tree[link[0]];
+        }
+    }
+
+    function delAnchor(link) {
+        while (link[link.length - 1] == 'index') {
+            link = link.slice(0, link.length - 1);
+        }
+        if (link.length == 3) {
+            delete fb.srce.tree[link[0]][link[1]][link[2]];
+        }
+        if (link.length > 1) {
+            if (Object.keys(fb.srce.tree[link[0]][link[1]]).length == 0) {
+                delete fb.srce.tree[link[0]][link[1]];
+            }
+        }
+        if (Object.keys(fb.srce.tree[link[0]]).length == 0) {
+            delete fb.srce.tree[link[0]];
+        }
+        updateDoc(fb.dsrc, fb.srce);
+    }
+    window.addAnchor = addAnchor;
+
+    function addAnchor(link) {
+        while (link[link.length - 1] == 'index') {
+            link = link.slice(0, link.length - 1);
+        }
+        if (fb.srce.tree[link[0]] == undefined) {
+            fb.srce.tree[link[0]] = {};
+        }
+        if (link.length > 1) {
+            if (fb.srce.tree[link[0]][link[1]] == undefined) {
+                fb.srce.tree[link[0]][link[1]] = {};
+            }
+        }
+        if (link.length == 3) {
+            fb.srce.tree[link[0]][link[1]][link[2]] = {};
+        }
+        updateDoc(fb.dsrc, fb.srce);
+    }
+
+    function setAnchor() {
+        $$('article a:not([target])').forEach(a => {
+            var link = getUrl(a.pathname);
+            if (link.length) {
+                if (!findAnchor(fb.srce.tree, link)) {
+                    a.classList.add('r');
+                }
+            }
+        })
     }
 
     var H = '';
@@ -339,10 +420,15 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function setImage() {
-        $$('article img').forEach(e => {
-            e.outerHTML = `<figure>${e.outerHTML}<figcaption>${e.getAttribute('title')}</figcaption></figure>`;
-        });
-        $$('article img').forEach(e => {
+        var imgs = $$('article img');
+        imgs.forEach(e => {
+            var fig = document.createElement('figure');
+            var cap = document.createElement('figcaption');
+            cap.innerHTML = e.getAttribute('title');
+            fig.innerHTML = e.outerHTML;
+            fig.append(cap);
+            e.replaceWith(fig);
+            e = fig.firstChild;
             e.onclick = () => {
                 e.classList.toggle("show");
                 body.classList.toggle("blur");
@@ -356,10 +442,10 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                         el.src = await getDownloadURL(fb.img[el.name]);
                     }
                 }
-                el.childNodes.forEach(async el => {
+                el.$$('img').forEach(async el => {
                     if (!el.src) {
                         if (el.name in fb.img) {
-                            el.src = getDownloadURL(fb.img[el.name]);
+                            el.src = await getDownloadURL(fb.img[el.name]);
                         }
                     }
                 });
@@ -372,20 +458,18 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 if (el) {
                     if (!e.src) {
                         e.src = await getDownloadURL(fb.img[e.name]);
-                        el.src = e.src;
-                    } else {
-                        el.src = e.src
                     }
+                    el.src = e.src;
                     if (el.tagName.toLowerCase() == 'iframe') {
                         el.setAttribute('scrolling', 'no')
                         var wrap = document.createElement('div');
                         var full = document.createElement('full');
-                        wrap.innerHTML = el.outerHTML;
                         full.className = 'fa fa-expand';
                         full.onclick = () => {
                             wrap.firstChild.classList.toggle("show");
                             body.classList.toggle("blur");
                         }
+                        wrap.innerHTML = el.outerHTML;
                         wrap.append(full);
                         wrap.style.position = 'relative';
                         wrap.style.width = 'fit-content';
@@ -406,30 +490,91 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
+    function imgUpload(e, name, as = true) {
+        var rf = ref(st, `${url.join('/')}/${name}`);
+        var task = uploadBytesResumable(rf, e);
+
+        var size = $(`[name="${name}"]>size`);
+        var bar = $(`[name="${name}"]>size>bar`);
+        size.classList.add('p');
+        if (as) {
+            task.on('state_changed',
+                (s) => {
+                    var v = (s.bytesTransferred / s.totalBytes * 100);
+                    var p = v.toFixed(2) + '%';
+                    bar.style.width = p;
+                    bar.innerText = p;
+                }
+            );
+        }
+
+        task.then(f => {
+            rf.meta = f.metadata;
+            size.classList.remove('p');
+            size.innerText = numByte(rf.meta.size);
+            getDownloadURL(rf).then(u => {
+                setFileStatus();
+                rf.src = u;
+                e.src = u;
+            });
+            fb.img[e.name] = rf;
+        });
+    }
+
     function uploadFile() {
         $('article input').files.forEach(e => {
-            uploadBytes(ref(st, `${url.join('/')}/${e.name}`), e).then((file) => {
-                var f = file.metadata.ref;
-                f.meta = file.metadata;
-                if (is.csv.test(f.name)) {
-                    fb.csv[f.name] = f;
-                } else {
-                    fb.img[f.name] = f;
-                }
-                $('#img>div').prepend(createFile(f));
-                setFileStatus();
-            });
+            var name = e.name;
+            if (is.img.test(name)) {
+                name = setFileName(e);
+                imgUpload(e, name);
+            } else {
+                var rf = ref(st, `${url.join('/')}/${name}`);
+                uploadBytes(rf, e)
+                    .then(f => {
+                        rf.meta = f.metadata;
+                        if (is.csv.test(name)) {
+                            fb.csv[name] = rf;
+                        }
+                        $('#img>div').prepend(createFile(rf));
+                        setFileStatus();
+                    });
+            }
         });
         $('article input').value = '';
     }
 
-    function imgOnclick(e) {
-        if (e.innerText) {
-            e.innerHTML = e.innerText;
+    function imgOnclick(p) {
+        var e = p.firstChild;
+        if (p.innerText) {
+            p.innerHTML = p.innerText;
+            var e = p.firstChild;
+            if (!e.src) {
+                var name = e.getAttribute('name');
+                if (fb.img[name] != undefined) {
+                    e.src = fb.img[name].src;
+                }
+            }
         } else {
-            e.innerText = e.innerHTML;
+            e.removeAttribute('src');
+            e.removeAttribute('alt');
+            e.removeAttribute('style');
+            p.innerText = p.innerHTML;
         }
-        e.focus();
+        p.focus();
+    }
+
+    function setFileName(e) {
+        for (var i = 0; i <= Object.keys(fb.img).length; i++) {
+            var name = `img${i}.png`;
+            if (fb.img[name] == undefined) {
+                if (!e.name) {
+                    e.setAttribute('name', name);
+                }
+                $('#img>div').append(createFile(e, name, true));
+                fb.img[name] = 'pending';
+                return name;
+            }
+        }
     }
 
     function clipbImg(as = true) {
@@ -449,53 +594,21 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                         e.new = true;
                     }
                 }
-                if (!e.name) {
-                    for (var i = 0; i <= Object.keys(fb.img).length; i++) {
-                        var name = `img${i}.png`;
-                        if (fb.img[name] == undefined) {
-                            e.setAttribute('name', name);
-                            $('#img>div').append(createFile(e, true));
-                            fb.img[name] = 'pending';
-                            break;
-                        }
-                    }
-                }
-            });
-            imgs.forEach(e => {
+                if (!e.name) { setFileName(e); }
+
                 if (e.new == true) {
+                    var p = e.parentElement;
+                    if (p.tagName.toLowerCase() != 'p') {
+                        var p = document.createElement('p');
+                        p.innerHTML = e.outerHTML;
+                        e.replaceWith(p);
+                        e = p.firstChild;
+                    }
+                    p.onclick = () => { imgOnclick(p) };
                     fetch(e.src)
                         .then(r => r.blob())
                         .then(r => {
-                            var rf = ref(st, `${url.join('/')}/${e.name}`);
-                            var task = uploadBytesResumable(rf, r);
-                            var size = $(`[name="${e.name}"]>size`);
-                            size.classList.add('p');
-                            var bar = $(`[name="${e.name}"]>size>bar`);
-                            if (as) {
-                                task.on('state_changed',
-                                    (s) => {
-                                        var v = (s.bytesTransferred / s.totalBytes * 100);
-                                        var p = v.toFixed(2) + '%';
-                                        bar.style.width = p;
-                                        bar.innerText = p;
-                                    }
-                                );
-                            }
-
-                            task.then(f => {
-                                rf.meta = f.metadata;
-                                size.classList.remove('p');
-                                size.innerText = numByte(rf.meta.size);
-                                getDownloadURL(rf).then(u => {
-                                    setFileStatus();
-                                    rf.src = u;
-                                    $(`[name="${e.name}"]`).src = rf.src;
-                                }).then(() => {
-                                    e.src = fb.img[e.name].src;
-                                    e.parentElement.onclick = () => { imgOnclick(e.parentElement) };
-                                });
-                                fb.img[e.name] = rf;
-                            });
+                            imgUpload(r, e.name);
                         });
                 }
                 if (!as) {
@@ -568,6 +681,26 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function setChart() {
+        const trv_opt = (e) => {
+            const id = e.getAttribute('name');
+            const o = {
+                "autosize": true,
+                "symbol": id,
+                "interval": "D",
+                "theme": "dark",
+                "locale": "kr",
+                "enable_publishing": false,
+                "save_image": false,
+                "container_id": id,
+                "hide_top_toolbar": true
+            }
+            if (e.getAttribute('width')) {
+                delete o['autosize'];
+                o.width = e.getAttribute('width');
+                o.height = e.getAttribute('height');
+            }
+            return o;
+        }
         $$('chart').forEach(async e => {
             var name = e.getAttribute('name');
             var data = e.innerHTML.trim().replaceAll('\n\n', '\n');
@@ -583,8 +716,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             makeChart(e, raw);
         })
         $$('trv').forEach(e => {
-            e.id = e.getAttribute('name');
-            new TradingView.widget(trv_opt(e.id));
+            new TradingView.widget(trv_opt(e));
         });
     }
 
@@ -598,8 +730,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         sel.addRange(range);
     }
 
-    function createFile(e, exist = false) {
-        var name = e.name;
+    function createFile(e, name = e.name, exist = false) {
         var p = document.createElement('p');
         var span = document.createElement('span');
         var size = document.createElement('size');
@@ -693,72 +824,77 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     function edit() {
         var autosave = setInterval(save, 60 * 1000, true);
         var autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
-
         body.classList.remove('blur');
         $$('input[name="type"]').forEach(e => { e.onclick = () => { ls.edit = e.value, $('edit').innerText = getData(e.value); } });
-        article.innerHTML = `<edit contenteditable=true></edit>${de(fb.srce.file.true)}`;
-
-        $('edit').focus();
-        $('edit').onkeydown = e => {
-            if (e.ctrlKey && e.keyCode == 83) {
-                e.preventDefault();
-                save();
-                clearInterval(autosave);
-                clearTimeout(autostop);
-            } else if (e.keyCode == 9) {
-                e.preventDefault();
-                insertText(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
-            } else if (e.altKey && e.keyCode == 86) {
-                if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
+        (async() => {
+            article.innerHTML = `<edit contenteditable=true></edit>${de(fb.srce.file.true)}`
+        })().then(() => {
+            $('edit').focus();
+            $('edit').onkeydown = e => {
+                if (e.ctrlKey && e.keyCode == 83) {
                     e.preventDefault();
-                    var r = getSelection().getRangeAt(0).getBoundingClientRect();
-                    clip.classList.toggle('clip');
-                    clip.style.top = r.bottom;
-                    clip.style.left = r.right;
+                    save();
+                    clearInterval(autosave);
+                    clearTimeout(autostop);
+                } else if (e.keyCode == 9) {
+                    e.preventDefault();
+                    insertText(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
+                } else if (e.altKey && e.keyCode == 86) {
+                    if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
+                        e.preventDefault();
+                        var r = getSelection().getRangeAt(0).getBoundingClientRect();
+                        clip.classList.toggle('clip');
+                        clip.style.top = r.bottom;
+                        clip.style.left = r.right;
+                    }
                 }
             }
-        }
-
-        getData(ls.edit).split(/\n/).forEach(e => {
-            var p = document.createElement('p');
-            var t = document.createElement('p');
-            p.innerText = e;
-            t.innerHTML = e;
-            if (t.$('img')) {
-                if (!is.lazyload) {
-                    var img = t.$('img');
-                    if (img.getAttribute('name')) {
-                        if (img.name in fb.img) {
-                            setFileSrc(img);
+        }).then(() => {
+            if (is.tree) {
+                $('edit').innerHTML = JSON.stringify(getData(ls.edit), null, 2);
+            } else {
+                getData(ls.edit).split(/\n/).forEach(e => {
+                    var p = document.createElement('p');
+                    var t = document.createElement('p');
+                    p.innerText = e;
+                    t.innerHTML = e;
+                    if (t.$('img')) {
+                        if (!is.lazyload) {
+                            var img = t.$('img');
+                            if (img.getAttribute('name')) {
+                                if (img.name in fb.img) {
+                                    setFileSrc(img);
+                                }
+                                t.onclick = () => { imgOnclick(t) };
+                                $('edit').append(t);
+                            } else {
+                                $('edit').append(p);
+                            }
+                        } else {
+                            $('edit').append(p);
                         }
-                        t.onclick = () => { imgOnclick(t) };
-                        $('edit').append(t);
-                    } else {
+                    } else if (e.length) {
                         $('edit').append(p);
                     }
-                } else {
-                    $('edit').append(p);
-                }
-            } else if (e.length) {
-                $('edit').append(p);
+                })
             }
-        })
-        section.classList.add('e-s');
-        article.classList.add('e-a');
-        setFileEdit();
-        setFileStatus();
-
-        $('edit').oninput = e => {
-            clearTimeout(autostop);
-            autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
-        }
-        if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
-            $('edit').oncopy = addClip;
-            $('edit').oncut = addClip;
-        }
-        $('edit').onpaste = () => {
-            setTimeout(() => { clipbImg() }, 300);
-        }
+            section.classList.add('e-s');
+            article.classList.add('e-a');
+            setFileEdit();
+            setFileStatus();
+        }).then(() => {
+            $('edit').oninput = e => {
+                clearTimeout(autostop);
+                autostop = setTimeout(() => { clearInterval(autosave), save(0) }, 5 * 60 * 1000);
+            }
+            if (/mac|iPhone|ipad|iPod/i.test(navigator.platform)) {
+                $('edit').oncopy = addClip;
+                $('edit').oncut = addClip;
+            }
+            $('edit').onpaste = () => {
+                setTimeout(() => { clipbImg() }, 300);
+            }
+        });
     }
 
     function addClip() {
@@ -784,7 +920,11 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             clearTimeout(autostop);
             section.classList.remove('e-s');
             article.classList.remove('e-a');
-            setData(de(fb.dict[url[2]][ls.edit]));
+            if (is.tree) {
+                setData(fb.dict);
+            } else {
+                setData(de(fb.dict[url[2]][ls.edit]));
+            }
             if (ls.prp) { fval(u.prp, false); }
         }
         $('es>div>span').className = 'b';
@@ -792,17 +932,22 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function save(as = false) {
-        if ($('edit')) {
+        if (is.tree) {
+            fb.srce.tree = JSON.parse($('edit').innerText.replaceAll('\n', ''));
+            setDoc(fb.html, fb.srce).then(() => { saved(as); });
+        } else if ($('edit')) {
             clipbImg(as);
             var d = en($('edit').innerText);
             d = d.replaceAll("&alpha;", "α").replaceAll("&beta;", "β").replaceAll("&gamma;", "γ").replaceAll("&delta;", "δ");
             if (fb.dict == undefined) {
                 fb.dict = {};
                 fb.dict[url[2]] = { auth: 1, true: d, false: '' };
-                setDoc(fb.html, fb.dict).then(() => { saved(as); })
+                setDoc(fb.html, fb.dict).then(() => { saved(as); });
+                addAnchor(url);
             } else {
                 if (!fb.dict[url[2]]) {
                     fb.dict[url[2]] = { auth: 1 };
+                    addAnchor(url);
                 }
                 fb.dict[url[2]][ls.edit] = d;
                 if (fb.dict[url[2]].auth == 1) {
@@ -819,13 +964,14 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             clearTimeout(autostop);
             if (fb.dict) {
                 delete fb.dict[url[2]];
-                var new_dict = {}
+                var new_dict = {};
                 new_dict[url[2]] = deleteField();
                 updateDoc(fb.html, new_dict).then(() => { setData(getData(ls.log)); });
                 if (!Object.keys(fb.dict).length) {
                     deleteDoc(fb.html);
                     fb.dict = undefined;
                 }
+                delAnchor(url);
             } else {
                 setData(getData(ls.log));
             }
@@ -836,6 +982,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                     fb.csv = {};
                 }
             })
+
         }
     }
 
