@@ -326,7 +326,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
         updateDoc(fb.dsrc, fb.srce);
     }
-    window.addAnchor = addAnchor;
 
     function addAnchor(link) {
         while (link[link.length - 1] == 'index') {
@@ -921,7 +920,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             section.classList.remove('e-s');
             article.classList.remove('e-a');
             if (is.tree) {
-                setData(fb.dict);
+                setData(fb.dict.tree);
             } else {
                 setData(de(fb.dict[url[2]][ls.edit]));
             }
