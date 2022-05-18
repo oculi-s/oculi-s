@@ -489,9 +489,10 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function imgUpload(e, name, as = true) {
+    function imgUpload(r, e, as = true) {
+        var name = e.name;
         var rf = ref(st, `${url.join('/')}/${name}`);
-        var task = uploadBytesResumable(rf, e);
+        var task = uploadBytesResumable(rf, r);
 
         var size = $(`[name="${name}"]>size`);
         var bar = $(`[name="${name}"]>size>bar`);
@@ -509,6 +510,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
 
         task.then(f => {
             rf.meta = f.metadata;
+            fb.img[name] = rf;
             size.classList.remove('p');
             size.innerText = numByte(rf.meta.size);
             getDownloadURL(rf).then(u => {
@@ -516,7 +518,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 rf.src = u;
                 e.src = u;
             });
-            fb.img[e.name] = rf;
         });
     }
 
@@ -546,7 +547,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         var e = p.firstChild;
         if (p.innerText) {
             p.innerHTML = p.innerText;
-            var e = p.firstChild;
+            e = p.firstChild;
             if (!e.src) {
                 var name = e.getAttribute('name');
                 if (fb.img[name] != undefined) {
@@ -566,9 +567,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         for (var i = 0; i <= Object.keys(fb.img).length; i++) {
             var name = `img${i}.png`;
             if (fb.img[name] == undefined) {
-                if (!e.name) {
-                    e.setAttribute('name', name);
-                }
+                if (!e.getAttribute('name')) { e.setAttribute('name', name); }
                 $('#img>div').append(createFile(e, name, true));
                 fb.img[name] = 'pending';
                 return name;
@@ -576,46 +575,39 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function clipbImg(as = true) {
-        if ($('edit img')) {
-            var imgs = $$('edit img');
-            imgs.forEach(e => {
+    function clipbImg() {
+        $$('edit img').forEach(e => {
+            var p = e.parentElement;
+            e.new = false;
+            if (fb.img[e.name] != 'pending') {
+                if (fb.img[e.name] == undefined) {
+                    e.removeAttribute('name');
+                    e.new = true;
+                } else if (e.src != fb.img[e.name].src) {
+                    e.removeAttribute('name');
+                    e.new = true;
+                } else if (!e.src) {
+                    e.removeAttribute('name');
+                    e.new = true;
+                }
+            }
+            if (e.new) {
+                setFileName(e);
+                if (p.tagName.toLowerCase() != 'p') {
+                    var p = document.createElement('p');
+                    p.innerHTML = e.outerHTML;
+                    e.replaceWith(p);
+                    e = p.firstChild;
+                }
+                p.onclick = () => { imgOnclick(p) };
+                fetch(e.src)
+                    .then(r => r.blob())
+                    .then(r => {
+                        imgUpload(r, e);
+                    });
                 e.new = false;
-                if (fb.img[e.name] != 'pending') {
-                    if (fb.img[e.name] == undefined) {
-                        e.removeAttribute('name');
-                        e.new = true;
-                    } else if (e.src != fb.img[e.name].src) {
-                        e.removeAttribute('name');
-                        e.new = true;
-                    } else if (!e.src) {
-                        e.removeAttribute('name');
-                        e.new = true;
-                    }
-                }
-                if (!e.name) { setFileName(e); }
-
-                if (e.new == true) {
-                    var p = e.parentElement;
-                    if (p.tagName.toLowerCase() != 'p') {
-                        var p = document.createElement('p');
-                        p.innerHTML = e.outerHTML;
-                        e.replaceWith(p);
-                        e = p.firstChild;
-                    }
-                    p.onclick = () => { imgOnclick(p) };
-                    fetch(e.src)
-                        .then(r => r.blob())
-                        .then(r => {
-                            imgUpload(r, e.name);
-                        });
-                }
-                if (!as) {
-                    e.removeAttribute('src');
-                    e.parentNode.innerText = e.parentNode.innerHTML;
-                }
-            })
-        }
+            }
+        });
     }
 
     function csvParse(s, d = ',') {
@@ -795,22 +787,19 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function setFileStatus() {
+        var status = $('status');
         (async() => {
-            if ($('status')) {
-                $('status').innerText = '';
+            if (status) {
+                status.innerText = '';
                 var div = document.createElement('div');
                 var span = document.createElement('span');
                 var sum = 0;
-                if (Object.keys(fb.img).length) {
-                    sum += Object.values(fb.img).map(e => e.meta.size).reduce((a, b) => a + b);
-                }
-                if (Object.keys(fb.csv).length) {
-                    sum += Object.values(fb.csv).map(e => e.meta.size).reduce((a, b) => a + b);
-                }
+                Object.values(fb.img).forEach(v => { sum += v.meta.size; });
+                Object.values(fb.csv).forEach(v => { sum += v.meta.size; });
                 var perc = sum / (50 * kb * kb);
                 span.innerText = `${numByte(sum)} / 50MB (${(perc * 100).toFixed(1)}%)`;
                 div.style.width = `${perc * $('status').clientWidth}px`;
-                $('status').append(span, div)
+                status.append(span, div);
             }
         })().catch(e => {
             setTimeout(setFileStatus, 1000);
@@ -832,9 +821,13 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             $('edit').onkeydown = e => {
                 if (e.ctrlKey && e.keyCode == 83) {
                     e.preventDefault();
-                    save();
-                    clearInterval(autosave);
-                    clearTimeout(autostop);
+                    if (Object.values(fb.img).includes('pending') || Object.values(fb.csv).includes('pending')) {
+                        alert('사진 업로드 중입니다.');
+                    } else {
+                        save();
+                        clearInterval(autosave);
+                        clearTimeout(autostop);
+                    }
                 } else if (e.keyCode == 9) {
                     e.preventDefault();
                     insertText(getSelection(), '\u00a0\u00a0\u00a0\u00a0');
@@ -935,9 +928,21 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             fb.srce.tree = JSON.parse($('edit').innerText.replaceAll('\n', ''));
             setDoc(fb.html, fb.srce).then(() => { saved(as); });
         } else if ($('edit')) {
-            clipbImg(as);
+            if (!as) {
+                $$('edit img').forEach(e => {
+                    var p = e.parentElement;
+                    e.removeAttribute('src');
+                    e.removeAttribute('alt');
+                    e.removeAttribute('style');
+                    p.innerText = p.innerHTML;
+                });
+            }
             var d = en($('edit').innerText);
-            d = d.replaceAll("&alpha;", "α").replaceAll("&beta;", "β").replaceAll("&gamma;", "γ").replaceAll("&delta;", "δ");
+            d = d.replaceAll("&alpha;", "α")
+                .replaceAll("&beta;", "β")
+                .replaceAll("&gamma;", "γ")
+                .replaceAll("&delta;", "δ");
+
             if (fb.dict == undefined) {
                 fb.dict = {};
                 fb.dict[url[2]] = { auth: 1, true: d, false: '' };
