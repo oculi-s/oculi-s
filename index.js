@@ -851,6 +851,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                     p.innerText = e;
                     t.innerHTML = e;
                     if (t.$('img')) {
+                        t.classList.add('e-i');
                         if (!is.lazyload) {
                             var img = t.$('img');
                             if (img.getAttribute('name')) {
