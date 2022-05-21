@@ -18,7 +18,7 @@ Contact me whenever you want
 ## 3. :running_man: Python
 [Programmers](https://github.com/oculi-s/Programmers) L3, L4  
 
-## 4. :iphone: Kotlin 응애  
+## 4. :iphone: Swift 응애  
 ## 5. :robot: MATLAB 응애  
 > [about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)
 
