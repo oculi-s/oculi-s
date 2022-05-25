@@ -400,6 +400,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 strg.items.forEach(e => {
                     getMetadata(e).then(m => { e.meta = m; })
                     if (!is.lazyload) {
+                        e.src = 'pending';
                         getDownloadURL(e).then(u => { e.src = u; });
                     }
                     if (is.vid.test(e.name) || is.img.test(e.name)) {
@@ -432,7 +433,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 e.classList.toggle("show");
                 body.classList.toggle("blur");
             };
-        })
+        });
         $$('blind, .blind').forEach(b => {
             var el = b.nextElementSibling;
             b.onclick = async() => {
@@ -455,10 +456,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             Object.values(fb.img).forEach(async e => {
                 var el = $(`[name="${e.name}"]`);
                 if (el) {
-                    if (!e.src) {
-                        e.src = await getDownloadURL(fb.img[e.name]);
-                    }
-                    el.src = e.src;
+                    setFileSrc(el, e);
                     if (el.tagName.toLowerCase() == 'iframe') {
                         el.setAttribute('scrolling', 'no')
                         var wrap = document.createElement('div');
@@ -476,6 +474,17 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                     }
                 }
             });
+        }
+    }
+
+    function setFileSrc(helem, e) {
+        console.log(e.name)
+        if (!e.src) {
+            getDownloadURL(fb.img[e.name]).then(u => { e.src = u; });
+        } else if (e.src == 'pending') {
+            setTimeout(() => { setFileSrc(helem, e) }, 500);
+        } else {
+            helem.src = e.src;
         }
     }
 
@@ -545,7 +554,12 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
 
     function imgOnclick(p) {
         var e = p.firstChild;
-        if (p.innerText) {
+        if (e.tagName.toLowerCase() == 'img') {
+            e.removeAttribute('src');
+            e.removeAttribute('alt');
+            e.removeAttribute('style');
+            p.innerText = p.innerHTML;
+        } else {
             p.innerHTML = p.innerText;
             e = p.firstChild;
             if (!e.src) {
@@ -554,11 +568,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                     e.src = fb.img[name].src;
                 }
             }
-        } else {
-            e.removeAttribute('src');
-            e.removeAttribute('alt');
-            e.removeAttribute('style');
-            p.innerText = p.innerHTML;
         }
         p.focus();
     }
@@ -778,14 +787,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function setFileSrc(e) {
-        if (fb.img[e.name].src != undefined) {
-            e.src = fb.img[e.name].src;
-        } else {
-            setTimeout(() => { setFileSrc(e) }, 1000);
-        }
-    }
-
     function setFileStatus() {
         var status = $('status');
         (async() => {
@@ -846,17 +847,17 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 $('edit').innerHTML = JSON.stringify(getData(ls.edit), null, 2);
             } else {
                 getData(ls.edit).split(/\n/).forEach(e => {
-                    var p = document.createElement('p');
-                    var t = document.createElement('p');
+                    var p = document.createElement('div');
+                    var t = document.createElement('div');
                     p.innerText = e;
                     t.innerHTML = e;
                     if (t.$('img')) {
                         t.classList.add('e-i');
                         if (!is.lazyload) {
-                            var img = t.$('img');
-                            if (img.getAttribute('name')) {
-                                if (img.name in fb.img) {
-                                    setFileSrc(img);
+                            var i = t.$('img');
+                            if (i.getAttribute('name')) {
+                                if (i.name in fb.img) {
+                                    setFileSrc(i, fb.img[i.name]);
                                 }
                                 t.onclick = () => { imgOnclick(t) };
                                 $('edit').append(t);
@@ -932,10 +933,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             if (!as) {
                 $$('edit img').forEach(e => {
                     var p = e.parentElement;
-                    e.removeAttribute('src');
-                    e.removeAttribute('alt');
-                    e.removeAttribute('style');
-                    p.innerText = p.innerHTML;
+                    imgOnclick(p);
                 });
             }
             var d = en($('edit').innerText);
