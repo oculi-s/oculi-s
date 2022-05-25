@@ -478,7 +478,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function setFileSrc(helem, e) {
-        console.log(e.name)
         if (!e.src) {
             getDownloadURL(fb.img[e.name]).then(u => { e.src = u; });
         } else if (e.src == 'pending') {
@@ -554,7 +553,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
 
     function imgOnclick(p) {
         var e = p.firstChild;
-        if (e.tagName.toLowerCase() == 'img') {
+        if (e.tagName) {
             e.removeAttribute('src');
             e.removeAttribute('alt');
             e.removeAttribute('style');
@@ -847,23 +846,28 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 $('edit').innerHTML = JSON.stringify(getData(ls.edit), null, 2);
             } else {
                 getData(ls.edit).split(/\n/).forEach(e => {
-                    var p = document.createElement('div');
-                    var t = document.createElement('div');
+                    var p = document.createElement('p');
+                    var t = document.createElement('p');
                     p.innerText = e;
                     t.innerHTML = e;
                     if (t.$('img')) {
-                        t.classList.add('e-i');
                         if (!is.lazyload) {
-                            var i = t.$('img');
-                            if (i.getAttribute('name')) {
-                                if (i.name in fb.img) {
-                                    setFileSrc(i, fb.img[i.name]);
+                            t.$$('img').forEach(i => {
+                                if (i.getAttribute('name')) {
+                                    var ti = document.createElement('p');
+                                    ti.append(i);
+                                    if (i.name in fb.img) {
+                                        setFileSrc(i, fb.img[i.name]);
+                                    }
+                                    ti.classList.add('e-i')
+                                    ti.onclick = () => { imgOnclick(ti) };
+                                    $('edit').append(ti);
+                                } else {
+                                    var pi = document.createElement('p');
+                                    pi.append(i.outerHTML);
+                                    $('edit').append(pi);
                                 }
-                                t.onclick = () => { imgOnclick(t) };
-                                $('edit').append(t);
-                            } else {
-                                $('edit').append(p);
-                            }
+                            });
                         } else {
                             $('edit').append(p);
                         }
@@ -931,10 +935,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             setDoc(fb.html, fb.srce).then(() => { saved(as); });
         } else if ($('edit')) {
             if (!as) {
-                $$('edit img').forEach(e => {
-                    var p = e.parentElement;
-                    imgOnclick(p);
-                });
+                $$('edit img').forEach(e => { imgOnclick(e.parentElement); });
             }
             var d = en($('edit').innerText);
             d = d.replaceAll("&alpha;", "α")
