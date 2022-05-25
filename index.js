@@ -25,8 +25,16 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     const ss = sessionStorage;
     const de = decodeURI;
     const en = encodeURI;
-    window.fb = { from: {}, img: {}, csv: {} };
-    const is = { sample: fbc.authDomain.includes('sample') ? '/sample' : '', code: en('</code>'), csv: RegExp('.csv'), img: RegExp('.gif|.png|.jpg|.jpeg|.pdf|.webp'), vid: RegExp('.mp4|.mov'), loaded: false };
+    window.fb = { from: {}, img: {}, csv: {}, pdf: {} };
+    const is = {
+        sample: fbc.authDomain.includes('sample') ? '/sample' : '',
+        code: en('</code>'),
+        csv: RegExp('.csv'),
+        img: RegExp('.gif|.png|.jpg|.jpeg|.webp'),
+        vid: RegExp('.mp4|.mov'),
+        pdf: RegExp('.pdf'),
+        loaded: false
+    };
     const head = document.head;
     const body = document.body;
     if (ls.cMode == undefined) { ls.cMode = 1; }
@@ -67,7 +75,21 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         window.is = is;
         section.classList.add(url[0]);
         console.log(url);
-        loadStorage();
+        listAll(ref(st, url.join('/'))).then(strg => {
+            if (strg) {
+                strg.items.forEach(e => {
+                    if (is.vid.test(e.name) || is.img.test(e.name)) {
+                        fb.img[e.name] = e;
+                    } else if (is.csv.test(e.name)) {
+                        fb.csv[e.name] = e;
+                    } else if (is.pdf.test(e.name)) {
+                        fb.pdf[e.name] = e;
+                    }
+                });
+            }
+        }).then(() => {
+            setImage();
+        });
 
         var c = JSON.parse(ls.clipBoard);
         for (var i = 0; i < 5; i++) {
@@ -200,10 +222,11 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         scrsrc.forEach(scr => { scr.remove() });
         script.forEach(scr => { scr.remove() });
         article.innerHTML = e.innerHTML;
+        setFigure();
+        setBlindPdf();
         setIndex();
-        setMenu();
         setFold();
-        setImage();
+        setMenu();
         setScript(script);
         setCode();
         setChart();
@@ -394,34 +417,26 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function loadStorage() {
-        listAll(ref(st, url.join('/'))).then(strg => {
-            if (strg) {
-                strg.items.forEach(e => {
-                    getMetadata(e).then(m => { e.meta = m; })
-                    if (!is.lazyload) {
-                        e.src = 'pending';
-                        getDownloadURL(e).then(u => { e.src = u; });
-                    }
-                    if (is.vid.test(e.name) || is.img.test(e.name)) {
-                        fb.img[e.name] = e;
-                    } else if (is.csv.test(e.name)) {
-                        fb.csv[e.name] = e;
-                    }
+    function setImage() {
+        Object.values(fb.img).forEach(e => {
+            getMetadata(e).then(m => { e.meta = m; });
+            if (!is.lazyload) {
+                e.src = 'pending';
+                getDownloadURL(e).then(u => {
+                    e.src = u;
+                }).catch(e => {
+                    unload();
+                    var exc = document.createElement('exc');
+                    exc.className = 'fa fa-image r';
+                    section.prepend(exc);
+                    throw e;
                 });
             }
-        }).catch(e => {
-            unload();
-            var exc = document.createElement('exc');
-            exc.className = 'fa fa-image r';
-            section.prepend(exc);
-            throw e;
         });
     }
 
-    function setImage() {
-        var imgs = $$('article img');
-        imgs.forEach(e => {
+    function setFigure() {
+        $$('article img').forEach(e => {
             var fig = document.createElement('figure');
             var cap = document.createElement('figcaption');
             cap.innerHTML = e.getAttribute('title');
@@ -429,11 +444,18 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             fig.append(cap);
             e.replaceWith(fig);
             e = fig.firstChild;
+            if (e.name in fb.img) {
+                setFileSrc(e, fb.img[e.name]);
+            }
+
             e.onclick = () => {
                 e.classList.toggle("show");
                 body.classList.toggle("blur");
             };
         });
+    }
+
+    function setBlindPdf() {
         $$('blind, .blind').forEach(b => {
             var el = b.nextElementSibling;
             b.onclick = async() => {
@@ -442,10 +464,10 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                         el.src = await getDownloadURL(fb.img[el.name]);
                     }
                 }
-                el.$$('img').forEach(async el => {
-                    if (!el.src) {
-                        if (el.name in fb.img) {
-                            el.src = await getDownloadURL(fb.img[el.name]);
+                el.$$('img').forEach(async ch => {
+                    if (!ch.src) {
+                        if (ch.name in fb.img) {
+                            ch.src = await getDownloadURL(fb.img[ch.name]);
                         }
                     }
                 });
@@ -453,25 +475,22 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             }
         });
         if (!is.lazyload) {
-            Object.values(fb.img).forEach(async e => {
+            Object.values(fb.pdf).forEach(e => {
                 var el = $(`[name="${e.name}"]`);
                 if (el) {
-                    setFileSrc(el, e);
-                    if (el.tagName.toLowerCase() == 'iframe') {
-                        el.setAttribute('scrolling', 'no')
-                        var wrap = document.createElement('div');
-                        var full = document.createElement('full');
-                        full.className = 'fa fa-expand';
-                        full.onclick = () => {
-                            wrap.firstChild.classList.toggle("show");
-                            body.classList.toggle("blur");
-                        }
-                        wrap.innerHTML = el.outerHTML;
-                        wrap.append(full);
-                        wrap.style.position = 'relative';
-                        wrap.style.width = 'fit-content';
-                        el.replaceWith(wrap);
+                    el.setAttribute('scrolling', 'no')
+                    var wrap = document.createElement('div');
+                    var full = document.createElement('full');
+                    full.className = 'fa fa-expand';
+                    full.onclick = () => {
+                        wrap.firstChild.classList.toggle("show");
+                        body.classList.toggle("blur");
                     }
+                    wrap.innerHTML = el.outerHTML;
+                    wrap.append(full);
+                    wrap.style.position = 'relative';
+                    wrap.style.width = 'fit-content';
+                    el.replaceWith(wrap);
                 }
             });
         }
