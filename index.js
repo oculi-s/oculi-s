@@ -245,6 +245,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         setMenu();
         setScript(script);
         setCode();
+        setAnchor();
         setChart();
         if (location.hash) { location.href = location.hash; }
         section.classList.remove('e-s');
@@ -727,6 +728,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     function setChart() {
         const trv_opt = (e) => {
             const id = e.getAttribute('name');
+            e.id = id;
             const o = {
                 "autosize": true,
                 "symbol": id,
