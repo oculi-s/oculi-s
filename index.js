@@ -65,7 +65,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     var article;
     var url;
 
-
     (async() => {
         url = getUrl(location.pathname);
         url.push('index', 'index', 'index');
@@ -117,7 +116,24 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             nav.innerHTML = de(fb.srce.nav[ls.log]);
             aside.innerHTML = de(fb.srce.aside[ls.log]);
             if (ls.uid != 'null' && ls.uid != 'undefined') {
-                $('aside>p').innerHTML = auth.currentUser.email;
+                var t = Object.values(fb.srce.tree).filter(e => e.source == undefined),
+                    c = 0,
+                    d = 0;
+                t.flat().forEach(e => {
+                    Object.values(e).forEach(f => {
+                        if (typeof(f) == 'object') {
+                            c += Object.values(f).length;
+                            Object.values(f).forEach(g => {
+                                d += parseInt(g);
+                            });
+                        } else {
+                            c++;
+                            d += parseInt(f);
+                        }
+                    });
+                });
+                d = (d / 1024 / 1024).toFixed(2);
+                $('aside>div').innerHTML = `<p>${t.length} 주제</p><p>${c} 문서</p><p>${d} Gb</p>`;
             }
         } else {
             body.innerHTML = '';
@@ -230,7 +246,6 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         setScript(script);
         setCode();
         setChart();
-        setAnchor();
         if (location.hash) { location.href = location.hash; }
         section.classList.remove('e-s');
         article.classList.remove('e-a');
@@ -268,6 +283,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 }
                 e.innerHTML = `<a href=${is.sample}/from/${name}/><b>${h1 ? h1 : e.innerHTML}</b></a>`;
                 e.after(t);
+                setAnchor();
             })
         }
         if ($('pubchem')) {
@@ -333,6 +349,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function delAnchor(link) {
+        var t = { tree: fb.srce.tree };
         while (link[link.length - 1] == 'index') {
             link = link.slice(0, link.length - 1);
         }
@@ -347,25 +364,34 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         if (Object.keys(fb.srce.tree[link[0]]).length == 0) {
             delete fb.srce.tree[link[0]];
         }
-        updateDoc(fb.dsrc, fb.srce);
+        updateDoc(fb.dsrc, t);
     }
 
     function addAnchor(link) {
+        var t = { tree: fb.srce.tree };
         while (link[link.length - 1] == 'index') {
             link = link.slice(0, link.length - 1);
         }
-        if (fb.srce.tree[link[0]] == undefined) {
-            fb.srce.tree[link[0]] = {};
-        }
-        if (link.length > 1) {
-            if (fb.srce.tree[link[0]][link[1]] == undefined) {
-                fb.srce.tree[link[0]][link[1]] = {};
+        if (link.length == 1) {
+            if (fb.srce.tree[link[0]] == undefined) {
+                fb.srce.tree[link[0]] = $('edit').innerHTML.length;
+            }
+        } else {
+            if (typeof(fb.srce.tree[link[0]]) != 'object') {
+                fb.srce.tree[link[0]] = {};
+            }
+            if (link.length == 2) {
+                if (typeof(fb.srce.tree[link[0]][link[1]]) != 'object') {
+                    fb.srce.tree[link[0]][link[1]] = $('edit').innerHTML.length;
+                }
+            } else if (link.length == 3) {
+                if (typeof(fb.srce.tree[link[0]][link[1]]) != 'object') {
+                    fb.srce.tree[link[0]][link[1]] = {};
+                }
+                fb.srce.tree[link[0]][link[1]][link[2]] = $('edit').innerHTML.length;
             }
         }
-        if (link.length == 3) {
-            fb.srce.tree[link[0]][link[1]][link[2]] = {};
-        }
-        updateDoc(fb.dsrc, fb.srce);
+        updateDoc(fb.dsrc, t);
     }
 
     function setAnchor() {
@@ -969,14 +995,20 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 addAnchor(url);
             } else {
                 if (!fb.dict[url[2]]) {
-                    fb.dict[url[2]] = { auth: 1 };
-                    addAnchor(url);
+                    fb.dict[url[2]] = { auth: 1, true: '', false: '' };
                 }
+                if (fb.dict[url[2]].auth == 1) { fb.dict[url[2]][!ls.edit] = ''; }
                 fb.dict[url[2]][ls.edit] = d;
-                if (fb.dict[url[2]].auth == 1) {
-                    fb.dict[url[2]][!ls.edit] = '';
+
+                var t = {};
+                t[url[2]] = {};
+                t[url[2]].auth = fb.dict[url[2]].auth;
+                t[url[2]][ls.edit] = d;
+                if (fb.dict[url[2]][!ls.edit] != undefined) {
+                    t[url[2]][!ls.edit] = fb.dict[url[2]][!ls.edit];
                 }
-                updateDoc(fb.html, fb.dict).then(() => { saved(as); })
+                addAnchor(url);
+                updateDoc(fb.html, t).then(() => { saved(as); })
             }
         }
     }
@@ -1046,4 +1078,4 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     window.getDocs = getDocs;
     window.getDoc = getDoc;
     window.uploadFile = uploadFile;
-})();
+})()
