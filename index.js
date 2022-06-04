@@ -357,56 +357,49 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function delAnchor(link) {
-        getDoc(fb.dtre).then(r => {
-            fb.tree = r.data();
-            var t = fb.tree;
-            while (link[link.length - 1] == 'index') {
-                link = link.slice(0, link.length - 1);
+        var t = {};
+        t[link[0]] = fb.tree[link[0]]
+        while (link[link.length - 1] == 'index') {
+            link = link.slice(0, link.length - 1);
+        }
+        if (link.length == 3) {
+            delete t[link[0]][link[1]][link[2]];
+        }
+        if (link.length > 1) {
+            if (Object.keys(t[link[0]][link[1]]).length == 0) {
+                delete t[link[0]][link[1]];
             }
-            if (link.length == 3) {
-                delete fb.tree[link[0]][link[1]][link[2]];
-            }
-            if (link.length > 1) {
-                if (Object.keys(fb.tree[link[0]][link[1]]).length == 0) {
-                    delete fb.tree[link[0]][link[1]];
-                }
-            }
-            if (Object.keys(fb.tree[link[0]]).length == 0) {
-                delete fb.tree[link[0]];
-            }
-            updateDoc(fb.dtre, t);
-        });
+        }
+        updateDoc(fb.dtre, t);
     }
 
     function addAnchor(link) {
-        getDoc(fb.dtre).then(r => {
-            fb.tree = r.data();
-            var t = fb.tree,
-                l = unescape(encodeURIComponent($('edit').innerHTML)).length;
-            while (link[link.length - 1] == 'index') {
-                link = link.slice(0, link.length - 1);
+        var t = {},
+            l = unescape(encodeURIComponent($('edit').innerHTML)).length;
+        t[link[0]] = fb.tree[link[0]]
+        while (link[link.length - 1] == 'index') {
+            link = link.slice(0, link.length - 1);
+        }
+        if (link.length == 1) {
+            if (t[link[0]] == undefined) {
+                t[link[0]] = l;
             }
-            if (link.length == 1) {
-                if (fb.tree[link[0]] == undefined) {
-                    t[link[0]] = l;
-                }
-            } else {
-                if (typeof(fb.tree[link[0]]) != 'object') {
-                    t[link[0]] = {};
-                }
-                if (link.length == 2) {
-                    if (typeof(fb.tree[link[0]][link[1]]) != 'object') {
-                        t[link[0]][link[1]] = l;
-                    }
-                } else if (link.length == 3) {
-                    if (typeof(fb.tree[link[0]][link[1]]) != 'object') {
-                        t[link[0]][link[1]] = {};
-                    }
-                    t[link[0]][link[1]][link[2]] = l;
-                }
+        } else {
+            if (typeof(t[link[0]]) != 'object') {
+                t[link[0]] = {};
             }
-            updateDoc(fb.dtre, t);
-        });
+            if (link.length == 2) {
+                if (typeof(t[link[0]][link[1]]) != 'object') {
+                    t[link[0]][link[1]] = l;
+                }
+            } else if (link.length == 3) {
+                if (typeof(t[link[0]][link[1]]) != 'object') {
+                    t[link[0]][link[1]] = {};
+                }
+                t[link[0]][link[1]][link[2]] = l;
+            }
+        }
+        updateDoc(fb.dtre, t);
     }
 
     function setAnchor() {
