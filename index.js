@@ -70,7 +70,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         url.push('index', 'index', 'index');
         url = url.slice(0, 3);
         is.lazyload = url[0] == 'life';
-        is.tree = url.join('/') == `${(is.sample.length ? 'sample' : 'index')}/source/tree`;
+        is.tree = url.join('/') == `index/tree/index`;
         window.is = is;
         section.classList.add(url[0]);
         console.log(url);
@@ -105,18 +105,21 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         if (ls.uid == undefined) { ls.log = false, ls.uid = null; }
         fval(u.trv);
 
-        fb.dsrc = doc(db, is.sample.length ? 'sample' : 'index', 'source');
+        fb.dsrc = doc(db, 'index', 'source');
+        fb.dtre = doc(db, 'index', 'tree');
         fb.srce = await getDoc(fb.dsrc);
         fb.srce = fb.srce.data();
         fb.user = await getDoc(doc(db, 'user', ls.uid));
         fb.user = fb.user.data();
+        fb.tree = await getDoc(fb.dtre);
+        fb.tree = fb.tree.data();
         head.innerHTML += de(fb.srce.css.true);
 
         if (fb.user) {
             nav.innerHTML = de(fb.srce.nav[ls.log]);
             aside.innerHTML = de(fb.srce.aside[ls.log]);
             if (ls.uid != 'null' && ls.uid != 'undefined') {
-                var t = Object.values(fb.srce.tree).filter(e => e.source == undefined),
+                var t = Object.values(fb.tree).filter(e => e.source == undefined),
                     c = 0,
                     d = 0;
                 t.flat().forEach(e => {
@@ -132,8 +135,10 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                         }
                     });
                 });
-                d = (d / 1024 / 1024).toFixed(2);
-                $('aside>div').innerHTML = `<p>${t.length} 주제</p><p>${c} 문서</p><p>${d} Gb</p>`;
+                var e = 'KB';
+                d /= 1024;
+                if (d > 1024) { d /= 1024, e = 'Gb'; }
+                $('aside>div').innerHTML = `<p>${t.length} 주제</p><p>${c} 문서</p><p>${d.toFixed(2)} ${e}</p>`;
             }
         } else {
             body.innerHTML = '';
@@ -145,9 +150,11 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             document.documentElement.setAttribute('cMode', ls.cMode);
         }
 
-        fb.html = doc(db, url[0], url[1]);
-        fb.dict = await getDoc(fb.html);
-        fb.dict = fb.dict.data();
+        if (!is.tree) {
+            fb.html = doc(db, url[0], url[1]);
+            fb.dict = await getDoc(fb.html);
+            fb.dict = fb.dict.data();
+        }
     })().then(() => {
         var portal = document.createElement('portal');
         for (var i = 0; i < url.length; i++) {
@@ -199,7 +206,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
 
     function getData(x) {
         if (is.tree) {
-            return fb.srce.tree;
+            return fb.tree;
         } else if (fb.dict) {
             if (url[2] in fb.dict) {
                 var r = fb.dict[url[2]][x];
@@ -227,8 +234,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         var e = document.createElement('html');
         if (is.tree) {
             const keys = new Set();
-            JSON.stringify(fb.dict, (k, v) => (keys.add(k), v));
-            e.innerHTML = JSON.stringify(index, Array.from(keys).sort(), 2);
+            JSON.stringify(fb.tree, (k, v) => (keys.add(k), v));
+            e.innerHTML = JSON.stringify(fb.tree, Array.from(keys).sort(), 2);
             article.style['white-space'] = 'break-spaces';
         } else {
             e.innerHTML = index.replaceAll('\u00a0', ' ');
@@ -350,56 +357,63 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function delAnchor(link) {
-        var t = { tree: fb.srce.tree };
-        while (link[link.length - 1] == 'index') {
-            link = link.slice(0, link.length - 1);
-        }
-        if (link.length == 3) {
-            delete fb.srce.tree[link[0]][link[1]][link[2]];
-        }
-        if (link.length > 1) {
-            if (Object.keys(fb.srce.tree[link[0]][link[1]]).length == 0) {
-                delete fb.srce.tree[link[0]][link[1]];
+        getDoc(fb.dtre).then(r => {
+            fb.tree = r.data();
+            var t = fb.tree;
+            while (link[link.length - 1] == 'index') {
+                link = link.slice(0, link.length - 1);
             }
-        }
-        if (Object.keys(fb.srce.tree[link[0]]).length == 0) {
-            delete fb.srce.tree[link[0]];
-        }
-        updateDoc(fb.dsrc, t);
+            if (link.length == 3) {
+                delete fb.tree[link[0]][link[1]][link[2]];
+            }
+            if (link.length > 1) {
+                if (Object.keys(fb.tree[link[0]][link[1]]).length == 0) {
+                    delete fb.tree[link[0]][link[1]];
+                }
+            }
+            if (Object.keys(fb.tree[link[0]]).length == 0) {
+                delete fb.tree[link[0]];
+            }
+            updateDoc(fb.dtre, t);
+        });
     }
 
     function addAnchor(link) {
-        var t = { tree: fb.srce.tree };
-        while (link[link.length - 1] == 'index') {
-            link = link.slice(0, link.length - 1);
-        }
-        if (link.length == 1) {
-            if (fb.srce.tree[link[0]] == undefined) {
-                fb.srce.tree[link[0]] = $('edit').innerHTML.length;
+        getDoc(fb.dtre).then(r => {
+            fb.tree = r.data();
+            var t = fb.tree,
+                l = unescape(encodeURIComponent($('edit').innerHTML)).length;
+            while (link[link.length - 1] == 'index') {
+                link = link.slice(0, link.length - 1);
             }
-        } else {
-            if (typeof(fb.srce.tree[link[0]]) != 'object') {
-                fb.srce.tree[link[0]] = {};
-            }
-            if (link.length == 2) {
-                if (typeof(fb.srce.tree[link[0]][link[1]]) != 'object') {
-                    fb.srce.tree[link[0]][link[1]] = $('edit').innerHTML.length;
+            if (link.length == 1) {
+                if (fb.tree[link[0]] == undefined) {
+                    t[link[0]] = l;
                 }
-            } else if (link.length == 3) {
-                if (typeof(fb.srce.tree[link[0]][link[1]]) != 'object') {
-                    fb.srce.tree[link[0]][link[1]] = {};
+            } else {
+                if (typeof(fb.tree[link[0]]) != 'object') {
+                    t[link[0]] = {};
                 }
-                fb.srce.tree[link[0]][link[1]][link[2]] = $('edit').innerHTML.length;
+                if (link.length == 2) {
+                    if (typeof(fb.tree[link[0]][link[1]]) != 'object') {
+                        t[link[0]][link[1]] = l;
+                    }
+                } else if (link.length == 3) {
+                    if (typeof(fb.tree[link[0]][link[1]]) != 'object') {
+                        t[link[0]][link[1]] = {};
+                    }
+                    t[link[0]][link[1]][link[2]] = l;
+                }
             }
-        }
-        updateDoc(fb.dsrc, t);
+            updateDoc(fb.dtre, t);
+        });
     }
 
     function setAnchor() {
         $$('article a:not([target])').forEach(a => {
             var link = getUrl(a.pathname);
             if (link.length) {
-                if (!findAnchor(fb.srce.tree, link)) {
+                if (!findAnchor(fb.tree, link)) {
                     a.classList.add('r');
                 }
             }
@@ -966,7 +980,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             section.classList.remove('e-s');
             article.classList.remove('e-a');
             if (is.tree) {
-                setData(fb.dict.tree);
+                setData(fb.tree);
             } else {
                 setData(de(fb.dict[url[2]][ls.edit]));
             }
@@ -978,8 +992,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
 
     function save(as = false) {
         if (is.tree) {
-            fb.srce.tree = JSON.parse($('edit').innerText.replaceAll('\n', ''));
-            setDoc(fb.html, fb.srce).then(() => { saved(as); });
+            fb.tree = JSON.parse($('edit').innerText.replaceAll('\n', ''));
+            setDoc(fb.dtre, fb.tree).then(() => { saved(as); });
         } else if ($('edit')) {
             if (!as) {
                 $$('edit img').forEach(e => { imgOnclick(e.parentElement); });
