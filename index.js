@@ -530,13 +530,14 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function setFileSrc(helem, e) {
+    function setFileSrc(h, e) {
         if (!e.src) {
             getDownloadURL(fb.img[e.name]).then(u => { e.src = u; });
         } else if (e.src == 'pending') {
-            setTimeout(() => { setFileSrc(helem, e) }, 500);
+            setTimeout(() => { setFileSrc(h, e) }, 500);
         } else {
-            helem.src = e.src;
+            h.src = e.src;
+            h.onload = () => { h.classList.add('u') }
         }
     }
 
@@ -610,6 +611,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             e.removeAttribute('src');
             e.removeAttribute('alt');
             e.removeAttribute('style');
+            e.removeAttribute('class');
             p.innerText = p.innerHTML;
         } else {
             p.innerHTML = p.innerText;
