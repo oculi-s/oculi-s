@@ -247,9 +247,9 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         script.forEach(scr => { scr.remove() });
         article.innerHTML = e.innerHTML;
         setFigure();
-        setBlindPdf();
         setIndex();
         setFold();
+        setBlindPdf();
         setMenu();
         setScript(script);
         setCode();
@@ -484,9 +484,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             fig.append(cap);
             e.replaceWith(fig);
             e = fig.firstChild;
-            if (e.name in fb.img) {
-                setFileSrc(e, fb.img[e.name]);
-            }
+            setFileSrc(e, fb.img[e.name]);
 
             e.onclick = () => {
                 e.classList.toggle("show");
@@ -499,17 +497,8 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         $$('blind, .blind').forEach(b => {
             var el = b.nextElementSibling;
             b.onclick = async() => {
-                if (!el.src) {
-                    if (el.name in fb.img) {
-                        el.src = await getDownloadURL(fb.img[el.name]);
-                    }
-                }
                 el.$$('img').forEach(async ch => {
-                    if (!ch.src) {
-                        if (ch.name in fb.img) {
-                            ch.src = await getDownloadURL(fb.img[ch.name]);
-                        }
-                    }
+                    setFileSrc(ch, fb.img[ch.name], true);
                 });
                 b.classList.toggle('view');
             }
@@ -536,22 +525,38 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function setFileSrc(h, e) {
-        var p = h;
-        while (p) {
-            p = p.parentNode;
-            if (!p.offsetHeight) {
-                return
+    function setFileSrc(h, e, blind = false) {
+        if (h.src) {
+            return
+        } else if (is.lazyload && !blind) {
+            if (e.src) {
+                h.src = e.src;
+            }
+        } else if (e != undefined) {
+            var p = h.parentElement;
+            while (p) {
+                if (p.clientHeight == 0) {
+                    setTimeout(() => {
+                        if (p.clientHeight > 0) {
+                            setFileSrc(h, e, blind);
+                        }
+                    }, 50);
+                    return
+                }
+                p = p.parentElement;
+            }
+            if (!e.src) {
+                getDownloadURL(fb.img[e.name]).then(u => {
+                    e.src = u;
+                    h.src = u;
+                });
+            } else if (e.src == 'pending') {
+                setTimeout(() => { setFileSrc(h, e, blind) }, 500);
+            } else {
+                h.src = e.src;
             }
         }
-        if (!e.src) {
-            getDownloadURL(fb.img[e.name]).then(u => { e.src = u; });
-        } else if (e.src == 'pending') {
-            setTimeout(() => { setFileSrc(h, e) }, 500);
-        } else {
-            h.src = e.src;
-            h.onload = () => { h.classList.add('u') }
-        }
+        h.onload = () => { h.classList.add('u') }
     }
 
     function numByte(s) {
@@ -629,12 +634,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         } else {
             p.innerHTML = p.innerText;
             e = p.firstChild;
-            if (!e.src) {
-                var name = e.getAttribute('name');
-                if (fb.img[name] != undefined) {
-                    e.src = fb.img[name].src;
-                }
-            }
+            setFileSrc(e, fb.img[e.name]);
         }
         p.focus();
     }
@@ -928,13 +928,12 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                         if (!is.lazyload) {
                             t.$$('img').forEach(i => {
                                 if (i.getAttribute('name')) {
+                                    i.classList.add('u');
                                     var ti = document.createElement('p');
+                                    ti.classList.add('e-i');
                                     ti.append(i);
-                                    if (i.name in fb.img) {
-                                        setFileSrc(i, fb.img[i.name]);
-                                    }
-                                    ti.classList.add('e-i')
                                     ti.onclick = () => { imgOnclick(ti) };
+                                    setFileSrc(i, fb.img[i.name]);
                                     $('edit').append(ti);
                                 } else {
                                     var pi = document.createElement('p');
