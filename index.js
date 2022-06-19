@@ -119,26 +119,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             nav.innerHTML = de(fb.srce.nav[ls.log]);
             aside.innerHTML = de(fb.srce.aside[ls.log]);
             if (ls.uid != 'null' && ls.uid != 'undefined') {
-                var t = Object.values(fb.tree).filter(e => e.source == undefined),
-                    c = 0,
-                    d = 0;
-                t.flat().forEach(e => {
-                    Object.values(e).forEach(f => {
-                        if (typeof(f) == 'object') {
-                            c += Object.values(f).length;
-                            Object.values(f).forEach(g => {
-                                d += parseInt(g);
-                            });
-                        } else {
-                            c++;
-                            d += parseInt(f);
-                        }
-                    });
-                });
-                var e = 'KB';
-                d /= 1024;
-                if (d > 1024) { d /= 1024, e = 'Gb'; }
-                $('aside>div').innerHTML = `<p>${t.length} 주제</p><p>${c} 문서</p><p>${d.toFixed(2)} ${e}</p>`;
+                setTree();
             }
         } else {
             body.innerHTML = '';
@@ -182,6 +163,26 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         $('article').innerText = `\n${e.stack}\n\n${$('script[type=module]').src}`;
         throw e;
     });
+
+    function setTree() {
+        var t = Object.values(fb.tree).filter(e => e.source == undefined),
+            c = 0,
+            d = 0;
+        t.flat().forEach(e => {
+            Object.values(e).forEach(f => {
+                if (typeof(f) == 'object') {
+                    c += Object.values(f).length;
+                    Object.values(f).forEach(g => {
+                        d += parseInt(g);
+                    });
+                } else {
+                    c++;
+                    d += parseInt(f);
+                }
+            });
+        });
+        $('aside>div').innerHTML = `<p>${t.length} 주제</p><p>${c} 문서</p><p>${numByte(d)}</p>`;
+    }
 
     function getUrl(s) {
         s = de(s).toLowerCase().split('/').slice(1).filter(e => e != '');
@@ -254,6 +255,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         setCode();
         setAnchor();
         setChart();
+        setTree();
         if (location.hash) { location.href = location.hash; }
         section.classList.remove('e-s');
         article.classList.remove('e-a');
@@ -346,12 +348,15 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function findAnchor(tree, link) {
+    function findAnchor(tree, link, len = false) {
         if (!tree[link[0]]) {
             return false;
         } else if (link.length > 1 && link[1] != 'index') {
             return findAnchor(tree[link[0]], link.slice(1));
         } else {
+            if (len) {
+                tree[link[0]] = len;
+            }
             return tree[link[0]];
         }
     }
@@ -376,6 +381,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     function addAnchor(link) {
         var t = {},
             l = unescape(encodeURIComponent($('edit').innerHTML)).length;
+        findAnchor(fb.tree, link, l);
         t[link[0]] = fb.tree[link[0]]
         while (link[link.length - 1] == 'index') {
             link = link.slice(0, link.length - 1);
@@ -531,6 +537,13 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function setFileSrc(h, e) {
+        var p = h;
+        while (p) {
+            p = p.parentNode;
+            if (!p.offsetHeight) {
+                return
+            }
+        }
         if (!e.src) {
             getDownloadURL(fb.img[e.name]).then(u => { e.src = u; });
         } else if (e.src == 'pending') {
@@ -542,9 +555,9 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
     }
 
     function numByte(s) {
-        if (s > kb * kb) {
+        if (s > 1000 * 1000) {
             return (s / (kb * kb)).toFixed(2) + ' MB';
-        } else if (s > kb) {
+        } else if (s > 1000) {
             return (s / kb).toFixed(2) + ' KB';
         } else {
             return s.toFixed(2) + ' B';
@@ -711,25 +724,27 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             }
             e.append(t);
         } else {
-            var stack = e.getAttribute('stack');
+            var stack = e.getAttribute('stack') == 'true';
+            var label = e.getAttribute('label') == 'true';
+            var legend = e.getAttribute('legend') == 'true';
             var o = {
                 chart: {},
                 title: {},
                 data: { csv: raw },
-                legend: { enabled: false, layout: 'vertical', align: 'right' },
+                legend: { layout: 'vertical', align: 'right' },
                 plotOptions: {
-                    series: { dataLabels: { enabled: true }, stacking: stack },
-                    column: { dataLabels: { enabled: true }, stacking: stack },
-                    pie: { dataLabels: { enabled: false }, label: { enabled: false } },
-                    line: { dataLabels: { enabled: true }, stacking: stack },
-                    bar: { dataLabels: { enabled: true }, stacking: stack }
+                    series: { dataLabels: { enabled: label }, stacking: stack, allowPointSelect: true },
+                    column: { dataLabels: { enabled: label }, stacking: stack, allowPointSelect: true },
+                    pie: { dataLabels: { enabled: label, distance: "-30%", }, showInLegend: legend, allowPointSelect: true, },
+                    line: { dataLabels: { enabled: label }, stacking: stack, allowPointSelect: true },
+                    bar: { dataLabels: { enabled: label }, stacking: stack, allowPointSelect: true }
                 }
             }
             o.title.text = e.title;
             o.chart.type = e.getAttribute('type');
             o.chart.width = e.getAttribute('width');
             o.chart.height = e.getAttribute('height');
-            o.chart.margin = 20;
+            o.legend.enabled = legend;
             Highcharts.chart(e.id, o);
         }
     }
@@ -756,10 +771,13 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             }
             return o;
         }
-        $$('chart').forEach(async e => {
+        $$('chart').forEach(async(e, i) => {
             var name = e.getAttribute('name');
             var data = e.innerHTML.trim().replaceAll('\n\n', '\n');
             var raw = fb.csv[name];
+            if (!name) {
+                name = `c${i}`;
+            }
             e.id = name;
             if (raw) {
                 raw = await getDownloadURL(raw);
