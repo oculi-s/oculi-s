@@ -164,24 +164,24 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         throw e;
     });
 
+    function recTree(tree, v) {
+        v.len += tree._;
+        if (tree._ > 0) {
+            v.cnt++;
+        }
+        for (var k in tree) {
+            if (tree[k]._ != undefined) {
+                recTree(tree[k], v);
+            }
+        }
+    }
+
     function setTree() {
-        var t = Object.values(fb.tree).filter(e => e.source == undefined),
-            c = 0,
-            d = 0;
-        t.flat().forEach(e => {
-            Object.values(e).forEach(f => {
-                if (typeof(f) == 'object') {
-                    c += Object.values(f).length;
-                    Object.values(f).forEach(g => {
-                        d += parseInt(g);
-                    });
-                } else {
-                    c++;
-                    d += parseInt(f);
-                }
-            });
-        });
-        $('aside>div').innerHTML = `<p>${t.length} 주제</p><p>${c} 문서</p><p>${numByte(d)}</p>`;
+        var t = fb.tree,
+            v = { cnt: 0, len: 0 };
+        recTree(t, v);
+        t = Object.keys(t).filter(e => e != '_');
+        $('aside>div').innerHTML = `<p>${t.length} 주제</p><p>${v.cnt} 문서</p><p>${numByte(v.len)}</p>`;
     }
 
     function getUrl(s) {
@@ -348,71 +348,49 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         }
     }
 
-    function findAnchor(tree, link, len = false) {
-        if (!tree[link[0]]) {
+    function recAnchor(tree = fb.tree, link = url, len = false) {
+        var t = tree[link[0]];
+        if (!t) {
             return false;
         } else if (link.length > 1 && link[1] != 'index') {
-            return findAnchor(tree[link[0]], link.slice(1));
+            return recAnchor(t, link.slice(1), len);
         } else {
-            if (len) {
-                tree[link[0]] = len;
+            if (typeof(len) == 'number') { t._ = len; }
+            if (t._ == 0 && Object.keys(t).length == 1) {
+                delete tree[link[0]];
             }
-            return tree[link[0]];
+            return t;
         }
     }
 
-    function delAnchor(link) {
-        var t = {};
-        t[link[0]] = fb.tree[link[0]]
-        while (link[link.length - 1] == 'index') {
-            link = link.slice(0, link.length - 1);
+    function delAnchor(link = url) {
+        recAnchor(fb.tree, link, 0);
+        while (link.length) {
+            recAnchor(fb.tree, link);
+            link = link.slice(0, -1);
         }
-        if (link.length == 3) {
-            delete t[link[0]][link[1]][link[2]];
-        }
-        if (link.length > 1) {
-            if (Object.keys(t[link[0]][link[1]]).length == 0) {
-                delete t[link[0]][link[1]];
-            }
-        }
-        updateDoc(fb.dtre, t);
+        setDoc(fb.dtre, fb.tree);
     }
 
-    function addAnchor(link) {
-        var t = {},
-            l = unescape(encodeURIComponent($('edit').innerHTML)).length;
-        findAnchor(fb.tree, link, l);
-        t[link[0]] = fb.tree[link[0]]
-        while (link[link.length - 1] == 'index') {
-            link = link.slice(0, link.length - 1);
+    function addAnchor(link = url) {
+        var d = fb.tree;
+        var len = unescape(encodeURIComponent($('edit').innerHTML)).length;
+        while (link[0] != 'index') {
+            if (d[link[0]] == undefined) {
+                d[link[0]] = { '_': 0 }
+            }
+            d = d[link[0]];
+            link = link.slice(1).concat('index');
         }
-        if (link.length == 1) {
-            if (t[link[0]] == undefined) {
-                t[link[0]] = l;
-            }
-        } else {
-            if (typeof(t[link[0]]) != 'object') {
-                t[link[0]] = {};
-            }
-            if (link.length == 2) {
-                if (typeof(t[link[0]][link[1]]) != 'object') {
-                    t[link[0]][link[1]] = l;
-                }
-            } else if (link.length == 3) {
-                if (typeof(t[link[0]][link[1]]) != 'object') {
-                    t[link[0]][link[1]] = {};
-                }
-                t[link[0]][link[1]][link[2]] = l;
-            }
-        }
-        updateDoc(fb.dtre, t);
+        d._ = len;
+        updateDoc(fb.dtre, fb.tree);
     }
 
     function setAnchor() {
         $$('article a:not([target])').forEach(a => {
             var link = getUrl(a.pathname);
             if (link.length) {
-                if (!findAnchor(fb.tree, link)) {
+                if (!recAnchor(fb.tree, link)) {
                     a.classList.add('r');
                 }
             }
@@ -919,10 +897,14 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
             if (is.tree) {
                 $('edit').innerHTML = JSON.stringify(getData(ls.edit), null, 2);
             } else {
-                getData(ls.edit).split(/\n/).forEach(e => {
+                var d = getData(ls.edit);
+                var t = document.createElement('div');
+                t.innerHTML = d;
+                t.innerHTML.split(/\n/).forEach(e => {
                     var p = document.createElement('p');
                     var t = document.createElement('p');
                     p.innerText = e;
+                    // p.innerText = p.innerHTML;
                     t.innerHTML = e;
                     if (t.$('img')) {
                         if (!is.lazyload) {
@@ -1011,16 +993,12 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 $$('edit img').forEach(e => { imgOnclick(e.parentElement); });
             }
             var d = en($('edit').innerText);
-            d = d.replaceAll("&alpha;", "α")
-                .replaceAll("&beta;", "β")
-                .replaceAll("&gamma;", "γ")
-                .replaceAll("&delta;", "δ");
 
             if (fb.dict == undefined) {
                 fb.dict = {};
                 fb.dict[url[2]] = { auth: 1, true: d, false: '' };
                 setDoc(fb.html, fb.dict).then(() => { saved(as); });
-                addAnchor(url);
+                addAnchor();
             } else {
                 if (!fb.dict[url[2]]) {
                     fb.dict[url[2]] = { auth: 1, true: '', false: '' };
@@ -1035,7 +1013,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 if (fb.dict[url[2]][!ls.edit] != undefined) {
                     t[url[2]][!ls.edit] = fb.dict[url[2]][!ls.edit];
                 }
-                addAnchor(url);
+                addAnchor();
                 updateDoc(fb.html, t).then(() => { saved(as); })
             }
         }
