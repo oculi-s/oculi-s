@@ -318,9 +318,13 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
         if (h1) {
             var f = h1.getAttribute('fold');
             var b = h1.getAttribute('blind');
+            var ff = h1.getAttribute('folded');
             $$(`article>*:not(index) ${f}, article>${f}`).forEach(e => {
                 e.onclick = () => { e.classList.toggle('fold') };
                 e.classList.add('foldable');
+                if (ff){
+                    e.classList.add('fold');
+                }
             })
             $$(`article>*:not(index) ${b}, article>${b}`).forEach(e => {
                 e.classList.add('blind');
