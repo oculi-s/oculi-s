@@ -900,7 +900,7 @@ import 'https://code.highcharts.com/es-modules/masters/modules/accessibility.src
                 var d = getData(ls.edit);
                 var t = document.createElement('div');
                 t.innerHTML = d;
-                t.innerHTML.split(/\n/).forEach(e => {
+                t.innerHTML.replaceAll('&nbsp;',' ').split(/\n/).forEach(e => {
                     var p = document.createElement('p');
                     var t = document.createElement('p');
                     p.innerText = e;
