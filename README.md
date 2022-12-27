@@ -6,7 +6,7 @@
 Contact me whenever you want  
 
 ## 1. :biking_man: C99  
-[BOJ](https://github.com/oculi-s/Baekjoon) 플5!  
+[BOJ](https://github.com/oculi-s/Baekjoon) 플3!  
 [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
   
 ## 2. :computer: JS Html CSS
