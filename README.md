@@ -6,14 +6,13 @@
 Contact me whenever you want  
 
 ## 1. :biking_man: C99  
-[BOJ](https://github.com/oculi-s/Baekjoon) 플3!  
+[BOJ](https://solved.ac/oculis) 플2!  
 [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
   
 ## 2. :computer: JS Html CSS
 [Blog](https://github.com/oculi-s/sample) 데이터가 암호화된 블로그 구성  
 [Tree](https://github.com/oculi-s/tree) 실시간 트리구조 변환기 제작  
 [Flea market](https://github.com/oculi-s/flea_market) 쇼핑몰 데모 제작  
-[Ohddul](https://github.com/oculi-s/ohddul) 웹 커뮤니티 구성  
 
 ## 3. :running_man: Python
 [Programmers](https://github.com/oculi-s/Programmers) L3, L4  
