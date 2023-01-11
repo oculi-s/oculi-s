@@ -6,7 +6,7 @@
 Contact me whenever you want  
 
 ## 1. :biking_man: C99  
-[BOJ](https://solved.ac/oculis) 플2!  
+[BOJ](https://solved.ac/oculis) 플1!  
 [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
   
 ## 2. :computer: JS Html CSS
