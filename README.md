@@ -4,7 +4,9 @@
 ## 김현식 1998.06.04
 📱 <b>010-8901-6864</b>  
 Contact me whenever you want  
+<i>[about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)</i>
 
+  <!--
 ## 1. :biking_man: C99  
 [BOJ](https://solved.ac/oculis) 플1!  
 [Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
@@ -19,7 +21,7 @@ Contact me whenever you want
 
 ## 4. :iphone: Swift 응애  
 ## 5. :robot: MATLAB 응애  
-<i>[about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)</i>
+-->
 
 </div>
 <div align="center">
