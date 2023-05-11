@@ -30,6 +30,8 @@ Contact me whenever you want
 [![Solved.ac Profile](http://mazassumnida.wtf/api/mini/generate_badge?boj=oculis)](https://solved.ac/oculis)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Foculis0925&count_bg=%23000000&title_bg=%23D32424&icon=&icon_color=%23FF5555&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/oculis)
+  
 [![CodeForces Profile](https://cf.leed.at?id=oculis)](https://codeforces.com/profile/oculis)
                                       
 [![Solved.ac Profile](http://mazassumnida.wtf/api/v2/generate_badge?boj=oculis)](https://solved.ac/oculis/)
