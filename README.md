@@ -2,7 +2,30 @@
 <div>
 
 ## 김현식 1998.06.04
-📱 <b>010-8901-6864</b>
+📱 <b>010-8901-6864</b>  
+[![Tistory]](https://oculis.tistory.com)
+
+<div align="center">
+  
+![Node.js] ![Express.js] ![Passport.js]  
+![React] ![Next.js] ![NextAuth]  
+![Ubuntu] ![Nginx]  
+![Clang] ![CPP] ![Python]  
+
+</div>
+
+[Tistory]: https://img.shields.io/badge/Tistory-000?logo=tistory&logoColor=fff&style=for-the-badge
+[Node.js]: https://img.shields.io/badge/Node.js-393?logo=nodedotjs&logoColor=fff&style=for-the-badge
+[Express.js]: https://img.shields.io/badge/Express-000?logo=express&logoColor=fff&style=for-the-badge
+[Passport.js]: https://img.shields.io/badge/Passport-34E27A?logo=passport&logoColor=000&style=for-the-badge
+[React]: https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=000&style=for-the-badge
+[Next.js]: https://img.shields.io/badge/Next.js-000?logo=nextdotjs&logoColor=fff&style=for-the-badge
+[NextAuth]: https://img.shields.io/badge/NextAuth-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
+[Ubuntu]: https://img.shields.io/badge/Ubuntu-E95420?logo=ubuntu&logoColor=fff&style=for-the-badge
+[Nginx]: https://img.shields.io/badge/NGINX-009639?logo=nginx&logoColor=fff&style=for-the-badge
+[CPP]: https://img.shields.io/badge/C%2B%2B-00599C?logo=cplusplus&logoColor=fff&style=for-the-badge
+[Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
+[Clang]: https://img.shields.io/badge/C-A8B9CC?logo=c&logoColor=fff&style=for-the-badge
 
   <!--
 Contact me whenever you want  
