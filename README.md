@@ -9,7 +9,7 @@
   
 ![Node.js] ![Express.js] ![Passport.js]  
 ![React] ![Next.js] ![NextAuth]  
-![Ubuntu] ![Nginx]  
+![Ubuntu] ![Nginx] ![Lets encrypt]  
 ![Clang] ![CPP] ![Python]  
 
 </div>
@@ -23,6 +23,7 @@
 [NextAuth]: https://img.shields.io/badge/NextAuth-000000?style=for-the-badge&logo=nextdotjs&logoColor=white
 [Ubuntu]: https://img.shields.io/badge/Ubuntu-E95420?logo=ubuntu&logoColor=fff&style=for-the-badge
 [Nginx]: https://img.shields.io/badge/NGINX-009639?logo=nginx&logoColor=fff&style=for-the-badge
+[Lets encrypt]: https://img.shields.io/badge/Let's%20Encrypt-003A70?logo=letsencrypt&logoColor=fff&style=for-the-badge
 [CPP]: https://img.shields.io/badge/C%2B%2B-00599C?logo=cplusplus&logoColor=fff&style=for-the-badge
 [Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
 [Clang]: https://img.shields.io/badge/C-A8B9CC?logo=c&logoColor=fff&style=for-the-badge
