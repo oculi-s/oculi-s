@@ -11,7 +11,7 @@
 ![Node.js] ![Express.js] ![Passport.js]  
 ![React] ![Next.js] ![NextAuth]  
 ![Ubuntu] ![Nginx] ![Lets encrypt]  
-![Clang] ![CPP] ![Python]  
+![Clang] ![CPP] ![Python] ![Tensorflow]  
 
 </div>
 
@@ -65,6 +65,7 @@ Contact me whenever you want
 [Lets encrypt]: https://img.shields.io/badge/Let's%20Encrypt-003A70?logo=letsencrypt&logoColor=fff&style=for-the-badge
 [CPP]: https://img.shields.io/badge/C%2B%2B-00599C?logo=cplusplus&logoColor=fff&style=for-the-badge
 [Python]: https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54
+[Tensorflow]: https://img.shields.io/badge/TensorFlow-%23FF6F00.svg?style=for-the-badge&logo=TensorFlow&logoColor=white
 [Clang]: https://img.shields.io/badge/C-A8B9CC?logo=c&logoColor=fff&style=for-the-badge
 [Coffee]: https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png
 [CodeForces]: https://badges.joonhyung.xyz/codeforces/oculis.svg
