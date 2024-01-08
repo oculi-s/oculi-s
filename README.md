@@ -10,30 +10,11 @@
   
 ![Node.js] ![Express.js] ![Passport.js]  
 ![React] ![Next.js] ![NextAuth]  
+![Flutter]  
 ![Ubuntu] ![Nginx] ![Lets encrypt]  
 ![Clang] ![CPP] ![Python] ![Tensorflow]  
 
 </div>
-
-  <!--
-Contact me whenever you want  
-<i>[about oculis](https://latina.bab2min.pe.kr/xe/lk/oculus?form=oculis)</i>
-
-## 1. :biking_man: C99  
-[BOJ](https://solved.ac/oculis) 플1!  
-[Codeforces](https://github.com/oculi-s/Codeforces) 으응애애  
-  
-## 2. :computer: JS Html CSS
-[Blog](https://github.com/oculi-s/sample) 데이터가 암호화된 블로그 구성  
-[Tree](https://github.com/oculi-s/tree) 실시간 트리구조 변환기 제작  
-[Flea market](https://github.com/oculi-s/flea_market) 쇼핑몰 데모 제작  
-  
-## 3. :running_man: Python
-[Programmers](https://github.com/oculi-s/Programmers) L3, L4  
-
-## 4. :iphone: Swift 응애  
-## 5. :robot: MATLAB 응애  
--->
 
 ### 🧠 Algorithm
 </div>
@@ -51,7 +32,7 @@ Contact me whenever you want
 </div>
 </div>
 
-
+[Flutter]: https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=fff&style=flat
 [Gmail]: https://img.shields.io/badge/Gmail-EA4335?logo=gmail&logoColor=fff&style=flat
 [Tistory]: https://img.shields.io/badge/Tistory-000?logo=tistory&logoColor=fff&style=flat
 [Node.js]: https://img.shields.io/badge/Node.js-393?logo=nodedotjs&logoColor=fff&style=flat
