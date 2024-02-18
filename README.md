@@ -1,22 +1,27 @@
 <div>
 <div>
 
-### 김현식 1998.06.04  
-📱<b>010-8901-6864</b>  
-[![Tistory]](https://oculis.tistory.com) [![Gmail]](mailto:oculis0925@yonsei.ac.kr) 
+### Kim Hyun sik 1998.06.04  
+---  
+I work as a technical researcher at [Biobytes](https://github.com/biobyteskorea), I have strengths in regression, image preprocessing, SPA/Hybrid development  
+📞 010-8901-6864, 📧 [oculis0925@yonsei.ac.kr](mailto:oculis0925@yonsei.ac.kr), Feel free to contact  
 
-### 💻 Tech stack
-<div align="center">
-  
-![Node.js] ![Express.js] ![Passport.js]  
-![React] ![Next.js] ![NextAuth]  
-![Flutter]  
-![Ubuntu] ![Nginx] ![Lets encrypt]  
-![Clang] ![CPP] ![Python] ![Tensorflow]  
 
-</div>
+### 💻 Tech stack  
+--- 
+![Node.js] ![Express.js] ![Passport.js] ![React] ![Next.js] ![NextAuth] ![Flutter]  
+![Ubuntu] ![Nginx] ![Lets encrypt] ![Clang] ![CPP] ![Python] ![Tensorflow]  
+
+### 🌏 Career  
+--- 
+- 2018.12-2019.09 SGU, Medical Image & AI Research assistant   
+- 2019.08-2019.12 VHS medical center, 3D modeling research assistant  
+- 2018.03-2019.12 SGU, Electronic engineering
+- 2020.03- YWMC, Medicine  
+- 2023.09- Biobytes, Technical researcher
 
 ### 🧠 Algorithm
+---  
 </div>
 <div align="center">
 
@@ -24,7 +29,7 @@
 [![Solved.ac]](https://solved.ac/oculis)
 [![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Foculis0925&count_bg=%23000000&title_bg=%23D32424&icon=&icon_color=%23FF5555&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
 
-[![Coffee]](https://www.buymeacoffee.com/oculis)  
+<!-- [![Coffee]](https://www.buymeacoffee.com/oculis)  -->
 [![Codeforces Profile](https://cf.leed.at?id=oculis)](https://codeforces.com/profile/oculis)  
 [![Solved.ac Profile](http://mazassumnida.wtf/api/v2/generate_badge?boj=oculis)](https://solved.ac/oculis/)  
 [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=oculi-s&layout=compact&hide_border=true&theme=dark&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
