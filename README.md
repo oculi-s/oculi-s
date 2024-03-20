@@ -3,7 +3,7 @@
 
 ### Kim Hyun sik 1998.06.04  
 ---  
-I work as a technical researcher at [Biobytes](https://github.com/biobyteskorea), I have strengths in regression, image preprocessing, SPA/Hybrid development  
+I work as a technical researcher at [Biobytes](https://github.com/biobyteskr), I have strengths in regression, image preprocessing, SPA/Hybrid development  
 📞 010-8901-6864, 📧 [oculis0925@yonsei.ac.kr](mailto:oculis0925@yonsei.ac.kr), Feel free to contact  
 
 
