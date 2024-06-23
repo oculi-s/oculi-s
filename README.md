@@ -14,6 +14,7 @@ I work as a technical researcher at [Biobytes](https://github.com/biobyteskr), I
 
 ### 🌏 Career  
 --- 
+- 2024.06 Team Leader of Team B, Grand prize, Korea Clinical Datathon 2024
 - 2018.12-2019.09 SGU, Medical Image & AI Research assistant   
 - 2019.08-2019.12 VHS medical center, 3D modeling research assistant  
 - 2018.03-2019.12 SGU, Electronic engineering
