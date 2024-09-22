@@ -19,7 +19,7 @@ I work as a technical researcher at [Biobytes](https://github.com/biobyteskr), I
 - 2019.08-2019.12 VHS medical center, 3D modeling research assistant  
 - 2018.03-2019.12 SGU, Electronic engineering
 - 2020.03- YWMC, Medicine  
-- 2023.09- Biobytes, Technical researcher
+- 2023.09- Biobytes, AI researcher
 
 ### 🧠 Algorithm
 ---  
