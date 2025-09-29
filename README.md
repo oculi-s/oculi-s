@@ -1,9 +1,11 @@
 <div>
 
 ## Kim Hyun sik 1998.06.04  
+[![Codeforces]](https://codeforces.com/profile/oculis)
+[![Solved.ac]](https://solved.ac/oculis)  
+
 I worked as a technical researcher at [Biobytes](https://github.com/biobyteskr), I have strengths in regression, image preprocessing, SPA/Hybrid development  
 📞 010-8901-6864, 📧 [oculis0925@yonsei.ac.kr](mailto:oculis0925@yonsei.ac.kr), Feel free to contact  
-
 
 ## Tech stack  
 ![Node.js] ![Express.js] ![Passport.js] ![React] ![Next.js] ![NextAuth] ![Flutter]  
@@ -21,20 +23,6 @@ I worked as a technical researcher at [Biobytes](https://github.com/biobyteskr),
 - [Kim, Hyun Sik, Choon Hee Chung, and Jung Woo Lee. "A Novel Sarcopenia Screening Approach Using an Osteoporosis-Inspired T-Score Method." Yonsei Medical Journal 66.10 (2025): 647-656.](https://doi.org/10.3349/ymj.2024.0537)
 - [Youk, Hyun, et al. "Association between osteoporosis under treatment and all-cause and specific-cause mortalities: a nationwide retrospective cohort study in South Korea." BMC Musculoskeletal Disorders 26.1 (2025): 291.](https://doi.org/10.1186/s12891-025-08527-w)
 
-## Algorithm
-<div align="center">
-
-[![Codeforces]](https://codeforces.com/profile/oculis)
-[![Solved.ac]](https://solved.ac/oculis)
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Foculis0925&count_bg=%23000000&title_bg=%23D32424&icon=&icon_color=%23FF5555&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
-
-<!-- [![Coffee]](https://www.buymeacoffee.com/oculis)  -->
-[![Codeforces Profile](https://cf.leed.at?id=oculis)](https://codeforces.com/profile/oculis)  
-[![Solved.ac Profile](http://mazassumnida.wtf/api/v2/generate_badge?boj=oculis)](https://solved.ac/oculis/)  
-<!-- [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=oculi-s&layout=compact&hide_border=true&theme=dark&count_private=true)](https://github.com/anuraghazra/github-readme-stats) -->
-
-</div>
-</div>
 
 [Flutter]: https://img.shields.io/badge/Flutter-02569B?logo=flutter&logoColor=fff&style=flat
 [Gmail]: https://img.shields.io/badge/Gmail-EA4335?logo=gmail&logoColor=fff&style=flat
