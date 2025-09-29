@@ -1,29 +1,27 @@
 <div>
-<div>
 
-### Kim Hyun sik 1998.06.04  
----  
-I work as a technical researcher at [Biobytes](https://github.com/biobyteskr), I have strengths in regression, image preprocessing, SPA/Hybrid development  
+## Kim Hyun sik 1998.06.04  
+I worked as a technical researcher at [Biobytes](https://github.com/biobyteskr), I have strengths in regression, image preprocessing, SPA/Hybrid development  
 📞 010-8901-6864, 📧 [oculis0925@yonsei.ac.kr](mailto:oculis0925@yonsei.ac.kr), Feel free to contact  
 
 
-### 💻 Tech stack  
---- 
+## Tech stack  
 ![Node.js] ![Express.js] ![Passport.js] ![React] ![Next.js] ![NextAuth] ![Flutter]  
 ![Ubuntu] ![Nginx] ![Lets encrypt] ![Clang] ![CPP] ![Python] ![Tensorflow]  
 
-### 🌏 Career  
---- 
+## Career  
 - 2024.06 Team Leader of Team B, Grand prize, Korea Clinical Datathon 2024
 - 2018.12-2019.09 SGU, Medical Image & AI Research assistant   
 - 2019.08-2019.12 VHS medical center, 3D modeling research assistant  
 - 2018.03-2019.12 SGU, Electronic engineering
 - 2020.03- YWMC, Medicine  
-- 2023.09- Biobytes, AI researcher
+- 2023.09-2024.12 Biobytes, AI researcher
 
-### 🧠 Algorithm
----  
-</div>
+## Article
+- [Kim, Hyun Sik, Choon Hee Chung, and Jung Woo Lee. "A Novel Sarcopenia Screening Approach Using an Osteoporosis-Inspired T-Score Method." Yonsei Medical Journal 66.10 (2025): 647-656.](https://doi.org/10.3349/ymj.2024.0537)
+- [Youk, Hyun, et al. "Association between osteoporosis under treatment and all-cause and specific-cause mortalities: a nationwide retrospective cohort study in South Korea." BMC Musculoskeletal Disorders 26.1 (2025): 291.](https://doi.org/10.1186/s12891-025-08527-w)
+
+## Algorithm
 <div align="center">
 
 [![Codeforces]](https://codeforces.com/profile/oculis)
@@ -33,7 +31,7 @@ I work as a technical researcher at [Biobytes](https://github.com/biobyteskr), I
 <!-- [![Coffee]](https://www.buymeacoffee.com/oculis)  -->
 [![Codeforces Profile](https://cf.leed.at?id=oculis)](https://codeforces.com/profile/oculis)  
 [![Solved.ac Profile](http://mazassumnida.wtf/api/v2/generate_badge?boj=oculis)](https://solved.ac/oculis/)  
-[![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=oculi-s&layout=compact&hide_border=true&theme=dark&count_private=true)](https://github.com/anuraghazra/github-readme-stats)
+<!-- [![Top Langs](https://github-readme-stats.vercel.app/api/top-langs/?username=oculi-s&layout=compact&hide_border=true&theme=dark&count_private=true)](https://github.com/anuraghazra/github-readme-stats) -->
 
 </div>
 </div>
