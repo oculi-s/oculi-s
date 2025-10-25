@@ -4,7 +4,7 @@
 [![Codeforces]](https://codeforces.com/profile/oculis)
 [![Solved.ac]](https://solved.ac/oculis)  
 
-I worked as a technical researcher at [Biobytes](https://github.com/biobyteskr), I have strengths in regression, image preprocessing, SPA/Hybrid development  
+I worked as a technical researcher at [Biobytes](https://github.com/biobyteskr), I have strengths in CDSS, SPA/Hybrid web dev    
 📞 010-8901-6864, 📧 [oculis0925@yonsei.ac.kr](mailto:oculis0925@yonsei.ac.kr), Feel free to contact  
 
 ## Tech stack  
@@ -13,13 +13,14 @@ I worked as a technical researcher at [Biobytes](https://github.com/biobyteskr),
 
 ## Career  
 - 2024.06 Team Leader of Team B, Grand prize, Korea Clinical Datathon 2024
-- 2018.12-2019.09 SGU, Medical Image & AI Research assistant   
-- 2019.08-2019.12 VHS medical center, 3D modeling research assistant  
-- 2018.03-2019.12 SGU, Electronic engineering
-- 2020.03- YWMC, Medicine  
-- 2023.09-2024.12 Biobytes, AI researcher
+- 2023.09-2024.12 AI researcher, Biobytes. Inc.
+- 2018.12-2019.09 Ultrasound imaging & AI Research assistant, Sogang university
+- 2019.08-2019.12 3D modeling research assistant, VHS medical center
+- 2018.03-2019.12 Electronic engineering, Sogang university
+- 2020.03- Wonju college of medicine, Yonsei university
 
-## Article
+## Research
+- (Upcoming) Hyun Sik Kim, Jung Woo Lee. "AI-Based Prediction of SPPB Scores Using Questionnaires of Abilities: Findings from the National Health and Aging Trends Study" BMC Medical Informatics and Decision Making
 - [Kim, Hyun Sik, Choon Hee Chung, and Jung Woo Lee. "A Novel Sarcopenia Screening Approach Using an Osteoporosis-Inspired T-Score Method." Yonsei Medical Journal 66.10 (2025): 647-656.](https://doi.org/10.3349/ymj.2024.0537)
 - [Youk, Hyun, et al. "Association between osteoporosis under treatment and all-cause and specific-cause mortalities: a nationwide retrospective cohort study in South Korea." BMC Musculoskeletal Disorders 26.1 (2025): 291.](https://doi.org/10.1186/s12891-025-08527-w)
 
