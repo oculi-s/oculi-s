@@ -20,7 +20,7 @@ I worked as a technical researcher at [Biobytes](https://github.com/biobyteskr),
 - 2020.03- Wonju college of medicine, Yonsei university
 
 ## Research
-- (Upcoming) Hyun Sik Kim, Jung Woo Lee. "AI-Based Prediction of SPPB Scores Using Questionnaires of Abilities: Findings from the National Health and Aging Trends Study" BMC Medical Informatics and Decision Making
+- [Hyun Sik Kim, Jung Woo Lee. "AI-based prediction of SPPB scores using questionnaires of abilities: findings from the national health and aging trends study" BMC Medical Informatics and Decision Making](https://doi.org/10.1186/s12911-025-03263-6)
 - [Kim, Hyun Sik, Choon Hee Chung, and Jung Woo Lee. "A Novel Sarcopenia Screening Approach Using an Osteoporosis-Inspired T-Score Method." Yonsei Medical Journal 66.10 (2025): 647-656.](https://doi.org/10.3349/ymj.2024.0537)
 - [Youk, Hyun, et al. "Association between osteoporosis under treatment and all-cause and specific-cause mortalities: a nationwide retrospective cohort study in South Korea." BMC Musculoskeletal Disorders 26.1 (2025): 291.](https://doi.org/10.1186/s12891-025-08527-w)
 
